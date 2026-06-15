@@ -1,0 +1,1802 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>1820 | Reservation</title>
+  <script>
+    if (sessionStorage.getItem("1820PageTransition") === "reservation") {
+      document.documentElement.classList.add("is-arriving");
+    }
+  </script>
+  <style>
+    :root {
+      --paper: #f3f3f3;
+      --ink: #070707;
+      --graphite: #2f2f2f;
+      --soft: #b9b9b9;
+      --line: rgba(0, 0, 0, 0.28);
+      --ghost: rgba(0, 0, 0, 0.055);
+      --transition: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--paper);
+      color: var(--ink);
+      scroll-behavior: auto;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      background:
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.025) 0 1px, transparent 1px 8px),
+        linear-gradient(180deg, #f6f6f6 0%, #ececec 52%, #d8d8d8 100%);
+    }
+
+    body::before {
+      content: "1820";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      display: grid;
+      place-items: center;
+      padding: 8rem clamp(18px, 4vw, 58px) 9rem;
+      pointer-events: none;
+      color: #080808;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(7.2rem, 20vw, 19rem);
+      font-weight: 400;
+      line-height: 0.76;
+      opacity: 0.055;
+      transform: translateY(-1vh);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      pointer-events: none;
+      opacity: 0.22;
+      background:
+        repeating-radial-gradient(circle at 24% 34%, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 5px),
+        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.03) 0 1px, transparent 1px 7px);
+      mix-blend-mode: multiply;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    select,
+    textarea,
+    a {
+      font: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 76px;
+      padding: 20px clamp(18px, 4vw, 58px);
+      color: #ffffff;
+      mix-blend-mode: difference;
+    }
+
+    .brand,
+    .date {
+      font-size: clamp(0.72rem, 0.68rem + 0.16vw, 0.86rem);
+      font-weight: 850;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .brand {
+      font-size: clamp(1rem, 0.86rem + 0.56vw, 1.42rem);
+      letter-spacing: 0.02em;
+    }
+
+    .reservation-page {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 1320px);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: clamp(104px, 13vh, 144px) clamp(18px, 5vw, 72px) clamp(30px, 6vh, 72px);
+      display: grid;
+      grid-template-columns: minmax(0, 0.8fr) minmax(330px, 0.72fr);
+      gap: clamp(30px, 7vw, 104px);
+      align-items: end;
+    }
+
+    .reservation-hero {
+      align-self: center;
+    }
+
+    .kicker,
+    .step-label,
+    .field label,
+    .summary-row span:first-child,
+    .button,
+    .chip {
+      font-size: clamp(0.68rem, 0.62rem + 0.18vw, 0.82rem);
+      font-weight: 900;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .kicker {
+      margin: 0 0 clamp(18px, 3vw, 28px);
+      color: #4a4a4a;
+    }
+
+    h1 {
+      max-width: 8ch;
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(4.6rem, 11vw, 11rem);
+      font-weight: 400;
+      line-height: 0.84;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      max-width: 34rem;
+      margin: clamp(24px, 4vw, 42px) 0 0;
+      color: #171717;
+      font-size: clamp(1rem, 0.9rem + 0.44vw, 1.34rem);
+      font-weight: 580;
+      line-height: 1.52;
+    }
+
+    .booking-surface {
+      border: 1px solid var(--line);
+      background:
+        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.035) 0 1px, transparent 1px 5px),
+        rgba(244, 244, 244, 0.88);
+      box-shadow: 12px 12px 0 #080808;
+    }
+
+    .surface-head {
+      display: grid;
+      gap: 18px;
+      padding: clamp(18px, 2.6vw, 30px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    .step-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(0, 0, 0, 0.24);
+      padding: 8px 10px;
+      color: #666666;
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .chip.is-active {
+      color: #f5f5f5;
+      border-color: #080808;
+      background: #080808;
+    }
+
+    .progress-track {
+      height: 4px;
+      background: rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 33.333%;
+      height: 100%;
+      background: #080808;
+      transition: width 520ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .status {
+      display: none;
+      margin: 0;
+      padding: 14px 16px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.06);
+      color: #171717;
+      font-size: 0.92rem;
+      font-weight: 650;
+      line-height: 1.45;
+    }
+
+    .status.is-visible {
+      display: block;
+    }
+
+    .status[data-type="success"] {
+      background: #080808;
+      color: #f5f5f5;
+    }
+
+    form {
+      display: grid;
+    }
+
+    [data-step-panel] {
+      display: none;
+      gap: 18px;
+      padding: clamp(18px, 2.6vw, 30px);
+    }
+
+    [data-step-panel].is-active {
+      display: grid;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .field.is-wide {
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+      color: #333333;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 56px;
+      border: 1px solid rgba(0, 0, 0, 0.34);
+      border-radius: 0;
+      background:
+        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.025) 0 1px, transparent 1px 5px),
+        #f7f7f7;
+      color: #080808;
+      padding: 0 14px;
+      outline: none;
+      font-size: 1rem;
+      font-weight: 620;
+      transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    textarea {
+      min-height: 112px;
+      resize: vertical;
+      padding: 14px;
+      line-height: 1.45;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #080808;
+      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.18);
+      background: #ffffff;
+    }
+
+    .phone-grid {
+      display: grid;
+      grid-template-columns: minmax(178px, 0.48fr) minmax(0, 1fr);
+      gap: 10px;
+    }
+
+    #countryCode {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .datepicker-wrap {
+      position: relative;
+      z-index: 5;
+    }
+
+    .date-trigger {
+      width: 100%;
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border: 1px solid rgba(0, 0, 0, 0.34);
+      border-radius: 0;
+      background:
+        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.025) 0 1px, transparent 1px 5px),
+        #f7f7f7;
+      color: #080808;
+      padding: 0 14px;
+      font-size: 1rem;
+      font-weight: 720;
+      text-align: left;
+      transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .date-trigger:hover,
+    .date-trigger:focus-visible,
+    .date-trigger[aria-expanded="true"] {
+      border-color: #080808;
+      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.18);
+      background: #ffffff;
+      outline: none;
+    }
+
+    .date-trigger span:first-child {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .date-mark {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border: 1px solid rgba(0, 0, 0, 0.34);
+      color: #080808;
+      font-size: 0.82rem;
+      font-weight: 950;
+      line-height: 1;
+      flex: 0 0 auto;
+    }
+
+    .date-panel {
+      position: absolute;
+      left: 0;
+      top: calc(100% + 10px);
+      z-index: 30;
+      width: min(386px, calc(100vw - 40px));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background:
+        repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 5px),
+        #25252b;
+      color: #f4f4f4;
+      padding: 14px;
+      box-shadow: 12px 12px 0 rgba(0, 0, 0, 0.42);
+    }
+
+    .date-panel[hidden] {
+      display: none;
+    }
+
+    .calendar-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .calendar-nav {
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 0;
+      background: #f4f4f4;
+      color: #080808;
+      font-size: 1.24rem;
+      font-weight: 700;
+      transition: transform 160ms ease, opacity 160ms ease, box-shadow 160ms ease;
+    }
+
+    .calendar-nav:hover:not(:disabled),
+    .calendar-nav:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35);
+      outline: none;
+    }
+
+    .calendar-nav:disabled {
+      opacity: 0.32;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .calendar-title {
+      color: #ffffff;
+      font-size: 0.82rem;
+      font-weight: 950;
+      letter-spacing: 0.14em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .calendar-weekdays,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .calendar-weekdays {
+      margin-bottom: 8px;
+    }
+
+    .calendar-weekday {
+      color: rgba(255, 255, 255, 0.66);
+      font-size: 0.72rem;
+      font-weight: 740;
+      text-align: center;
+    }
+
+    .calendar-cell {
+      min-height: 40px;
+    }
+
+    .calendar-day {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 0;
+      background: rgba(255, 255, 255, 0.09);
+      color: #f7f7f7;
+      font-size: 0.88rem;
+      font-weight: 800;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+    }
+
+    .calendar-day:hover:not(:disabled),
+    .calendar-day:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.5);
+      outline: none;
+    }
+
+    .calendar-day.is-selected {
+      border-color: #f7f7f7;
+      background: #f7f7f7;
+      color: #080808;
+      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.42);
+    }
+
+    .calendar-day.is-today {
+      outline: 1px dashed rgba(255, 255, 255, 0.55);
+      outline-offset: -5px;
+    }
+
+    .calendar-day:disabled {
+      opacity: 0.28;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .calendar-legend {
+      margin: 12px 0 0;
+      color: rgba(255, 255, 255, 0.62);
+      font-size: 0.76rem;
+      font-weight: 650;
+      line-height: 1.4;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .time-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      max-height: 308px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 2px 8px 8px 2px;
+      scrollbar-color: #080808 rgba(0, 0, 0, 0.12);
+      scrollbar-width: thin;
+    }
+
+    .time-grid::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .time-grid::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .time-grid::-webkit-scrollbar-thumb {
+      background: #080808;
+    }
+
+    .seating-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .choice-button {
+      min-height: 54px;
+      border: 1px solid rgba(0, 0, 0, 0.34);
+      border-radius: 0;
+      background: #f7f7f7;
+      color: #080808;
+      font-weight: 850;
+      transition: transform 180ms ease, background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .choice-button:hover,
+    .choice-button:focus-visible {
+      transform: translateY(-1px);
+      outline: none;
+      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.18);
+    }
+
+    .choice-button.is-selected {
+      background: #080808;
+      color: #f5f5f5;
+      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .error {
+      min-height: 1.1rem;
+      color: #080808;
+      font-size: 0.78rem;
+      font-weight: 760;
+      line-height: 1.35;
+    }
+
+    .field.has-error input,
+    .field.has-error select,
+    .field.has-error textarea,
+    .field.has-error .date-trigger {
+      border-color: #080808;
+      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.26);
+      background: #ffffff;
+    }
+
+    .summary {
+      display: grid;
+      border: 1px solid rgba(0, 0, 0, 0.34);
+      background: rgba(255, 255, 255, 0.42);
+    }
+
+    .summary-row {
+      display: grid;
+      grid-template-columns: minmax(120px, 0.36fr) minmax(0, 1fr);
+      gap: 16px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.18);
+    }
+
+    .summary-row:last-child {
+      border-bottom: 0;
+    }
+
+    .summary-row span:first-child {
+      color: #555555;
+    }
+
+    .summary-row span:last-child {
+      color: #080808;
+      font-size: 1rem;
+      font-weight: 680;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: clamp(18px, 2.6vw, 30px);
+      border-top: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    .button {
+      min-height: 58px;
+      min-width: min(100%, 180px);
+      border: 2px solid #080808;
+      border-radius: 0;
+      padding: 18px 22px;
+      background: #080808;
+      color: #f5f5f5;
+      box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.18);
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    .button.is-secondary {
+      background: #f4f4f4;
+      color: #080808;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      transform: translate(3px, 3px);
+      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
+      outline: none;
+    }
+
+    .button[hidden] {
+      display: none;
+    }
+
+    .button:disabled {
+      opacity: 0.52;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .quiet-note {
+      margin: 0;
+      color: #3d3d3d;
+      font-size: 0.92rem;
+      font-weight: 620;
+      line-height: 1.5;
+    }
+
+    .page-transition {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: grid;
+      place-items: center;
+      background: #f7f7f7;
+      opacity: var(--transition);
+      pointer-events: none;
+      transition: opacity 1080ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html.is-arriving {
+      --transition: 1;
+    }
+
+    html.is-arriving .page-transition {
+      pointer-events: auto;
+    }
+
+    .rock-loader {
+      position: relative;
+      width: clamp(54px, 6vw, 92px);
+      aspect-ratio: 1.24;
+      opacity: 0;
+      transform: rotate(-7deg);
+      filter: grayscale(1);
+      animation: rockBlink 980ms ease-in-out infinite;
+    }
+
+    html.is-arriving .rock-loader {
+      opacity: 0.9;
+    }
+
+    .rock-loader::before,
+    .rock-loader::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      clip-path: polygon(18% 29%, 43% 9%, 76% 19%, 93% 52%, 73% 88%, 29% 91%, 7% 62%);
+    }
+
+    .rock-loader::before {
+      background:
+        repeating-linear-gradient(118deg, rgba(255, 255, 255, 0.28) 0 1px, transparent 1px 6px),
+        linear-gradient(135deg, #e8e8e8, #9c9c9c 58%, #2b2b2b);
+      border: 2px solid #111111;
+      box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.16);
+    }
+
+    .rock-loader::after {
+      inset: 7% 10% 14% 12%;
+      background:
+        repeating-linear-gradient(32deg, rgba(0, 0, 0, 0.18) 0 1px, transparent 1px 5px);
+      opacity: 0.48;
+      mix-blend-mode: multiply;
+    }
+
+    @keyframes rockBlink {
+      0%,
+      100% {
+        opacity: 0.28;
+        transform: rotate(-7deg) scale(0.96);
+      }
+
+      48% {
+        opacity: 0.92;
+        transform: rotate(-7deg) scale(1);
+      }
+    }
+
+    @media (max-width: 880px) {
+      .reservation-page {
+        grid-template-columns: 1fr;
+        align-items: start;
+        padding-top: 92px;
+      }
+
+      h1 {
+        max-width: 9ch;
+        font-size: clamp(4rem, 18vw, 7rem);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        min-height: 68px;
+        padding: 18px 20px;
+      }
+
+      .date {
+        display: none;
+      }
+
+      .reservation-page {
+        padding: 82px 18px 28px;
+        gap: 26px;
+      }
+
+      .field-grid,
+      .phone-grid,
+      .choice-grid,
+      .time-grid,
+      .summary-row {
+        grid-template-columns: 1fr;
+      }
+
+      .form-actions {
+        display: grid;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .booking-surface {
+        box-shadow: 8px 8px 0 #080808;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar" aria-label="Site header">
+    <a class="brand" href="index.html" aria-label="1820 home">1820</a>
+    <div class="date">Reservation</div>
+  </header>
+
+  <main class="reservation-page">
+    <section class="reservation-hero" aria-label="Reservation introduction">
+      <p class="kicker">Private reservations</p>
+      <h1>Hold the room.</h1>
+      <p class="hero-copy">A quiet request for the table, the hour, and the shape of the evening. The room remains monochrome, measured, and small by design.</p>
+    </section>
+
+    <section class="booking-surface" aria-label="Reservation form">
+      <div class="surface-head">
+        <div class="step-row">
+          <span class="step-label" id="stepLabel">Step 1 of 3</span>
+          <div class="chip-row" aria-hidden="true">
+            <span class="chip is-active" data-chip="1">Guest</span>
+            <span class="chip" data-chip="2">Table</span>
+            <span class="chip" data-chip="3">Review</span>
+          </div>
+        </div>
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+
+      <form id="reservationForm" novalidate>
+        <section data-step-panel="1" class="is-active">
+          <div class="field-grid">
+            <div class="field" data-field="firstName">
+              <label for="firstName">First name</label>
+              <input id="firstName" name="first_name" autocomplete="given-name" />
+              <span class="error" data-error="firstName"></span>
+            </div>
+            <div class="field" data-field="lastName">
+              <label for="lastName">Last name</label>
+              <input id="lastName" name="last_name" autocomplete="family-name" />
+              <span class="error" data-error="lastName"></span>
+            </div>
+            <div class="field is-wide" data-field="email">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" />
+              <span class="error" data-error="email"></span>
+            </div>
+            <div class="field is-wide" data-field="phone">
+              <label for="phone">Phone</label>
+              <div class="phone-grid">
+                <select id="countryCode" name="phone_country_iso" aria-label="Country code"></select>
+                <input id="phone" name="phone_local" inputmode="tel" autocomplete="tel" />
+              </div>
+              <span class="error" data-error="phone"></span>
+            </div>
+            <div class="field is-wide" data-field="requests">
+              <label for="requests">Requests</label>
+              <textarea id="requests" name="requests" placeholder="Quiet table, occasion, allergies, timing."></textarea>
+              <span class="error" data-error="requests"></span>
+            </div>
+          </div>
+        </section>
+
+        <section data-step-panel="2">
+          <div class="field-grid">
+            <div class="field" data-field="date">
+              <label id="dateLabelTitle">Date</label>
+              <div class="datepicker-wrap" id="datePicker">
+                <button class="date-trigger" id="dateTrigger" type="button" aria-expanded="false" aria-haspopup="dialog" aria-labelledby="dateLabelTitle dateText">
+                  <span id="dateText">Select date</span>
+                  <span class="date-mark" aria-hidden="true">+</span>
+                </button>
+                <div class="date-panel" id="datePanel" hidden>
+                  <div class="calendar-head">
+                    <button class="calendar-nav" id="calendarPrev" type="button" aria-label="Previous month">&lsaquo;</button>
+                    <div class="calendar-title" id="calendarTitle">Month Year</div>
+                    <button class="calendar-nav" id="calendarNext" type="button" aria-label="Next month">&rsaquo;</button>
+                  </div>
+                  <div class="calendar-weekdays" aria-hidden="true">
+                    <span class="calendar-weekday">Mon</span>
+                    <span class="calendar-weekday">Tue</span>
+                    <span class="calendar-weekday">Wed</span>
+                    <span class="calendar-weekday">Thu</span>
+                    <span class="calendar-weekday">Fri</span>
+                    <span class="calendar-weekday">Sat</span>
+                    <span class="calendar-weekday">Sun</span>
+                  </div>
+                  <div class="calendar-grid" id="calendarGrid"></div>
+                  <p class="calendar-legend">Past dates are unavailable.</p>
+                </div>
+              </div>
+              <input id="date" name="booking_date" type="hidden" />
+              <span class="error" data-error="date"></span>
+            </div>
+            <div class="field" data-field="guests">
+              <label>Guests</label>
+              <div class="choice-grid" id="guestChoices" aria-label="Guest count"></div>
+              <span class="error" data-error="guests"></span>
+            </div>
+            <div class="field is-wide" data-field="seating">
+              <label>Seating</label>
+              <div class="choice-grid seating-grid" id="seatingChoices" aria-label="Seating choice"></div>
+              <span class="error" data-error="seating"></span>
+            </div>
+            <div class="field is-wide" data-field="time">
+              <label>Time</label>
+              <div class="time-grid" id="timeChoices" aria-label="Reservation time"></div>
+              <span class="error" data-error="time"></span>
+            </div>
+          </div>
+        </section>
+
+        <section data-step-panel="3">
+          <div class="summary" aria-label="Reservation summary">
+            <div class="summary-row"><span>Name</span><span id="summaryName">-</span></div>
+            <div class="summary-row"><span>Email</span><span id="summaryEmail">-</span></div>
+            <div class="summary-row"><span>Phone</span><span id="summaryPhone">-</span></div>
+            <div class="summary-row"><span>Date</span><span id="summaryDate">-</span></div>
+            <div class="summary-row"><span>Time</span><span id="summaryTime">-</span></div>
+            <div class="summary-row"><span>Guests</span><span id="summaryGuests">-</span></div>
+            <div class="summary-row"><span>Seating</span><span id="summarySeating">-</span></div>
+            <div class="summary-row"><span>Requests</span><span id="summaryRequests">None</span></div>
+          </div>
+          <p class="quiet-note">The request saves locally for now, with a backend-ready payload prepared in the browser.</p>
+        </section>
+
+        <div class="form-actions">
+          <button class="button is-secondary" id="backButton" type="button" hidden>Back</button>
+          <button class="button" id="nextButton" type="button">Next</button>
+          <button class="button" id="submitButton" type="submit" hidden>Save reservation</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <div class="page-transition" id="pageTransition" aria-hidden="true">
+    <div class="rock-loader"></div>
+  </div>
+
+  <script>
+    (() => {
+      const draftKey = "1820ReservationDraft";
+      const recordsKey = "1820ReservationRecords";
+      const transitionKey = "1820PageTransition";
+      const maxGuests = 4;
+      const seatingOptions = [
+        { value: "barstand", label: "Barstand" },
+        { value: "table", label: "Table" }
+      ];
+      const buildTimeSlots = () => {
+        const slots = [];
+        for (let minutes = 9 * 60; minutes <= 22 * 60; minutes += 15) {
+          const hour = String(Math.floor(minutes / 60)).padStart(2, "0");
+          const minute = String(minutes % 60).padStart(2, "0");
+          slots.push(`${hour}:${minute}`);
+        }
+        return slots;
+      };
+      const timeSlots = buildTimeSlots();
+      const countryOptions = [
+        { name: "Afghanistan", iso: "AF", code: "+93" },
+        { name: "Albania", iso: "AL", code: "+355" },
+        { name: "Algeria", iso: "DZ", code: "+213" },
+        { name: "American Samoa", iso: "AS", code: "+1-684" },
+        { name: "Andorra", iso: "AD", code: "+376" },
+        { name: "Angola", iso: "AO", code: "+244" },
+        { name: "Anguilla", iso: "AI", code: "+1-264" },
+        { name: "Antigua and Barbuda", iso: "AG", code: "+1-268" },
+        { name: "Argentina", iso: "AR", code: "+54" },
+        { name: "Armenia", iso: "AM", code: "+374" },
+        { name: "Aruba", iso: "AW", code: "+297" },
+        { name: "Australia", iso: "AU", code: "+61" },
+        { name: "Austria", iso: "AT", code: "+43" },
+        { name: "Azerbaijan", iso: "AZ", code: "+994" },
+        { name: "Bahamas", iso: "BS", code: "+1-242" },
+        { name: "Bahrain", iso: "BH", code: "+973" },
+        { name: "Bangladesh", iso: "BD", code: "+880" },
+        { name: "Barbados", iso: "BB", code: "+1-246" },
+        { name: "Belarus", iso: "BY", code: "+375" },
+        { name: "Belgium", iso: "BE", code: "+32" },
+        { name: "Belize", iso: "BZ", code: "+501" },
+        { name: "Benin", iso: "BJ", code: "+229" },
+        { name: "Bermuda", iso: "BM", code: "+1-441" },
+        { name: "Bhutan", iso: "BT", code: "+975" },
+        { name: "Bolivia", iso: "BO", code: "+591" },
+        { name: "Bosnia and Herzegovina", iso: "BA", code: "+387" },
+        { name: "Botswana", iso: "BW", code: "+267" },
+        { name: "Brazil", iso: "BR", code: "+55" },
+        { name: "British Virgin Islands", iso: "VG", code: "+1-284" },
+        { name: "Brunei", iso: "BN", code: "+673" },
+        { name: "Bulgaria", iso: "BG", code: "+359" },
+        { name: "Burkina Faso", iso: "BF", code: "+226" },
+        { name: "Burundi", iso: "BI", code: "+257" },
+        { name: "Cambodia", iso: "KH", code: "+855" },
+        { name: "Cameroon", iso: "CM", code: "+237" },
+        { name: "Canada", iso: "CA", code: "+1" },
+        { name: "Cape Verde", iso: "CV", code: "+238" },
+        { name: "Cayman Islands", iso: "KY", code: "+1-345" },
+        { name: "Central African Republic", iso: "CF", code: "+236" },
+        { name: "Chad", iso: "TD", code: "+235" },
+        { name: "Chile", iso: "CL", code: "+56" },
+        { name: "China", iso: "CN", code: "+86" },
+        { name: "Colombia", iso: "CO", code: "+57" },
+        { name: "Comoros", iso: "KM", code: "+269" },
+        { name: "Congo", iso: "CG", code: "+242" },
+        { name: "Congo (DRC)", iso: "CD", code: "+243" },
+        { name: "Cook Islands", iso: "CK", code: "+682" },
+        { name: "Costa Rica", iso: "CR", code: "+506" },
+        { name: "Croatia", iso: "HR", code: "+385" },
+        { name: "Cuba", iso: "CU", code: "+53" },
+        { name: "Curacao", iso: "CW", code: "+599" },
+        { name: "Cyprus", iso: "CY", code: "+357" },
+        { name: "Czech Republic", iso: "CZ", code: "+420" },
+        { name: "Denmark", iso: "DK", code: "+45" },
+        { name: "Djibouti", iso: "DJ", code: "+253" },
+        { name: "Dominica", iso: "DM", code: "+1-767" },
+        { name: "Dominican Republic", iso: "DO", code: "+1-809" },
+        { name: "Dominican Republic", iso: "DO", code: "+1-829" },
+        { name: "Dominican Republic", iso: "DO", code: "+1-849" },
+        { name: "Ecuador", iso: "EC", code: "+593" },
+        { name: "Egypt", iso: "EG", code: "+20" },
+        { name: "El Salvador", iso: "SV", code: "+503" },
+        { name: "Equatorial Guinea", iso: "GQ", code: "+240" },
+        { name: "Eritrea", iso: "ER", code: "+291" },
+        { name: "Estonia", iso: "EE", code: "+372" },
+        { name: "Eswatini", iso: "SZ", code: "+268" },
+        { name: "Ethiopia", iso: "ET", code: "+251" },
+        { name: "Faroe Islands", iso: "FO", code: "+298" },
+        { name: "Fiji", iso: "FJ", code: "+679" },
+        { name: "Finland", iso: "FI", code: "+358" },
+        { name: "France", iso: "FR", code: "+33" },
+        { name: "French Guiana", iso: "GF", code: "+594" },
+        { name: "French Polynesia", iso: "PF", code: "+689" },
+        { name: "Gabon", iso: "GA", code: "+241" },
+        { name: "Gambia", iso: "GM", code: "+220" },
+        { name: "Georgia", iso: "GE", code: "+995" },
+        { name: "Germany", iso: "DE", code: "+49" },
+        { name: "Ghana", iso: "GH", code: "+233" },
+        { name: "Gibraltar", iso: "GI", code: "+350" },
+        { name: "Greece", iso: "GR", code: "+30" },
+        { name: "Greenland", iso: "GL", code: "+299" },
+        { name: "Grenada", iso: "GD", code: "+1-473" },
+        { name: "Guadeloupe", iso: "GP", code: "+590" },
+        { name: "Guam", iso: "GU", code: "+1-671" },
+        { name: "Guatemala", iso: "GT", code: "+502" },
+        { name: "Guernsey", iso: "GG", code: "+44-1481" },
+        { name: "Guinea", iso: "GN", code: "+224" },
+        { name: "Guinea-Bissau", iso: "GW", code: "+245" },
+        { name: "Guyana", iso: "GY", code: "+592" },
+        { name: "Haiti", iso: "HT", code: "+509" },
+        { name: "Honduras", iso: "HN", code: "+504" },
+        { name: "Hong Kong", iso: "HK", code: "+852" },
+        { name: "Hungary", iso: "HU", code: "+36" },
+        { name: "Iceland", iso: "IS", code: "+354" },
+        { name: "India", iso: "IN", code: "+91" },
+        { name: "Indonesia", iso: "ID", code: "+62" },
+        { name: "Iran", iso: "IR", code: "+98" },
+        { name: "Iraq", iso: "IQ", code: "+964" },
+        { name: "Ireland", iso: "IE", code: "+353" },
+        { name: "Isle of Man", iso: "IM", code: "+44-1624" },
+        { name: "Israel", iso: "IL", code: "+972" },
+        { name: "Italy", iso: "IT", code: "+39" },
+        { name: "Ivory Coast", iso: "CI", code: "+225" },
+        { name: "Jamaica", iso: "JM", code: "+1-876" },
+        { name: "Japan", iso: "JP", code: "+81" },
+        { name: "Jersey", iso: "JE", code: "+44-1534" },
+        { name: "Jordan", iso: "JO", code: "+962" },
+        { name: "Kazakhstan", iso: "KZ", code: "+7" },
+        { name: "Kenya", iso: "KE", code: "+254" },
+        { name: "Kiribati", iso: "KI", code: "+686" },
+        { name: "Kosovo", iso: "XK", code: "+383" },
+        { name: "Kuwait", iso: "KW", code: "+965" },
+        { name: "Kyrgyzstan", iso: "KG", code: "+996" },
+        { name: "Laos", iso: "LA", code: "+856" },
+        { name: "Latvia", iso: "LV", code: "+371" },
+        { name: "Lebanon", iso: "LB", code: "+961" },
+        { name: "Lesotho", iso: "LS", code: "+266" },
+        { name: "Liberia", iso: "LR", code: "+231" },
+        { name: "Libya", iso: "LY", code: "+218" },
+        { name: "Liechtenstein", iso: "LI", code: "+423" },
+        { name: "Lithuania", iso: "LT", code: "+370" },
+        { name: "Luxembourg", iso: "LU", code: "+352" },
+        { name: "Macau", iso: "MO", code: "+853" },
+        { name: "Madagascar", iso: "MG", code: "+261" },
+        { name: "Malawi", iso: "MW", code: "+265" },
+        { name: "Malaysia", iso: "MY", code: "+60" },
+        { name: "Maldives", iso: "MV", code: "+960" },
+        { name: "Mali", iso: "ML", code: "+223" },
+        { name: "Malta", iso: "MT", code: "+356" },
+        { name: "Marshall Islands", iso: "MH", code: "+692" },
+        { name: "Martinique", iso: "MQ", code: "+596" },
+        { name: "Mauritania", iso: "MR", code: "+222" },
+        { name: "Mauritius", iso: "MU", code: "+230" },
+        { name: "Mayotte", iso: "YT", code: "+262" },
+        { name: "Mexico", iso: "MX", code: "+52" },
+        { name: "Micronesia", iso: "FM", code: "+691" },
+        { name: "Moldova", iso: "MD", code: "+373" },
+        { name: "Monaco", iso: "MC", code: "+377" },
+        { name: "Mongolia", iso: "MN", code: "+976" },
+        { name: "Montenegro", iso: "ME", code: "+382" },
+        { name: "Montserrat", iso: "MS", code: "+1-664" },
+        { name: "Morocco", iso: "MA", code: "+212" },
+        { name: "Mozambique", iso: "MZ", code: "+258" },
+        { name: "Myanmar", iso: "MM", code: "+95" },
+        { name: "Namibia", iso: "NA", code: "+264" },
+        { name: "Nauru", iso: "NR", code: "+674" },
+        { name: "Nepal", iso: "NP", code: "+977" },
+        { name: "Netherlands", iso: "NL", code: "+31" },
+        { name: "New Caledonia", iso: "NC", code: "+687" },
+        { name: "New Zealand", iso: "NZ", code: "+64" },
+        { name: "Nicaragua", iso: "NI", code: "+505" },
+        { name: "Niger", iso: "NE", code: "+227" },
+        { name: "Nigeria", iso: "NG", code: "+234" },
+        { name: "Niue", iso: "NU", code: "+683" },
+        { name: "North Korea", iso: "KP", code: "+850" },
+        { name: "North Macedonia", iso: "MK", code: "+389" },
+        { name: "Northern Mariana Islands", iso: "MP", code: "+1-670" },
+        { name: "Norway", iso: "NO", code: "+47" },
+        { name: "Oman", iso: "OM", code: "+968" },
+        { name: "Pakistan", iso: "PK", code: "+92" },
+        { name: "Palau", iso: "PW", code: "+680" },
+        { name: "Palestine", iso: "PS", code: "+970" },
+        { name: "Panama", iso: "PA", code: "+507" },
+        { name: "Papua New Guinea", iso: "PG", code: "+675" },
+        { name: "Paraguay", iso: "PY", code: "+595" },
+        { name: "Peru", iso: "PE", code: "+51" },
+        { name: "Philippines", iso: "PH", code: "+63" },
+        { name: "Poland", iso: "PL", code: "+48" },
+        { name: "Portugal", iso: "PT", code: "+351" },
+        { name: "Puerto Rico", iso: "PR", code: "+1-787" },
+        { name: "Puerto Rico", iso: "PR", code: "+1-939" },
+        { name: "Qatar", iso: "QA", code: "+974" },
+        { name: "Reunion", iso: "RE", code: "+262" },
+        { name: "Romania", iso: "RO", code: "+40" },
+        { name: "Russia", iso: "RU", code: "+7" },
+        { name: "Rwanda", iso: "RW", code: "+250" },
+        { name: "Saint Barthelemy", iso: "BL", code: "+590" },
+        { name: "Saint Helena", iso: "SH", code: "+290" },
+        { name: "Saint Kitts and Nevis", iso: "KN", code: "+1-869" },
+        { name: "Saint Lucia", iso: "LC", code: "+1-758" },
+        { name: "Saint Martin", iso: "MF", code: "+590" },
+        { name: "Saint Pierre and Miquelon", iso: "PM", code: "+508" },
+        { name: "Saint Vincent and the Grenadines", iso: "VC", code: "+1-784" },
+        { name: "Samoa", iso: "WS", code: "+685" },
+        { name: "San Marino", iso: "SM", code: "+378" },
+        { name: "Sao Tome and Principe", iso: "ST", code: "+239" },
+        { name: "Saudi Arabia", iso: "SA", code: "+966" },
+        { name: "Senegal", iso: "SN", code: "+221" },
+        { name: "Serbia", iso: "RS", code: "+381" },
+        { name: "Seychelles", iso: "SC", code: "+248" },
+        { name: "Sierra Leone", iso: "SL", code: "+232" },
+        { name: "Singapore", iso: "SG", code: "+65" },
+        { name: "Sint Maarten", iso: "SX", code: "+1-721" },
+        { name: "Slovakia", iso: "SK", code: "+421" },
+        { name: "Slovenia", iso: "SI", code: "+386" },
+        { name: "Solomon Islands", iso: "SB", code: "+677" },
+        { name: "Somalia", iso: "SO", code: "+252" },
+        { name: "South Africa", iso: "ZA", code: "+27" },
+        { name: "South Korea", iso: "KR", code: "+82" },
+        { name: "South Sudan", iso: "SS", code: "+211" },
+        { name: "Spain", iso: "ES", code: "+34" },
+        { name: "Sri Lanka", iso: "LK", code: "+94" },
+        { name: "Sudan", iso: "SD", code: "+249" },
+        { name: "Suriname", iso: "SR", code: "+597" },
+        { name: "Sweden", iso: "SE", code: "+46" },
+        { name: "Switzerland", iso: "CH", code: "+41" },
+        { name: "Syria", iso: "SY", code: "+963" },
+        { name: "Taiwan", iso: "TW", code: "+886" },
+        { name: "Tajikistan", iso: "TJ", code: "+992" },
+        { name: "Tanzania", iso: "TZ", code: "+255" },
+        { name: "Thailand", iso: "TH", code: "+66" },
+        { name: "Timor-Leste", iso: "TL", code: "+670" },
+        { name: "Togo", iso: "TG", code: "+228" },
+        { name: "Tokelau", iso: "TK", code: "+690" },
+        { name: "Tonga", iso: "TO", code: "+676" },
+        { name: "Trinidad and Tobago", iso: "TT", code: "+1-868" },
+        { name: "Tunisia", iso: "TN", code: "+216" },
+        { name: "Turkey", iso: "TR", code: "+90" },
+        { name: "Turkmenistan", iso: "TM", code: "+993" },
+        { name: "Turks and Caicos Islands", iso: "TC", code: "+1-649" },
+        { name: "Tuvalu", iso: "TV", code: "+688" },
+        { name: "U.S. Virgin Islands", iso: "VI", code: "+1-340" },
+        { name: "Uganda", iso: "UG", code: "+256" },
+        { name: "Ukraine", iso: "UA", code: "+380" },
+        { name: "United Arab Emirates", iso: "AE", code: "+971" },
+        { name: "United Kingdom", iso: "GB", code: "+44" },
+        { name: "United States", iso: "US", code: "+1" },
+        { name: "Uruguay", iso: "UY", code: "+598" },
+        { name: "Uzbekistan", iso: "UZ", code: "+998" },
+        { name: "Vanuatu", iso: "VU", code: "+678" },
+        { name: "Vatican City", iso: "VA", code: "+379" },
+        { name: "Venezuela", iso: "VE", code: "+58" },
+        { name: "Vietnam", iso: "VN", code: "+84" },
+        { name: "Wallis and Futuna", iso: "WF", code: "+681" },
+        { name: "Yemen", iso: "YE", code: "+967" },
+        { name: "Zambia", iso: "ZM", code: "+260" },
+        { name: "Zimbabwe", iso: "ZW", code: "+263" }
+      ];
+
+      const form = document.getElementById("reservationForm");
+      const status = document.getElementById("status");
+      const progressBar = document.getElementById("progressBar");
+      const stepLabel = document.getElementById("stepLabel");
+      const backButton = document.getElementById("backButton");
+      const nextButton = document.getElementById("nextButton");
+      const submitButton = document.getElementById("submitButton");
+      const guestChoices = document.getElementById("guestChoices");
+      const timeChoices = document.getElementById("timeChoices");
+      const seatingChoices = document.getElementById("seatingChoices");
+      const dateTrigger = document.getElementById("dateTrigger");
+      const dateText = document.getElementById("dateText");
+      const datePanel = document.getElementById("datePanel");
+      const calendarTitle = document.getElementById("calendarTitle");
+      const calendarPrev = document.getElementById("calendarPrev");
+      const calendarNext = document.getElementById("calendarNext");
+      const calendarGrid = document.getElementById("calendarGrid");
+      const fields = {
+        firstName: document.getElementById("firstName"),
+        lastName: document.getElementById("lastName"),
+        email: document.getElementById("email"),
+        countryCode: document.getElementById("countryCode"),
+        phone: document.getElementById("phone"),
+        requests: document.getElementById("requests"),
+        date: document.getElementById("date")
+      };
+
+      const state = {
+        step: 1,
+        firstName: "",
+        lastName: "",
+        email: "",
+        countryId: "US|+1",
+        countryIso: "US",
+        countryName: "United States",
+        countryCode: "+1",
+        phone: "",
+        requests: "",
+        date: "",
+        guests: "",
+        time: "",
+        seating: ""
+      };
+
+      let calendarCursor = new Date();
+
+      const todayIso = () => {
+        const date = new Date();
+        date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+        return date.toISOString().slice(0, 10);
+      };
+
+      const pad = (value) => String(value).padStart(2, "0");
+
+      const formatDateIso = (date) => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+
+      const parseIsoDate = (value) => {
+        const parts = String(value || "").split("-").map(Number);
+        if (parts.length !== 3 || parts.some(Number.isNaN)) {
+          return null;
+        }
+        return new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0, 0);
+      };
+
+      const formatDateCompact = (value) => {
+        const date = parseIsoDate(value);
+        if (!date) {
+          return "Select date";
+        }
+        return date.toLocaleDateString("en-US", {
+          month: "2-digit",
+          day: "2-digit",
+          year: "numeric"
+        });
+      };
+
+      const getCountryId = (country) => `${country.iso}|${country.code}`;
+
+      const isoToFlagEmoji = (iso) => iso
+        .toUpperCase()
+        .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
+
+      const populateCountryCodes = () => {
+        fields.countryCode.innerHTML = "";
+        countryOptions.forEach((country) => {
+          const option = document.createElement("option");
+          option.value = getCountryId(country);
+          option.dataset.iso = country.iso;
+          option.dataset.code = country.code;
+          option.dataset.name = country.name;
+          option.textContent = `${isoToFlagEmoji(country.iso)} ${country.name} ${country.code}`;
+          fields.countryCode.appendChild(option);
+        });
+      };
+
+      const syncCountryState = () => {
+        const option = fields.countryCode.selectedOptions[0];
+        if (!option) {
+          return;
+        }
+        state.countryId = option.value;
+        state.countryIso = option.dataset.iso || "";
+        state.countryCode = option.dataset.code || "";
+        state.countryName = option.dataset.name || "";
+      };
+
+      const selectCountryFromState = () => {
+        const options = Array.from(fields.countryCode.options);
+        const wanted = state.countryId || (state.countryIso && state.countryCode ? `${state.countryIso}|${state.countryCode}` : "");
+        const option = options.find((item) => item.value === wanted)
+          || options.find((item) => item.dataset.iso === state.countryIso && item.dataset.code === state.countryCode)
+          || options.find((item) => item.dataset.code === state.countryCode)
+          || options.find((item) => item.value === "US|+1")
+          || options[0];
+
+        if (option) {
+          fields.countryCode.value = option.value;
+          syncCountryState();
+        }
+      };
+
+      const updateDateLabel = () => {
+        dateText.textContent = formatDateCompact(state.date);
+      };
+
+      const setDatePanelOpen = (open) => {
+        datePanel.hidden = !open;
+        dateTrigger.setAttribute("aria-expanded", String(open));
+        if (open) {
+          const selectedDate = parseIsoDate(state.date);
+          if (selectedDate) {
+            calendarCursor = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+          }
+          renderCalendar();
+        }
+      };
+
+      const renderCalendar = () => {
+        const today = todayIso();
+        const todayDate = parseIsoDate(today);
+        const todayMonthStart = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
+        const year = calendarCursor.getFullYear();
+        const month = calendarCursor.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const firstWeekday = (firstDay.getDay() + 6) % 7;
+
+        calendarTitle.textContent = firstDay.toLocaleDateString("en-US", {
+          month: "long",
+          year: "numeric"
+        });
+        calendarGrid.innerHTML = "";
+
+        for (let index = 0; index < firstWeekday; index += 1) {
+          const filler = document.createElement("div");
+          filler.className = "calendar-cell";
+          calendarGrid.appendChild(filler);
+        }
+
+        for (let day = 1; day <= lastDay.getDate(); day += 1) {
+          const cell = document.createElement("div");
+          const button = document.createElement("button");
+          const date = new Date(year, month, day, 12, 0, 0, 0);
+          const iso = formatDateIso(date);
+          const disabled = iso < today;
+
+          cell.className = "calendar-cell";
+          button.type = "button";
+          button.className = "calendar-day";
+          button.textContent = String(day);
+          button.disabled = disabled;
+          button.classList.toggle("is-selected", state.date === iso);
+          button.classList.toggle("is-today", iso === today);
+          button.setAttribute("aria-pressed", String(state.date === iso));
+          button.addEventListener("click", () => {
+            state.date = iso;
+            fields.date.value = iso;
+            clearField("date");
+            updateDateLabel();
+            setDatePanelOpen(false);
+            renderCalendar();
+            saveDraft();
+          });
+
+          cell.appendChild(button);
+          calendarGrid.appendChild(cell);
+        }
+
+        calendarPrev.disabled = calendarCursor <= todayMonthStart;
+      };
+
+      const loadDraft = () => {
+        try {
+          const draft = JSON.parse(localStorage.getItem(draftKey) || "{}");
+          const hadCountryId = Object.prototype.hasOwnProperty.call(draft, "countryId");
+          Object.assign(state, draft, { step: 1 });
+          if (!hadCountryId) {
+            state.countryId = "";
+          }
+          if (Number(state.guests) > maxGuests) {
+            state.guests = "";
+          }
+          if (!timeSlots.includes(state.time)) {
+            state.time = "";
+          }
+          if (!seatingOptions.some((option) => option.value === state.seating)) {
+            state.seating = "";
+          }
+          if (state.date && state.date < todayIso()) {
+            state.date = "";
+          }
+        } catch (error) {
+          localStorage.removeItem(draftKey);
+        }
+      };
+
+      const saveDraft = () => {
+        localStorage.setItem(draftKey, JSON.stringify({
+          ...state,
+          updated_at: new Date().toISOString()
+        }));
+      };
+
+      const getFullPhone = () => {
+        const local = state.phone.replace(/[^\d]/g, "");
+        return local ? `${state.countryCode} ${local}` : "";
+      };
+
+      const formatDate = (value) => {
+        if (!value) {
+          return "-";
+        }
+
+        return new Date(`${value}T12:00:00`).toLocaleDateString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        });
+      };
+
+      const setStatus = (type, message) => {
+        status.dataset.type = type;
+        status.textContent = message;
+        status.classList.toggle("is-visible", Boolean(message));
+      };
+
+      const clearField = (name) => {
+        const wrap = document.querySelector(`[data-field="${name}"]`);
+        const error = document.querySelector(`[data-error="${name}"]`);
+        if (wrap) {
+          wrap.classList.remove("has-error");
+        }
+        if (error) {
+          error.textContent = "";
+        }
+      };
+
+      const setFieldError = (name, message) => {
+        const wrap = document.querySelector(`[data-field="${name}"]`);
+        const error = document.querySelector(`[data-error="${name}"]`);
+        if (wrap) {
+          wrap.classList.add("has-error");
+        }
+        if (error) {
+          error.textContent = message;
+        }
+      };
+
+      const syncStateFromInputs = () => {
+        state.firstName = fields.firstName.value.trim();
+        state.lastName = fields.lastName.value.trim();
+        state.email = fields.email.value.trim();
+        syncCountryState();
+        state.phone = fields.phone.value.trim();
+        state.requests = fields.requests.value.trim();
+        state.date = fields.date.value;
+      };
+
+      const applyStateToInputs = () => {
+        fields.firstName.value = state.firstName;
+        fields.lastName.value = state.lastName;
+        fields.email.value = state.email;
+        selectCountryFromState();
+        fields.phone.value = state.phone;
+        fields.requests.value = state.requests;
+        fields.date.value = state.date;
+        updateDateLabel();
+      };
+
+      const validateStep1 = () => {
+        syncStateFromInputs();
+        ["firstName", "lastName", "email", "phone"].forEach(clearField);
+        let valid = true;
+
+        if (!state.firstName) {
+          setFieldError("firstName", "First name is required.");
+          valid = false;
+        }
+
+        if (!state.lastName) {
+          setFieldError("lastName", "Last name is required.");
+          valid = false;
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.email)) {
+          setFieldError("email", "Enter a valid email.");
+          valid = false;
+        }
+
+        if (state.phone.replace(/[^\d]/g, "").length < 6) {
+          setFieldError("phone", "Enter a reachable phone number.");
+          valid = false;
+        }
+
+        return valid;
+      };
+
+      const validateStep2 = () => {
+        syncStateFromInputs();
+        ["date", "guests", "seating", "time"].forEach(clearField);
+        let valid = true;
+        const today = todayIso();
+
+        if (!state.date || state.date < today) {
+          setFieldError("date", "Choose today or a future date.");
+          valid = false;
+        }
+
+        if (!state.guests) {
+          setFieldError("guests", "Select party size.");
+          valid = false;
+        }
+
+        if (!state.seating) {
+          setFieldError("seating", "Choose barstand or table.");
+          valid = false;
+        }
+
+        if (!state.time) {
+          setFieldError("time", "Select a time.");
+          valid = false;
+        }
+
+        return valid;
+      };
+
+      const formatSeating = (value) => {
+        const option = seatingOptions.find((item) => item.value === value);
+        return option ? option.label : "-";
+      };
+
+      const buildPayload = () => ({
+        first_name: state.firstName,
+        last_name: state.lastName,
+        email: state.email,
+        phone_country_id: state.countryId,
+        phone_country_iso: state.countryIso,
+        phone_country_name: state.countryName,
+        phone_country_code: state.countryCode,
+        phone_local: state.phone.replace(/[^\d]/g, ""),
+        phone: getFullPhone(),
+        booking_date: state.date,
+        booking_date_display: formatDate(state.date),
+        booking_time: state.time,
+        guests: Number(state.guests),
+        seating_type: state.seating,
+        seating_display: formatSeating(state.seating),
+        requests: state.requests,
+        source: "1820-static-reservation",
+        status: "saved_locally_no_backend",
+        created_at: new Date().toISOString()
+      });
+
+      const updateSummary = () => {
+        document.getElementById("summaryName").textContent = `${state.firstName} ${state.lastName}`.trim() || "-";
+        document.getElementById("summaryEmail").textContent = state.email || "-";
+        document.getElementById("summaryPhone").textContent = getFullPhone() || "-";
+        document.getElementById("summaryDate").textContent = formatDate(state.date);
+        document.getElementById("summaryTime").textContent = state.time || "-";
+        document.getElementById("summaryGuests").textContent = state.guests || "-";
+        document.getElementById("summarySeating").textContent = formatSeating(state.seating);
+        document.getElementById("summaryRequests").textContent = state.requests || "None";
+        window.__reservationPayload = buildPayload();
+      };
+
+      const renderChoices = () => {
+        guestChoices.innerHTML = "";
+        for (let guests = 1; guests <= maxGuests; guests += 1) {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "choice-button";
+          button.textContent = String(guests);
+          button.dataset.value = String(guests);
+          button.setAttribute("aria-pressed", String(state.guests === String(guests)));
+          button.classList.toggle("is-selected", state.guests === String(guests));
+          button.addEventListener("click", () => {
+            state.guests = String(guests);
+            clearField("guests");
+            renderChoices();
+            saveDraft();
+          });
+          guestChoices.appendChild(button);
+        }
+
+        seatingChoices.innerHTML = "";
+        seatingOptions.forEach((option) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "choice-button";
+          button.textContent = option.label;
+          button.dataset.value = option.value;
+          button.setAttribute("aria-pressed", String(state.seating === option.value));
+          button.classList.toggle("is-selected", state.seating === option.value);
+          button.addEventListener("click", () => {
+            state.seating = option.value;
+            clearField("seating");
+            renderChoices();
+            saveDraft();
+          });
+          seatingChoices.appendChild(button);
+        });
+
+        timeChoices.innerHTML = "";
+        timeSlots.forEach((slot) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "choice-button";
+          button.textContent = slot;
+          button.dataset.value = slot;
+          button.setAttribute("aria-pressed", String(state.time === slot));
+          button.classList.toggle("is-selected", state.time === slot);
+          button.addEventListener("click", () => {
+            state.time = slot;
+            clearField("time");
+            renderChoices();
+            saveDraft();
+          });
+          timeChoices.appendChild(button);
+        });
+      };
+
+      const showStep = (step) => {
+        state.step = Math.min(3, Math.max(1, step));
+        document.querySelectorAll("[data-step-panel]").forEach((panel) => {
+          panel.classList.toggle("is-active", Number(panel.dataset.stepPanel) === state.step);
+        });
+        document.querySelectorAll("[data-chip]").forEach((chip) => {
+          chip.classList.toggle("is-active", Number(chip.dataset.chip) === state.step);
+        });
+        stepLabel.textContent = `Step ${state.step} of 3`;
+        progressBar.style.width = `${(state.step / 3) * 100}%`;
+        backButton.hidden = state.step === 1;
+        nextButton.hidden = state.step === 3;
+        submitButton.hidden = state.step !== 3;
+
+        if (state.step === 3) {
+          syncStateFromInputs();
+          updateSummary();
+        }
+
+        saveDraft();
+      };
+
+      const saveFinalRecord = () => {
+        const payload = buildPayload();
+        const records = JSON.parse(localStorage.getItem(recordsKey) || "[]");
+        records.push(payload);
+        localStorage.setItem(recordsKey, JSON.stringify(records));
+        localStorage.setItem(draftKey, JSON.stringify({
+          ...state,
+          last_payload: payload,
+          updated_at: new Date().toISOString()
+        }));
+        window.__reservationPayload = payload;
+        return payload;
+      };
+
+      const initArrival = () => {
+        if (!document.documentElement.classList.contains("is-arriving")) {
+          return;
+        }
+
+        window.setTimeout(() => {
+          sessionStorage.removeItem(transitionKey);
+          document.documentElement.classList.remove("is-arriving");
+        }, 760);
+      };
+
+      dateTrigger.addEventListener("click", (event) => {
+        event.stopPropagation();
+        setDatePanelOpen(datePanel.hidden);
+      });
+
+      datePanel.addEventListener("click", (event) => {
+        event.stopPropagation();
+      });
+
+      calendarPrev.addEventListener("click", () => {
+        const todayDate = parseIsoDate(todayIso());
+        const todayMonthStart = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
+        const previous = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth() - 1, 1);
+        if (previous < todayMonthStart) {
+          return;
+        }
+        calendarCursor = previous;
+        renderCalendar();
+      });
+
+      calendarNext.addEventListener("click", () => {
+        calendarCursor = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth() + 1, 1);
+        renderCalendar();
+      });
+
+      document.addEventListener("click", () => {
+        setDatePanelOpen(false);
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          setDatePanelOpen(false);
+        }
+      });
+
+      loadDraft();
+      populateCountryCodes();
+      {
+        const startDate = parseIsoDate(state.date) || parseIsoDate(todayIso());
+        calendarCursor = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+      }
+      applyStateToInputs();
+      renderCalendar();
+      renderChoices();
+      showStep(1);
+      initArrival();
+
+      Object.values(fields).forEach((input) => {
+        input.addEventListener("input", () => {
+          syncStateFromInputs();
+          clearField(input.id === "countryCode" ? "phone" : input.id);
+          if (input.id === "phone") {
+            fields.phone.value = fields.phone.value.replace(/[^\d\s()+-]/g, "");
+            state.phone = fields.phone.value.trim();
+          }
+          saveDraft();
+        });
+        input.addEventListener("change", () => {
+          syncStateFromInputs();
+          clearField(input.id === "countryCode" ? "phone" : input.id);
+          saveDraft();
+        });
+      });
+
+      backButton.addEventListener("click", () => {
+        setStatus("", "");
+        showStep(state.step - 1);
+      });
+
+      nextButton.addEventListener("click", () => {
+        setStatus("", "");
+        if (state.step === 1 && !validateStep1()) {
+          setStatus("error", "Complete the guest details before continuing.");
+          return;
+        }
+
+        if (state.step === 2 && !validateStep2()) {
+          setStatus("error", "Complete the table details before continuing.");
+          return;
+        }
+
+        showStep(state.step + 1);
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        setStatus("", "");
+
+        if (!validateStep1()) {
+          showStep(1);
+          setStatus("error", "Complete the guest details before saving.");
+          return;
+        }
+
+        if (!validateStep2()) {
+          showStep(2);
+          setStatus("error", "Complete the table details before saving.");
+          return;
+        }
+
+        syncStateFromInputs();
+        updateSummary();
+        saveFinalRecord();
+        setStatus("success", "Reservation saved locally. Backend payload is ready.");
+        showStep(3);
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,2518 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>1820 | Admin</title>
+  <style>
+    :root {
+      --paper: #f3f3f3;
+      --ink: #070707;
+      --graphite: #2d2d2d;
+      --muted: #686868;
+      --soft: #cfcfcf;
+      --line: rgba(0, 0, 0, 0.25);
+      --hard: #080808;
+      --panel: rgba(244, 244, 244, 0.9);
+      --success: #111111;
+      --warn: #555555;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      background:
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.025) 0 1px, transparent 1px 8px),
+        linear-gradient(180deg, #f6f6f6 0%, #eeeeee 45%, #dadada 100%);
+    }
+
+    body::before {
+      content: "1820";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      color: #080808;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(8rem, 22vw, 24rem);
+      font-weight: 400;
+      line-height: 0.76;
+      opacity: 0.045;
+      transform: translateY(-1vh);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      pointer-events: none;
+      opacity: 0.22;
+      background:
+        repeating-radial-gradient(circle at 24% 34%, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 5px),
+        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.03) 0 1px, transparent 1px 7px);
+      mix-blend-mode: multiply;
+    }
+
+    a,
+    button,
+    input,
+    select,
+    textarea {
+      color: inherit;
+      font: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 70;
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 18px clamp(16px, 3vw, 42px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+      background:
+        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.035) 0 1px, transparent 1px 5px),
+        rgba(244, 244, 244, 0.94);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand,
+    .label,
+    .button,
+    .chip,
+    .metric-label,
+    .table th,
+    .field label,
+    .tiny {
+      font-size: 0.72rem;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .brand {
+      font-size: clamp(1rem, 0.86rem + 0.56vw, 1.4rem);
+      letter-spacing: 0.02em;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .admin-shell {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 1760px);
+      margin: 0 auto;
+      padding: clamp(18px, 3vw, 42px);
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero-row {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.72fr) minmax(520px, 1.28fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .title-panel,
+    .control-panel,
+    .panel,
+    .metric,
+    .reservation-card,
+    .note-item,
+    .seat,
+    .table-seat {
+      border: 1px solid var(--line);
+      background:
+        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.032) 0 1px, transparent 1px 5px),
+        var(--panel);
+    }
+
+    .title-panel,
+    .control-panel,
+    .panel {
+      box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.88);
+    }
+
+    .title-panel {
+      padding: clamp(22px, 3vw, 36px);
+      display: grid;
+      align-content: end;
+      min-height: 260px;
+    }
+
+    .kicker {
+      margin: 0 0 18px;
+      color: #4e4e4e;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(4.5rem, 10vw, 11rem);
+      font-weight: 400;
+      line-height: 0.82;
+    }
+
+    h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.3rem, 4vw, 4.8rem);
+      font-weight: 400;
+      line-height: 0.92;
+    }
+
+    h3 {
+      font-size: 0.96rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .control-panel {
+      padding: clamp(18px, 2.4vw, 30px);
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      align-content: start;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .field.is-wide {
+      grid-column: 1 / -1;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid rgba(0, 0, 0, 0.34);
+      border-radius: 0;
+      background:
+        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.025) 0 1px, transparent 1px 5px),
+        #f7f7f7;
+      color: #080808;
+      padding: 0 12px;
+      outline: none;
+      font-size: 0.94rem;
+      font-weight: 650;
+      transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    textarea {
+      min-height: 92px;
+      padding: 12px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #080808;
+      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.16);
+      background: #ffffff;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: end;
+    }
+
+    .button {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 2px solid #080808;
+      border-radius: 0;
+      padding: 13px 16px;
+      background: #080808;
+      color: #f5f5f5;
+      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.16);
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    .button.is-secondary {
+      background: #f4f4f4;
+      color: #080808;
+    }
+
+    .button.is-quiet {
+      border-color: rgba(0, 0, 0, 0.28);
+      background: rgba(255, 255, 255, 0.45);
+      color: #080808;
+      box-shadow: none;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      transform: translate(2px, 2px);
+      box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+      outline: none;
+    }
+
+    .button.is-quiet:hover,
+    .button.is-quiet:focus-visible {
+      box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.12);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      min-height: 112px;
+      padding: 16px;
+      display: grid;
+      align-content: space-between;
+      gap: 14px;
+    }
+
+    .metric-value {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.4rem, 4vw, 4.2rem);
+      line-height: 0.82;
+    }
+
+    .metric-label {
+      color: #555555;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(560px, 1.2fr) minmax(420px, 0.8fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      min-width: 0;
+    }
+
+    .prompt-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(245, 245, 245, 0.72);
+      backdrop-filter: blur(8px);
+    }
+
+    .prompt-backdrop[hidden] {
+      display: none;
+    }
+
+    .booking-prompt {
+      width: min(680px, 100%);
+      max-height: min(820px, calc(100vh - 48px));
+      overflow: auto;
+      background: var(--paper);
+      box-shadow: 10px 10px 0 #080808;
+    }
+
+    .booking-prompt .message[hidden] {
+      display: none;
+    }
+
+    .booking-prompt .prompt-section[hidden] {
+      display: none;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.36);
+    }
+
+    .panel-body {
+      padding: 18px;
+    }
+
+    .panel-tools {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .panel-tools input {
+      width: min(260px, 42vw);
+      min-height: 32px;
+      padding: 7px 9px;
+      font-size: 0.76rem;
+    }
+
+    .chip {
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(0, 0, 0, 0.24);
+      padding: 7px 9px;
+      color: #666666;
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .chip.is-dark {
+      color: #f5f5f5;
+      border-color: #080808;
+      background: #080808;
+    }
+
+    .timetable {
+      max-height: 680px;
+      overflow: auto;
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      background: rgba(255, 255, 255, 0.32);
+      scrollbar-color: #080808 rgba(0, 0, 0, 0.12);
+      scrollbar-width: thin;
+    }
+
+    .time-row {
+      display: grid;
+      grid-template-columns: 76px 140px 140px minmax(260px, 1fr);
+      min-height: 64px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.13);
+    }
+
+    .time-row:last-child {
+      border-bottom: 0;
+    }
+
+    .time-cell,
+    .load-cell,
+    .starts-cell {
+      padding: 12px;
+      border-right: 1px solid rgba(0, 0, 0, 0.13);
+    }
+
+    .starts-cell {
+      border-right: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .time-cell {
+      font-weight: 900;
+      font-size: 0.88rem;
+    }
+
+    .load-cell {
+      display: grid;
+      gap: 7px;
+      align-content: center;
+    }
+
+    .load-text {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: #1a1a1a;
+      font-size: 0.78rem;
+      font-weight: 850;
+    }
+
+    .load-bar {
+      height: 7px;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.54);
+      overflow: hidden;
+    }
+
+    .load-bar span {
+      display: block;
+      height: 100%;
+      width: var(--load, 0%);
+      background: #080808;
+    }
+
+    .reservation-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px 12px;
+      padding: 10px;
+      cursor: pointer;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .reservation-card:hover,
+    .reservation-card:focus-visible,
+    .reservation-card.is-selected {
+      transform: translateY(-1px);
+      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.16);
+      outline: none;
+      background: #ffffff;
+    }
+
+    .reservation-name {
+      min-width: 0;
+      font-size: 0.92rem;
+      font-weight: 900;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .reservation-meta {
+      color: #4a4a4a;
+      font-size: 0.78rem;
+      font-weight: 740;
+    }
+
+    .status {
+      align-self: start;
+      border: 1px solid rgba(0, 0, 0, 0.24);
+      padding: 5px 7px;
+      background: #f7f7f7;
+      font-size: 0.66rem;
+      font-weight: 950;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .status.confirmed,
+    .status.seated {
+      background: #080808;
+      color: #f5f5f5;
+    }
+
+    .status.cancelled,
+    .status.no_show {
+      color: #5f5f5f;
+      background: #dedede;
+    }
+
+    .editor-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .static-field {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      border: 1px solid rgba(0, 0, 0, 0.28);
+      background: rgba(255, 255, 255, 0.48);
+      padding: 0 12px;
+      font-size: 0.94rem;
+      font-weight: 850;
+    }
+
+    .resource-choice {
+      min-height: 42px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(0, 0, 0, 0.28);
+      background: #f7f7f7;
+      font-size: 0.78rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: background 160ms ease, color 160ms ease, opacity 160ms ease;
+    }
+
+    .resource-choice input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .resource-choice:has(input:checked) {
+      background: #080808;
+      color: #f5f5f5;
+    }
+
+    .resource-choice.is-busy {
+      opacity: 0.36;
+      cursor: not-allowed;
+    }
+
+    .message {
+      display: none;
+      padding: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.28);
+      background: #080808;
+      color: #f5f5f5;
+      font-size: 0.86rem;
+      font-weight: 760;
+      line-height: 1.4;
+    }
+
+    .message.is-visible {
+      display: block;
+    }
+
+    .floor-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.44fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .bar-map {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .table-map {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .seat,
+    .table-seat {
+      min-height: 58px;
+      padding: 10px;
+      display: grid;
+      align-content: space-between;
+      gap: 6px;
+    }
+
+    .table-seat {
+      min-height: 112px;
+    }
+
+    .seat.is-busy,
+    .table-seat.is-busy {
+      background:
+        repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.055) 0 1px, transparent 1px 5px),
+        #151515;
+      color: #f5f5f5;
+      border-color: #080808;
+    }
+
+    .seat-title {
+      font-size: 0.84rem;
+      font-weight: 950;
+    }
+
+    .seat-detail {
+      color: inherit;
+      opacity: 0.76;
+      font-size: 0.76rem;
+      font-weight: 760;
+      line-height: 1.3;
+    }
+
+    .client-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.44fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .client-list,
+    .note-list {
+      display: grid;
+      gap: 8px;
+      max-height: 390px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .client-button {
+      width: 100%;
+      border: 1px solid rgba(0, 0, 0, 0.24);
+      background: rgba(255, 255, 255, 0.42);
+      padding: 12px;
+      text-align: left;
+      display: grid;
+      gap: 5px;
+    }
+
+    .client-button.is-selected {
+      background: #080808;
+      color: #f5f5f5;
+    }
+
+    .client-name {
+      font-size: 0.92rem;
+      font-weight: 900;
+    }
+
+    .client-sub {
+      opacity: 0.72;
+      font-size: 0.78rem;
+      font-weight: 720;
+    }
+
+    .note-item {
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .note-meta {
+      color: #555555;
+      font-size: 0.72rem;
+      font-weight: 850;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .note-text {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 650;
+      line-height: 1.45;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      background: rgba(255, 255, 255, 0.32);
+    }
+
+    .table {
+      width: 100%;
+      min-width: 1040px;
+      border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .table tr {
+      cursor: pointer;
+    }
+
+    .table tr:hover,
+    .table tr.is-selected {
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .table td {
+      font-size: 0.88rem;
+      font-weight: 650;
+      line-height: 1.35;
+    }
+
+    .backend-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .schema-line {
+      border: 1px solid rgba(0, 0, 0, 0.22);
+      background: rgba(255, 255, 255, 0.4);
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .schema-line code {
+      font-size: 0.84rem;
+      font-weight: 720;
+      word-break: break-word;
+    }
+
+    .empty {
+      color: #555555;
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.45;
+      padding: 10px 0;
+    }
+
+    @media (max-width: 1180px) {
+      .hero-row,
+      .main-grid,
+      .floor-grid,
+      .client-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .control-panel {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .admin-shell {
+        padding: 14px;
+      }
+
+      .topbar,
+      .top-actions,
+      .panel-head,
+      .button-row {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .title-panel {
+        min-height: auto;
+      }
+
+      h1 {
+        font-size: clamp(4.4rem, 22vw, 7.2rem);
+      }
+
+      .control-panel,
+      .metric-grid,
+      .editor-grid,
+      .backend-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .time-row {
+        grid-template-columns: 64px minmax(0, 1fr);
+      }
+
+      .load-cell {
+        display: none;
+      }
+
+      .time-cell {
+        border-right: 1px solid rgba(0, 0, 0, 0.13);
+      }
+
+      .resource-grid,
+      .bar-map,
+      .table-map {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../index.html">1820</a>
+    <div class="top-actions">
+      <span class="chip is-dark" id="connectionChip">Local database</span>
+      <a class="button is-quiet" href="login.html">Access</a>
+    </div>
+  </header>
+
+  <main class="admin-shell">
+    <section class="hero-row">
+      <div class="title-panel">
+        <p class="label kicker">Booking control system</p>
+        <h1>Admin room.</h1>
+      </div>
+
+      <div class="control-panel" aria-label="Admin controls">
+        <div class="field">
+          <label for="adminDate">Service date</label>
+          <input id="adminDate" type="date" />
+        </div>
+        <div class="field">
+          <label for="statusFilter">Status</label>
+          <select id="statusFilter">
+            <option value="all">All statuses</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="seated">Seated</option>
+            <option value="completed">Completed</option>
+            <option value="waitlist">Waitlist</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="no_show">No show</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="searchInput">Search</label>
+          <input id="searchInput" type="search" placeholder="Name, phone, email, note" />
+        </div>
+        <div class="field">
+          <label for="serverFilter">Server</label>
+          <select id="serverFilter">
+            <option value="all">All servers</option>
+          </select>
+        </div>
+        <div class="field is-wide">
+          <label>Controls</label>
+          <div class="button-row">
+            <button class="button" id="newReservationButton" type="button">New booking</button>
+            <button class="button is-secondary" id="importPublicButton" type="button">Import public saves</button>
+            <button class="button is-secondary" id="exportButton" type="button">Export JSON</button>
+            <button class="button is-quiet" id="resetDemoButton" type="button">Reset demo</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="metric-grid" aria-label="Service metrics">
+      <div class="metric">
+        <span class="metric-label">Bookings</span>
+        <span class="metric-value" id="metricBookings">0</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Covers</span>
+        <span class="metric-value" id="metricCovers">0</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Table seats</span>
+        <span class="metric-value" id="metricTablePeak">0/12</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Bar seats</span>
+        <span class="metric-value" id="metricBarPeak">0/12</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Returning</span>
+        <span class="metric-value" id="metricReturning">0</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Open issues</span>
+        <span class="metric-value" id="metricIssues">0</span>
+      </div>
+    </section>
+
+    <section class="main-grid">
+      <section class="panel" aria-label="Timetable">
+        <div class="panel-head">
+          <div>
+            <h2>Timetable.</h2>
+            <span class="tiny" id="timetableDateLabel">Service day</span>
+          </div>
+          <div class="panel-tools">
+            <span class="chip">Night cap 24</span>
+            <span class="chip">Tables max 12</span>
+            <span class="chip">19:00-midnight</span>
+            <span class="chip">No double seating</span>
+            <span class="chip">Bar spaces 12</span>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="timetable" id="timetable"></div>
+        </div>
+      </section>
+
+      <section class="panel" aria-label="Reservation editor">
+        <div class="panel-head">
+          <div>
+            <h2>Booking.</h2>
+            <span class="tiny" id="editorModeLabel">Editing</span>
+          </div>
+          <div class="panel-tools">
+            <button class="button is-quiet" id="duplicateButton" type="button">Duplicate</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="message" id="editorMessage"></div>
+          <form id="reservationEditor" class="editor-grid">
+            <input id="reservationId" type="hidden" />
+            <div class="field is-wide">
+              <label for="customerSelect">Client</label>
+              <select id="customerSelect"></select>
+            </div>
+            <div class="field">
+              <label for="bookingDate">Date</label>
+              <input id="bookingDate" type="date" />
+            </div>
+            <div class="field">
+              <label for="bookingTime">Time</label>
+              <select id="bookingTime"></select>
+            </div>
+            <div class="field">
+              <label>Stay length</label>
+              <input id="durationMinutes" type="hidden" value="0" />
+              <div class="static-field">Open-ended</div>
+            </div>
+            <div class="field">
+              <label for="bookingStatus">Status</label>
+              <select id="bookingStatus">
+                <option value="confirmed">Confirmed</option>
+                <option value="seated">Seated</option>
+                <option value="completed">Completed</option>
+                <option value="waitlist">Waitlist</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="no_show">No show</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="guestCount">Guests</label>
+              <input id="guestCount" type="number" min="1" max="24" />
+            </div>
+            <div class="field">
+              <label for="seatingType">Seating</label>
+              <select id="seatingType">
+                <option value="table">Table</option>
+                <option value="barstand">Barstand</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="serverName">Server</label>
+              <select id="serverName"></select>
+            </div>
+            <div class="field">
+              <label for="bookingSource">Source</label>
+              <select id="bookingSource">
+                <option value="website">Website</option>
+                <option value="phone">Phone</option>
+                <option value="walk_in">Walk in</option>
+                <option value="concierge">Concierge</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <div class="field is-wide" id="tableResourceWrap">
+              <label>Tables</label>
+              <div class="resource-grid" id="tableResourceChoices"></div>
+            </div>
+            <div class="field is-wide" id="barResourceWrap">
+              <label>Bar spaces</label>
+              <div class="resource-grid" id="barResourceChoices"></div>
+            </div>
+            <div class="field is-wide">
+              <label for="guestRequests">Guest requests</label>
+              <textarea id="guestRequests"></textarea>
+            </div>
+            <div class="field is-wide">
+              <label for="internalNote">Booking note</label>
+              <textarea id="internalNote"></textarea>
+            </div>
+            <div class="field is-wide">
+              <label>Actions</label>
+              <div class="button-row">
+                <button class="button is-secondary" id="autoSeatButton" type="button">Auto seat</button>
+                <button class="button" id="saveBookingButton" type="submit">Save booking</button>
+                <button class="button is-quiet" id="cancelBookingButton" type="button">Cancel booking</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+    </section>
+
+    <section class="panel" aria-label="Floor control">
+      <div class="panel-head">
+        <div>
+          <h2>Floor.</h2>
+          <span class="tiny" id="floorContext">Selected booking time</span>
+        </div>
+        <div class="panel-tools">
+          <span class="chip">6 tables x 4</span>
+          <span class="chip">12 table covers max</span>
+          <span class="chip">12 bar spaces</span>
+          <span class="chip">24 covers total</span>
+        </div>
+      </div>
+      <div class="panel-body floor-grid">
+        <section>
+          <h3>Barstand</h3>
+          <div class="bar-map" id="barMap"></div>
+        </section>
+        <section>
+          <h3>Tables</h3>
+          <div class="table-map" id="tableMap"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Client history">
+      <div class="panel-head">
+        <div>
+          <h2>Clients.</h2>
+          <span class="tiny" id="clientCountLabel">Profiles</span>
+        </div>
+        <div class="panel-tools">
+          <input id="clientSearchInput" type="search" placeholder="Search clients" />
+        </div>
+      </div>
+      <div class="panel-body client-grid">
+        <div>
+          <div class="client-list" id="clientList"></div>
+        </div>
+        <div>
+          <form class="editor-grid" id="clientEditor">
+            <input id="clientId" type="hidden" />
+            <div class="field">
+              <label for="clientName">Name</label>
+              <input id="clientName" />
+            </div>
+            <div class="field">
+              <label for="clientPhone">Phone</label>
+              <input id="clientPhone" />
+            </div>
+            <div class="field">
+              <label for="clientEmail">Email</label>
+              <input id="clientEmail" type="email" />
+            </div>
+            <div class="field">
+              <label for="clientTags">Tags</label>
+              <input id="clientTags" placeholder="quiet, vegan, window" />
+            </div>
+            <div class="field is-wide">
+              <label for="clientProfileNote">Profile note</label>
+              <textarea id="clientProfileNote"></textarea>
+            </div>
+            <div class="field is-wide">
+              <label>Client actions</label>
+              <div class="button-row">
+                <button class="button is-secondary" id="saveClientButton" type="submit">Save client</button>
+                <span class="chip" id="clientVisitSummary">0 visits</span>
+              </div>
+            </div>
+          </form>
+          <div class="field" style="margin-top: 14px;">
+            <label for="clientNoteText">Server note</label>
+            <textarea id="clientNoteText" placeholder="Preference, incident, allergy, pacing, special handling."></textarea>
+          </div>
+          <div class="button-row" style="margin-top: 10px;">
+            <button class="button is-secondary" id="addClientNoteButton" type="button">Add client note</button>
+          </div>
+          <div class="note-list" id="clientNotes" style="margin-top: 14px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Reservation database">
+      <div class="panel-head">
+        <div>
+          <h2>Database.</h2>
+          <span class="tiny" id="databaseCountLabel">Reservations</span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Client</th>
+                <th>Contact</th>
+                <th>Guests</th>
+                <th>Seating</th>
+                <th>Resources</th>
+                <th>Status</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody id="reservationRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Backend readiness">
+      <div class="panel-head">
+        <div>
+          <h2>Backend.</h2>
+          <span class="tiny">Adapter contract</span>
+        </div>
+        <span class="chip is-dark" id="backendMode">localStorage</span>
+      </div>
+      <div class="panel-body backend-grid">
+        <div class="schema-line">
+          <span class="label">Reservations</span>
+          <code id="reservationEndpoint">/api/admin/reservations</code>
+        </div>
+        <div class="schema-line">
+          <span class="label">Customers</span>
+          <code id="customerEndpoint">/api/admin/customers</code>
+        </div>
+        <div class="schema-line">
+          <span class="label">Notes</span>
+          <code id="noteEndpoint">/api/admin/client-notes</code>
+        </div>
+        <div class="schema-line">
+          <span class="label">Storage key</span>
+          <code id="storageKeyLabel">1820AdminDataV3</code>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="prompt-backdrop" id="bookingPrompt" hidden>
+    <section class="panel booking-prompt" role="dialog" aria-modal="true" aria-labelledby="bookingPromptTitle">
+      <div class="panel-head">
+        <div>
+          <h2 id="bookingPromptTitle">Booking.</h2>
+          <span class="tiny">Start a new request</span>
+        </div>
+        <div class="panel-tools">
+          <button class="button is-quiet" id="closeBookingPromptButton" type="button">Close</button>
+        </div>
+      </div>
+      <form class="panel-body editor-grid" id="bookingPromptForm">
+        <div class="field is-wide">
+          <label>Client source</label>
+          <div class="button-row">
+            <button class="button" id="promptDatabaseModeButton" type="button">From database</button>
+            <button class="button is-secondary" id="promptNewModeButton" type="button">New client</button>
+          </div>
+        </div>
+
+        <div class="field is-wide prompt-section" data-prompt-section="database">
+          <label for="promptClientSearch">Search database</label>
+          <input id="promptClientSearch" type="search" placeholder="Name, phone, email, note" />
+        </div>
+        <div class="field is-wide prompt-section" data-prompt-section="database">
+          <label for="promptCustomerSelect">Client</label>
+          <select id="promptCustomerSelect"></select>
+        </div>
+
+        <div class="field prompt-section" data-prompt-section="new" hidden>
+          <label for="promptClientName">Name</label>
+          <input id="promptClientName" autocomplete="off" />
+        </div>
+        <div class="field prompt-section" data-prompt-section="new" hidden>
+          <label for="promptClientPhone">Phone</label>
+          <input id="promptClientPhone" autocomplete="off" />
+        </div>
+        <div class="field is-wide prompt-section" data-prompt-section="new" hidden>
+          <label for="promptClientEmail">Email</label>
+          <input id="promptClientEmail" type="email" autocomplete="off" />
+        </div>
+        <div class="field is-wide prompt-section" data-prompt-section="new" hidden>
+          <label for="promptClientNote">Profile note</label>
+          <textarea id="promptClientNote" placeholder="Allergy, preference, source, useful context."></textarea>
+        </div>
+
+        <div class="message is-visible" id="bookingPromptMessage" hidden></div>
+        <div class="field is-wide">
+          <label>Actions</label>
+          <div class="button-row">
+            <button class="button is-secondary" id="cancelBookingPromptButton" type="button">Cancel</button>
+            <button class="button" id="startBookingButton" type="submit">Start booking</button>
+          </div>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = "1820AdminDataV3";
+      const PUBLIC_RECORDS_KEY = "1820ReservationRecords";
+      const API_BASE = window.ADMIN_API_BASE || "";
+      const SERVICE_OPEN_MINUTES = 19 * 60;
+      const SERVICE_CLOSE_MINUTES = 24 * 60;
+      const TOTAL_COVER_LIMIT = 24;
+      const TABLE_COVER_LIMIT = 12;
+      const BAR_LIMIT = 12;
+      const TABLES = Array.from({ length: 6 }, (_, index) => ({ id: `T${index + 1}`, capacity: 4 }));
+      const BAR_SEATS = Array.from({ length: 12 }, (_, index) => `B${String(index + 1).padStart(2, "0")}`);
+      const SERVERS = ["Mara", "Jonas", "Noa", "Ieva", "Dainius", "Admin"];
+      const ACTIVE_STATUSES = new Set(["confirmed", "seated"]);
+      const TIME_SLOTS = buildTimeSlots();
+
+      const endpoints = {
+        reservations: `${API_BASE || ""}/api/admin/reservations`,
+        customers: `${API_BASE || ""}/api/admin/customers`,
+        notes: `${API_BASE || ""}/api/admin/client-notes`
+      };
+
+      const $ = (selector, root = document) => root.querySelector(selector);
+      const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+      const dom = {
+        adminDate: $("#adminDate"),
+        statusFilter: $("#statusFilter"),
+        searchInput: $("#searchInput"),
+        serverFilter: $("#serverFilter"),
+        timetable: $("#timetable"),
+        timetableDateLabel: $("#timetableDateLabel"),
+        connectionChip: $("#connectionChip"),
+        metricBookings: $("#metricBookings"),
+        metricCovers: $("#metricCovers"),
+        metricTablePeak: $("#metricTablePeak"),
+        metricBarPeak: $("#metricBarPeak"),
+        metricReturning: $("#metricReturning"),
+        metricIssues: $("#metricIssues"),
+        editorMessage: $("#editorMessage"),
+        editorModeLabel: $("#editorModeLabel"),
+        reservationRows: $("#reservationRows"),
+        databaseCountLabel: $("#databaseCountLabel"),
+        clientList: $("#clientList"),
+        clientSearchInput: $("#clientSearchInput"),
+        clientEditor: $("#clientEditor"),
+        clientId: $("#clientId"),
+        clientName: $("#clientName"),
+        clientPhone: $("#clientPhone"),
+        clientEmail: $("#clientEmail"),
+        clientTags: $("#clientTags"),
+        clientProfileNote: $("#clientProfileNote"),
+        clientVisitSummary: $("#clientVisitSummary"),
+        clientNotes: $("#clientNotes"),
+        clientNoteText: $("#clientNoteText"),
+        clientCountLabel: $("#clientCountLabel"),
+        barMap: $("#barMap"),
+        tableMap: $("#tableMap"),
+        floorContext: $("#floorContext"),
+        backendMode: $("#backendMode"),
+        reservationEndpoint: $("#reservationEndpoint"),
+        customerEndpoint: $("#customerEndpoint"),
+        noteEndpoint: $("#noteEndpoint"),
+        storageKeyLabel: $("#storageKeyLabel"),
+        form: $("#reservationEditor"),
+        reservationId: $("#reservationId"),
+        customerSelect: $("#customerSelect"),
+        bookingDate: $("#bookingDate"),
+        bookingTime: $("#bookingTime"),
+        durationMinutes: $("#durationMinutes"),
+        bookingStatus: $("#bookingStatus"),
+        guestCount: $("#guestCount"),
+        seatingType: $("#seatingType"),
+        serverName: $("#serverName"),
+        bookingSource: $("#bookingSource"),
+        guestRequests: $("#guestRequests"),
+        internalNote: $("#internalNote"),
+        tableResourceWrap: $("#tableResourceWrap"),
+        barResourceWrap: $("#barResourceWrap"),
+        tableResourceChoices: $("#tableResourceChoices"),
+        barResourceChoices: $("#barResourceChoices"),
+        newReservationButton: $("#newReservationButton"),
+        importPublicButton: $("#importPublicButton"),
+        exportButton: $("#exportButton"),
+        resetDemoButton: $("#resetDemoButton"),
+        duplicateButton: $("#duplicateButton"),
+        autoSeatButton: $("#autoSeatButton"),
+        cancelBookingButton: $("#cancelBookingButton"),
+        addClientNoteButton: $("#addClientNoteButton"),
+        saveClientButton: $("#saveClientButton"),
+        bookingPrompt: $("#bookingPrompt"),
+        bookingPromptForm: $("#bookingPromptForm"),
+        bookingPromptMessage: $("#bookingPromptMessage"),
+        closeBookingPromptButton: $("#closeBookingPromptButton"),
+        cancelBookingPromptButton: $("#cancelBookingPromptButton"),
+        promptDatabaseModeButton: $("#promptDatabaseModeButton"),
+        promptNewModeButton: $("#promptNewModeButton"),
+        promptClientSearch: $("#promptClientSearch"),
+        promptCustomerSelect: $("#promptCustomerSelect"),
+        promptClientName: $("#promptClientName"),
+        promptClientPhone: $("#promptClientPhone"),
+        promptClientEmail: $("#promptClientEmail"),
+        promptClientNote: $("#promptClientNote")
+      };
+
+      const state = {
+        data: null,
+        selectedDate: todayIso(),
+        selectedReservationId: "",
+        selectedCustomerId: "",
+        search: "",
+        clientSearch: "",
+        promptMode: "database",
+        promptSearch: "",
+        status: "all",
+        server: "all"
+      };
+
+      const AdminBackend = {
+        mode: API_BASE ? "remote-ready" : "localStorage",
+        async load() {
+          if (API_BASE) {
+            return this.loadLocal();
+          }
+          return this.loadLocal();
+        },
+        async save(data) {
+          data.meta.updatedAt = new Date().toISOString();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+          return data;
+        },
+        async loadLocal() {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            return normalizeData(JSON.parse(raw));
+          }
+          const seeded = createSeedData();
+          await this.save(seeded);
+          return seeded;
+        },
+        async resetDemo() {
+          const seeded = createSeedData();
+          await this.save(seeded);
+          return seeded;
+        }
+      };
+
+      function todayIso() {
+        const date = new Date();
+        date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+        return date.toISOString().slice(0, 10);
+      }
+
+      function addDays(iso, amount) {
+        const date = parseDate(iso);
+        date.setDate(date.getDate() + amount);
+        return toIso(date);
+      }
+
+      function parseDate(iso) {
+        const [year, month, day] = String(iso).split("-").map(Number);
+        return new Date(year, month - 1, day, 12, 0, 0, 0);
+      }
+
+      function toIso(date) {
+        const copy = new Date(date);
+        copy.setMinutes(copy.getMinutes() - copy.getTimezoneOffset());
+        return copy.toISOString().slice(0, 10);
+      }
+
+      function buildTimeSlots() {
+        const slots = [];
+        for (let minutes = SERVICE_OPEN_MINUTES; minutes < SERVICE_CLOSE_MINUTES; minutes += 15) {
+          slots.push(minutesToTime(minutes));
+        }
+        return slots;
+      }
+
+      function timeToMinutes(value) {
+        const [hour, minute] = String(value || "00:00").split(":").map(Number);
+        return (hour * 60) + minute;
+      }
+
+      function minutesToTime(value) {
+        const hour = String(Math.floor(value / 60)).padStart(2, "0");
+        const minute = String(value % 60).padStart(2, "0");
+        return `${hour}:${minute}`;
+      }
+
+      function isServiceArrival(value) {
+        const minutes = timeToMinutes(value);
+        return minutes >= SERVICE_OPEN_MINUTES && minutes < SERVICE_CLOSE_MINUTES;
+      }
+
+      function normalizeArrivalTime(value) {
+        return isServiceArrival(value) ? value : minutesToTime(SERVICE_OPEN_MINUTES);
+      }
+
+      function formatDate(iso) {
+        return parseDate(iso).toLocaleDateString("en-US", {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        });
+      }
+
+      function uid(prefix) {
+        return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+      }
+
+      function normalizeData(data) {
+        const base = {
+          meta: { schemaVersion: 2, updatedAt: new Date().toISOString() },
+          settings: { totalCoverLimit: TOTAL_COVER_LIMIT, tableCoverLimit: TABLE_COVER_LIMIT, barCoverLimit: BAR_LIMIT, serviceOpen: "19:00", serviceClose: "00:00" },
+          customers: [],
+          reservations: [],
+          notes: []
+        };
+        const next = { ...base, ...data };
+        next.meta = { ...base.meta, ...(data.meta || {}) };
+        next.settings = { ...base.settings, ...(data.settings || {}) };
+        next.customers = Array.isArray(data.customers) ? data.customers : [];
+        next.reservations = Array.isArray(data.reservations)
+          ? data.reservations.map((reservation) => ({ ...reservation, durationMinutes: 0 }))
+          : [];
+        next.notes = Array.isArray(data.notes) ? data.notes : [];
+        return next;
+      }
+
+      function createSeedData() {
+        const today = todayIso();
+        const customers = [
+          customer("c-ada", "Ada Marcinkus", "ada@example.com", "+370 612 10001", ["quiet corner", "sparkling water"], "Avoids shellfish. Prefers slow pacing."),
+          customer("c-milas", "Milas Gray", "milas@example.com", "+44 7700 900112", ["bar", "graphite martini"], "Likes barstand seats B03-B04."),
+          customer("c-samira", "Samira Knox", "samira@example.com", "+1 212 555 0108", ["anniversary", "no flash"], "Always asks for low light."),
+          customer("c-jonas", "Jonas Petrauskas", "jonas@example.com", "+370 612 23345", ["business", "fast wine"], "Usually arrives 10 minutes early."),
+          customer("c-iev", "Ieva Stone", "ieva@example.com", "+375 29 555 0144", ["table", "still water"], "Prefers table 4 when available."),
+          customer("c-noor", "Noor Vale", "noor@example.com", "+971 50 555 1337", ["vegan", "late"], "Needs plant-based menu ready."),
+          customer("c-roman", "Roman Hale", "roman@example.com", "+49 151 555 8812", ["client dinner"], "Usually books for 4."),
+          customer("c-elena", "Elena Frost", "elena@example.com", "+33 6 55 55 55 20", ["chef note"], "Likes staff to remember names."),
+          customer("c-ugnius", "Ugnius Valainis", "ugnius.valainis@gmail.com", "+375 555555555", ["table", "cheese"], "Demo profile from local testing."),
+          customer("c-lina", "Lina Voss", "lina@example.com", "+370 612 90909", ["dessert", "window"], "Birthday noted last visit.")
+        ];
+
+        const reservations = [
+          reservation("r-001", "c-ada", today, "19:00", 2, "table", ["T1"], [], "confirmed", "Mara", "website", "Quiet table, no hurry.", "Returning guest. Mention the shellfish note."),
+          reservation("r-002", "c-milas", today, "19:15", 2, "barstand", [], ["B03", "B04"], "confirmed", "Jonas", "phone", "Bar seats only.", "Prepare graphite martini setup."),
+          reservation("r-003", "c-samira", today, "19:30", 4, "table", ["T2"], [], "seated", "Ieva", "website", "Anniversary.", "No flash photos near table."),
+          reservation("r-004", "c-jonas", today, "20:00", 2, "table", ["T3"], [], "confirmed", "Noa", "concierge", "Business dinner.", "Keep service direct."),
+          reservation("r-005", "c-noor", today, "20:15", 2, "barstand", [], [], "waitlist", "Dainius", "walk_in", "Vegan options.", "Night is full; call first if a cover opens."),
+          reservation("r-006", "c-iev", today, "20:30", 4, "barstand", [], ["B07", "B08", "B09", "B10"], "confirmed", "Mara", "website", "Still water near bar.", "Prefers table 4 when table covers are available."),
+          reservation("r-007", "c-roman", today, "21:00", 4, "table", ["T4"], [], "confirmed", "Jonas", "phone", "Client dinner.", "Wine list ready."),
+          reservation("r-008", "c-elena", today, "21:30", 4, "barstand", [], ["B01", "B02", "B11", "B12"], "confirmed", "Ieva", "website", "Chef note.", "Greet by name."),
+          reservation("r-009", "c-ugnius", today, "22:00", 2, "barstand", [], ["B05", "B06"], "confirmed", "Admin", "admin", "cheese", "Demo booking for dashboard review."),
+          reservation("r-010", "c-lina", addDays(today, 1), "19:45", 2, "table", ["T2"], [], "confirmed", "Noa", "website", "Window.", "Birthday dessert possible."),
+          reservation("r-011", "c-ada", addDays(today, -7), "19:30", 2, "table", ["T1"], [], "completed", "Mara", "website", "Quiet.", "Good pacing, asked about June menu."),
+          reservation("r-012", "c-milas", addDays(today, -3), "20:30", 2, "barstand", [], ["B01", "B02"], "completed", "Jonas", "phone", "Bar.", "Ordered martinis twice."),
+          reservation("r-013", "c-roman", addDays(today, 2), "19:00", 8, "table", ["T3", "T4"], [], "confirmed", "Dainius", "concierge", "Private business table.", "Group override: 8 guests, two tables."),
+          reservation("r-014", "c-noor", addDays(today, 3), "21:00", 2, "table", ["T5"], [], "confirmed", "Ieva", "website", "Vegan.", "Plant-based tasting.")
+        ];
+
+        const notes = [
+          note("n-001", "c-ada", "Mara", addDays(today, -7), "Handled shellfish allergy without needing reminder."),
+          note("n-002", "c-milas", "Jonas", addDays(today, -3), "Prefers the bar to a table even when table space is open."),
+          note("n-003", "c-ugnius", "Admin", today, "Demo note: likes cheese and a direct confirmation message."),
+          note("n-004", "c-lina", "Noa", addDays(today, -10), "Mentioned birthday in early June.")
+        ];
+
+        return normalizeData({
+          meta: { schemaVersion: 2, updatedAt: new Date().toISOString() },
+          settings: { totalCoverLimit: TOTAL_COVER_LIMIT, tableCoverLimit: TABLE_COVER_LIMIT, barCoverLimit: BAR_LIMIT, serviceOpen: "19:00", serviceClose: "00:00" },
+          customers,
+          reservations,
+          notes
+        });
+      }
+
+      function customer(id, name, email, phone, tags, profileNote) {
+        return {
+          id,
+          name,
+          email,
+          phone,
+          tags,
+          profileNote,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+      }
+
+      function reservation(id, customerId, date, time, guests, seatingType, assignedTables, assignedBarSeats, status, server, source, requests, internalNote) {
+        return {
+          id,
+          customerId,
+          date,
+          time,
+          durationMinutes: 0,
+          guests,
+          seatingType,
+          assignedTables,
+          assignedBarSeats,
+          status,
+          server,
+          source,
+          requests,
+          internalNote,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+      }
+
+      function note(id, customerId, author, dateIso, text) {
+        return {
+          id,
+          customerId,
+          author,
+          text,
+          createdAt: `${dateIso}T12:00:00.000Z`
+        };
+      }
+
+      function getCustomer(id) {
+        return state.data.customers.find((customer) => customer.id === id) || null;
+      }
+
+      function getReservation(id) {
+        return state.data.reservations.find((reservation) => reservation.id === id) || null;
+      }
+
+      function isActive(reservation) {
+        return ACTIVE_STATUSES.has(reservation.status);
+      }
+
+      function reservationsForDate(date = state.selectedDate) {
+        return state.data.reservations
+          .filter((reservation) => reservation.date === date)
+          .sort((a, b) => a.time.localeCompare(b.time));
+      }
+
+      function matchingReservations() {
+        const search = state.search.trim().toLowerCase();
+        return reservationsForDate().filter((reservation) => {
+          const customer = getCustomer(reservation.customerId);
+          const searchable = [
+            customer?.name,
+            customer?.email,
+            customer?.phone,
+            reservation.requests,
+            reservation.internalNote,
+            reservation.time,
+            reservation.status,
+            reservation.seatingType,
+            resourcesLabel(reservation)
+          ].filter(Boolean).join(" ").toLowerCase();
+          return (state.status === "all" || reservation.status === state.status)
+            && (state.server === "all" || reservation.server === state.server)
+            && (!search || searchable.includes(search));
+        });
+      }
+
+      function resourcesLabel(reservation) {
+        if (reservation.seatingType === "barstand") {
+          return reservation.assignedBarSeats?.length ? reservation.assignedBarSeats.join(", ") : "Unassigned bar";
+        }
+        return reservation.assignedTables?.length ? reservation.assignedTables.join(", ") : "Unassigned table";
+      }
+
+      function reservationsOverlapping(candidate, ignoreId = "") {
+        return state.data.reservations.filter((reservation) => {
+          return reservation.id !== ignoreId && reservation.date === candidate.date && isActive(reservation);
+        });
+      }
+
+      function occupancyAt(date) {
+        const tableReservations = [];
+        const barReservations = [];
+        reservationsForDate(date).forEach((reservation) => {
+          if (!isActive(reservation)) {
+            return;
+          }
+          if (reservation.seatingType === "barstand") {
+            barReservations.push(reservation);
+          } else {
+            tableReservations.push(reservation);
+          }
+        });
+        const tableCovers = tableReservations.reduce((sum, reservation) => sum + Number(reservation.guests || 0), 0);
+        const barCovers = barReservations.reduce((sum, reservation) => sum + Number(reservation.guests || 0), 0);
+        return {
+          tableCovers,
+          barCovers,
+          totalCovers: tableCovers + barCovers,
+          tableReservations,
+          barReservations
+        };
+      }
+
+      function busyResources(candidate, ignoreId = "") {
+        const overlapping = reservationsOverlapping(candidate, ignoreId);
+        const tables = new Map();
+        const bars = new Map();
+        overlapping.forEach((reservation) => {
+          const customer = getCustomer(reservation.customerId);
+          (reservation.assignedTables || []).forEach((table) => tables.set(table, customer?.name || "Busy"));
+          (reservation.assignedBarSeats || []).forEach((seat) => bars.set(seat, customer?.name || "Busy"));
+        });
+        return { tables, bars, overlapping };
+      }
+
+      function validateReservation(candidate, ignoreId = "") {
+        const issues = [];
+        const guests = Number(candidate.guests || 0);
+        if (!candidate.customerId) {
+          issues.push("Choose a client.");
+        }
+        if (!candidate.date) {
+          issues.push("Choose a date.");
+        }
+        if (!candidate.time) {
+          issues.push("Choose a time.");
+        }
+        if (candidate.time && !isServiceArrival(candidate.time)) {
+          issues.push("Arrival time must be between 19:00 and 23:45.");
+        }
+        if (guests < 1 || guests > TOTAL_COVER_LIMIT) {
+          issues.push("Guests must be between 1 and 24.");
+        }
+
+        if (!isActive(candidate)) {
+          return issues;
+        }
+
+        const busy = busyResources(candidate, ignoreId);
+        const existingCovers = busy.overlapping.reduce((sum, reservation) => sum + Number(reservation.guests || 0), 0);
+        const existingTableCovers = busy.overlapping
+          .filter((reservation) => reservation.seatingType !== "barstand")
+          .reduce((sum, reservation) => sum + Number(reservation.guests || 0), 0);
+        const existingBarCovers = busy.overlapping
+          .filter((reservation) => reservation.seatingType === "barstand")
+          .reduce((sum, reservation) => sum + Number(reservation.guests || 0), 0);
+        if (existingCovers + guests > TOTAL_COVER_LIMIT) {
+          issues.push(`Night cover limit exceeds ${TOTAL_COVER_LIMIT}.`);
+        }
+
+        if (candidate.seatingType === "table") {
+          const assigned = candidate.assignedTables || [];
+          const tableCapacity = assigned.length * 4;
+          if (tableCapacity < guests) {
+            issues.push("Assigned tables do not cover the guest count.");
+          }
+          if (existingTableCovers + guests > TABLE_COVER_LIMIT) {
+            issues.push(`Table cover limit exceeds ${TABLE_COVER_LIMIT}.`);
+          }
+          assigned.forEach((table) => {
+            if (busy.tables.has(table)) {
+              issues.push(`${table} is already booked for this service.`);
+            }
+          });
+        } else {
+          const assigned = candidate.assignedBarSeats || [];
+          if (assigned.length < guests) {
+            issues.push("Assigned bar spaces do not cover the guest count.");
+          }
+          if (existingBarCovers + guests > BAR_LIMIT) {
+            issues.push(`Bar cover limit exceeds ${BAR_LIMIT}.`);
+          }
+          assigned.forEach((seat) => {
+            if (busy.bars.has(seat)) {
+              issues.push(`${seat} is already booked for this service.`);
+            }
+          });
+          if (assigned.length > BAR_LIMIT) {
+            issues.push(`Bar spaces exceed ${BAR_LIMIT}.`);
+          }
+        }
+        return issues;
+      }
+
+      function autoAssign(candidate, ignoreId = "") {
+        const busy = busyResources(candidate, ignoreId);
+        const guests = Number(candidate.guests || 0);
+        if (candidate.seatingType === "table") {
+          const needed = Math.ceil(guests / 4);
+          const open = TABLES.map((table) => table.id).filter((table) => !busy.tables.has(table));
+          candidate.assignedTables = open.slice(0, needed);
+          candidate.assignedBarSeats = [];
+        } else {
+          const open = BAR_SEATS.filter((seat) => !busy.bars.has(seat));
+          candidate.assignedBarSeats = open.slice(0, guests);
+          candidate.assignedTables = [];
+        }
+        return candidate;
+      }
+
+      function renderAll() {
+        renderControls();
+        renderMetrics();
+        renderTimetable();
+        renderReservationTable();
+        renderEditor();
+        renderFloor();
+        renderClients();
+        renderBackend();
+      }
+
+      function renderControls() {
+        dom.adminDate.value = state.selectedDate;
+        dom.statusFilter.value = state.status;
+        dom.searchInput.value = state.search;
+        dom.serverFilter.innerHTML = `<option value="all">All servers</option>${SERVERS.map((server) => `<option value="${server}">${server}</option>`).join("")}`;
+        dom.serverFilter.value = state.server;
+        dom.connectionChip.textContent = AdminBackend.mode === "localStorage" ? "Local database" : "Remote ready";
+        dom.backendMode.textContent = AdminBackend.mode;
+      }
+
+      function renderMetrics() {
+        const dayReservations = reservationsForDate();
+        const active = dayReservations.filter(isActive);
+        const covers = active.reduce((sum, reservation) => sum + Number(reservation.guests || 0), 0);
+        const load = occupancyAt(state.selectedDate);
+        const returning = new Set(active.filter((reservation) => visitsForCustomer(reservation.customerId).length > 1).map((reservation) => reservation.customerId)).size;
+        const issues = active.filter((reservation) => validateReservation(reservation, reservation.id).length > 0).length;
+        dom.metricBookings.textContent = String(dayReservations.length);
+        dom.metricCovers.textContent = String(covers);
+        dom.metricTablePeak.textContent = `${load.tableCovers}/${TABLE_COVER_LIMIT}`;
+        dom.metricBarPeak.textContent = `${load.barCovers}/${BAR_LIMIT}`;
+        dom.metricReturning.textContent = String(returning);
+        dom.metricIssues.textContent = String(issues);
+      }
+
+      function renderTimetable() {
+        dom.timetableDateLabel.textContent = formatDate(state.selectedDate);
+        dom.timetable.innerHTML = TIME_SLOTS.map((slot) => {
+          const load = occupancyAt(state.selectedDate);
+          const starts = reservationsForDate().filter((reservation) => reservation.time === slot);
+          return `
+            <div class="time-row">
+              <div class="time-cell">${slot}</div>
+              <div class="load-cell">
+                <div class="load-text"><span>Tables</span><span>${load.tableCovers}/${TABLE_COVER_LIMIT}</span></div>
+                <div class="load-bar" style="--load:${Math.min(100, (load.tableCovers / TABLE_COVER_LIMIT) * 100)}%"><span></span></div>
+              </div>
+              <div class="load-cell">
+                <div class="load-text"><span>Night</span><span>${load.totalCovers}/${TOTAL_COVER_LIMIT}</span></div>
+                <div class="load-bar" style="--load:${Math.min(100, (load.totalCovers / TOTAL_COVER_LIMIT) * 100)}%"><span></span></div>
+              </div>
+              <div class="starts-cell">${starts.length ? starts.map(renderReservationCard).join("") : `<span class="empty">Open</span>`}</div>
+            </div>
+          `;
+        }).join("");
+        $$(".reservation-card", dom.timetable).forEach((card) => {
+          card.addEventListener("click", () => selectReservation(card.dataset.id));
+          card.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+              selectReservation(card.dataset.id);
+            }
+          });
+        });
+      }
+
+      function renderReservationCard(reservation) {
+        const customer = getCustomer(reservation.customerId);
+        return `
+          <button class="reservation-card ${state.selectedReservationId === reservation.id ? "is-selected" : ""}" data-id="${reservation.id}" type="button">
+            <span>
+              <span class="reservation-name">${escapeHtml(customer?.name || "Unknown client")}</span>
+              <span class="reservation-meta">${reservation.guests} guests / ${seatingLabel(reservation.seatingType)} / ${resourcesLabel(reservation)}</span>
+            </span>
+            <span class="status ${reservation.status}">${statusLabel(reservation.status)}</span>
+          </button>
+        `;
+      }
+
+      function renderReservationTable() {
+        const rows = matchingReservations();
+        dom.databaseCountLabel.textContent = `${rows.length} reservations`;
+        dom.reservationRows.innerHTML = rows.map((reservation) => {
+          const customer = getCustomer(reservation.customerId);
+          return `
+            <tr data-id="${reservation.id}" class="${state.selectedReservationId === reservation.id ? "is-selected" : ""}">
+              <td>${reservation.time}<br><span class="tiny">Arrival</span></td>
+              <td>${escapeHtml(customer?.name || "Unknown")}<br><span class="tiny">${visitsForCustomer(reservation.customerId).length} visits</span></td>
+              <td>${escapeHtml(customer?.phone || "")}<br>${escapeHtml(customer?.email || "")}</td>
+              <td>${reservation.guests}</td>
+              <td>${seatingLabel(reservation.seatingType)}</td>
+              <td>${escapeHtml(resourcesLabel(reservation))}</td>
+              <td><span class="status ${reservation.status}">${statusLabel(reservation.status)}</span></td>
+              <td>${escapeHtml(reservation.internalNote || reservation.requests || "")}</td>
+            </tr>
+          `;
+        }).join("") || `<tr><td colspan="8">No reservations match this view.</td></tr>`;
+        $$("tr[data-id]", dom.reservationRows).forEach((row) => {
+          row.addEventListener("click", () => selectReservation(row.dataset.id));
+        });
+      }
+
+      function renderEditor() {
+        renderSelects();
+        const reservation = getReservation(state.selectedReservationId) || draftReservation();
+        dom.editorModeLabel.textContent = reservation.id ? `Editing ${reservation.id}` : "New booking";
+        dom.reservationId.value = reservation.id || "";
+        dom.customerSelect.value = reservation.customerId || state.selectedCustomerId || state.data.customers[0]?.id || "";
+        dom.bookingDate.value = reservation.date || state.selectedDate;
+        dom.bookingTime.value = reservation.time || "19:00";
+        dom.durationMinutes.value = "0";
+        dom.bookingStatus.value = reservation.status || "confirmed";
+        dom.guestCount.value = String(reservation.guests || 2);
+        dom.seatingType.value = reservation.seatingType || "table";
+        dom.serverName.value = reservation.server || SERVERS[0];
+        dom.bookingSource.value = reservation.source || "admin";
+        dom.guestRequests.value = reservation.requests || "";
+        dom.internalNote.value = reservation.internalNote || "";
+        renderResourceChoices(reservation);
+        toggleResourceWraps();
+      }
+
+      function renderSelects() {
+        dom.customerSelect.innerHTML = state.data.customers
+          .slice()
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map((customer) => `<option value="${customer.id}">${escapeHtml(customer.name)} / ${escapeHtml(customer.phone)}</option>`)
+          .join("");
+        dom.bookingTime.innerHTML = TIME_SLOTS.map((slot) => `<option value="${slot}">${slot}</option>`).join("");
+        dom.serverName.innerHTML = SERVERS.map((server) => `<option value="${server}">${server}</option>`).join("");
+      }
+
+      function renderResourceChoices(reservation) {
+        const candidate = readEditor({ fallback: reservation });
+        const busy = busyResources(candidate, reservation.id);
+        dom.tableResourceChoices.innerHTML = TABLES.map((table) => {
+          const checked = (reservation.assignedTables || []).includes(table.id);
+          const busyName = busy.tables.get(table.id);
+          return `
+            <label class="resource-choice ${busyName ? "is-busy" : ""}" title="${busyName ? `Busy: ${busyName}` : `${table.capacity} seats`}">
+              <input type="checkbox" name="tables" value="${table.id}" ${checked ? "checked" : ""} ${busyName ? "disabled" : ""} />
+              ${table.id}
+            </label>
+          `;
+        }).join("");
+        dom.barResourceChoices.innerHTML = BAR_SEATS.map((seat) => {
+          const checked = (reservation.assignedBarSeats || []).includes(seat);
+          const busyName = busy.bars.get(seat);
+          return `
+            <label class="resource-choice ${busyName ? "is-busy" : ""}" title="${busyName ? `Busy: ${busyName}` : "Open"}">
+              <input type="checkbox" name="barSeats" value="${seat}" ${checked ? "checked" : ""} ${busyName ? "disabled" : ""} />
+              ${seat}
+            </label>
+          `;
+        }).join("");
+      }
+
+      function renderFloor() {
+        const candidate = readEditor({ fallback: getReservation(state.selectedReservationId) || draftReservation() });
+        const busy = busyResources(candidate, candidate.id || "");
+        dom.floorContext.textContent = `${formatDate(candidate.date)} / arrival ${candidate.time} / no double seating`;
+        dom.barMap.innerHTML = BAR_SEATS.map((seat) => {
+          const owner = busy.bars.get(seat);
+          const selected = (candidate.assignedBarSeats || []).includes(seat);
+          return `
+            <div class="seat ${owner || selected ? "is-busy" : ""}">
+              <span class="seat-title">${seat}</span>
+              <span class="seat-detail">${selected ? "Selected" : owner || "Open"}</span>
+            </div>
+          `;
+        }).join("");
+        dom.tableMap.innerHTML = TABLES.map((table) => {
+          const owner = busy.tables.get(table.id);
+          const selected = (candidate.assignedTables || []).includes(table.id);
+          return `
+            <div class="table-seat ${owner || selected ? "is-busy" : ""}">
+              <span class="seat-title">${table.id}</span>
+              <span class="seat-detail">4 seats</span>
+              <span class="seat-detail">${selected ? "Selected" : owner || "Open"}</span>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function renderClients() {
+        const query = state.clientSearch.trim().toLowerCase();
+        const ordered = state.data.customers.slice().filter((customer) => {
+          const visits = visitsForCustomer(customer.id);
+          const notes = notesForCustomer(customer.id);
+          const searchable = [
+            customer.name,
+            customer.phone,
+            customer.email,
+            ...(customer.tags || []),
+            customer.profileNote,
+            ...visits.map((reservation) => `${reservation.date} ${reservation.time} ${reservation.requests || ""} ${reservation.internalNote || ""}`),
+            ...notes.map((note) => note.text)
+          ].filter(Boolean).join(" ").toLowerCase();
+          return !query || searchable.includes(query);
+        }).sort((a, b) => {
+          const visitsA = visitsForCustomer(a.id).length;
+          const visitsB = visitsForCustomer(b.id).length;
+          return visitsB - visitsA || a.name.localeCompare(b.name);
+        });
+        dom.clientSearchInput.value = state.clientSearch;
+        dom.clientCountLabel.textContent = `${ordered.length}/${state.data.customers.length} profiles`;
+        dom.clientList.innerHTML = ordered.map((customer) => {
+          const visits = visitsForCustomer(customer.id);
+          return `
+            <button class="client-button ${state.selectedCustomerId === customer.id ? "is-selected" : ""}" data-id="${customer.id}" type="button">
+              <span class="client-name">${escapeHtml(customer.name)}</span>
+              <span class="client-sub">${visits.length} visits / ${escapeHtml(customer.phone)}</span>
+            </button>
+          `;
+        }).join("") || `<p class="empty">No client profiles match that search.</p>`;
+        $$(".client-button", dom.clientList).forEach((button) => {
+          button.addEventListener("click", () => selectCustomer(button.dataset.id));
+        });
+        renderClientDetail();
+      }
+
+      function renderClientDetail() {
+        const customer = getCustomer(state.selectedCustomerId) || getCustomer(getReservation(state.selectedReservationId)?.customerId) || state.data.customers[0];
+        if (!customer) {
+          dom.clientEditor.hidden = true;
+          dom.clientNotes.innerHTML = "";
+          return;
+        }
+        dom.clientEditor.hidden = false;
+        state.selectedCustomerId = customer.id;
+        const visits = visitsForCustomer(customer.id);
+        const last = visits[0];
+        dom.clientId.value = customer.id;
+        dom.clientName.value = customer.name || "";
+        dom.clientPhone.value = customer.phone || "";
+        dom.clientEmail.value = customer.email || "";
+        dom.clientTags.value = (customer.tags || []).join(", ");
+        dom.clientProfileNote.value = customer.profileNote || "";
+        dom.clientVisitSummary.textContent = last
+          ? `${visits.length} visits / last ${formatDate(last.date)} ${last.time}`
+          : `${visits.length} visits`;
+        const notes = notesForCustomer(customer.id);
+        dom.clientNotes.innerHTML = notes.map((item) => `
+          <div class="note-item">
+            <span class="note-meta">${escapeHtml(item.author)} / ${new Date(item.createdAt).toLocaleString()}</span>
+            <p class="note-text">${escapeHtml(item.text)}</p>
+          </div>
+        `).join("") || `<p class="empty">No notes yet.</p>`;
+      }
+
+      async function saveClientProfile(event) {
+        event.preventDefault();
+        const customer = getCustomer(dom.clientId.value);
+        if (!customer) {
+          return;
+        }
+        customer.name = dom.clientName.value.trim() || customer.name;
+        customer.phone = dom.clientPhone.value.trim();
+        customer.email = dom.clientEmail.value.trim();
+        customer.tags = dom.clientTags.value.split(",").map((tag) => tag.trim()).filter(Boolean);
+        customer.profileNote = dom.clientProfileNote.value.trim();
+        customer.updatedAt = new Date().toISOString();
+        await AdminBackend.save(state.data);
+        renderAll();
+      }
+
+      function promptCustomerMatches(customer, query) {
+        const visits = visitsForCustomer(customer.id);
+        const notes = notesForCustomer(customer.id);
+        const searchable = [
+          customer.name,
+          customer.phone,
+          customer.email,
+          ...(customer.tags || []),
+          customer.profileNote,
+          ...visits.map((reservation) => `${reservation.date} ${reservation.time} ${reservation.requests || ""} ${reservation.internalNote || ""}`),
+          ...notes.map((note) => note.text)
+        ].filter(Boolean).join(" ").toLowerCase();
+        return !query || searchable.includes(query);
+      }
+
+      function setPromptMessage(message = "") {
+        dom.bookingPromptMessage.textContent = message;
+        dom.bookingPromptMessage.hidden = !message;
+      }
+
+      function setPromptMode(mode) {
+        state.promptMode = mode === "new" ? "new" : "database";
+        dom.promptDatabaseModeButton.className = state.promptMode === "database" ? "button" : "button is-secondary";
+        dom.promptNewModeButton.className = state.promptMode === "new" ? "button" : "button is-secondary";
+        $$("[data-prompt-section='database']").forEach((section) => {
+          section.hidden = state.promptMode !== "database";
+        });
+        $$("[data-prompt-section='new']").forEach((section) => {
+          section.hidden = state.promptMode !== "new";
+        });
+        setPromptMessage("");
+      }
+
+      function renderBookingPrompt() {
+        const query = state.promptSearch.trim().toLowerCase();
+        const customers = state.data.customers
+          .slice()
+          .filter((customer) => promptCustomerMatches(customer, query))
+          .sort((a, b) => a.name.localeCompare(b.name));
+        dom.promptClientSearch.value = state.promptSearch;
+        dom.promptCustomerSelect.innerHTML = customers.map((customer) => {
+          const visits = visitsForCustomer(customer.id).length;
+          return `<option value="${customer.id}">${escapeHtml(customer.name)} / ${escapeHtml(customer.phone)} / ${visits} visits</option>`;
+        }).join("");
+        if (!customers.length) {
+          dom.promptCustomerSelect.innerHTML = `<option value="">No matching client</option>`;
+        } else if (state.selectedCustomerId && customers.some((customer) => customer.id === state.selectedCustomerId)) {
+          dom.promptCustomerSelect.value = state.selectedCustomerId;
+        }
+        setPromptMode(state.promptMode);
+      }
+
+      function openBookingPrompt() {
+        state.promptMode = "database";
+        state.promptSearch = "";
+        dom.promptClientName.value = "";
+        dom.promptClientPhone.value = "";
+        dom.promptClientEmail.value = "";
+        dom.promptClientNote.value = "";
+        setPromptMessage("");
+        renderBookingPrompt();
+        dom.bookingPrompt.hidden = false;
+        window.setTimeout(() => dom.promptClientSearch.focus(), 0);
+      }
+
+      function closeBookingPrompt() {
+        dom.bookingPrompt.hidden = true;
+        setPromptMessage("");
+      }
+
+      async function startBookingFromPrompt(event) {
+        event.preventDefault();
+        let customerId = "";
+        if (state.promptMode === "database") {
+          customerId = dom.promptCustomerSelect.value;
+          if (!customerId) {
+            setPromptMessage("Choose a client from the database.");
+            return;
+          }
+        } else {
+          const name = dom.promptClientName.value.trim();
+          if (!name) {
+            setPromptMessage("Enter a client name.");
+            return;
+          }
+          const nextCustomer = {
+            id: uid("c"),
+            name,
+            phone: dom.promptClientPhone.value.trim(),
+            email: dom.promptClientEmail.value.trim(),
+            tags: ["admin"],
+            profileNote: dom.promptClientNote.value.trim(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+          state.data.customers.push(nextCustomer);
+          customerId = nextCustomer.id;
+          await AdminBackend.save(state.data);
+        }
+        state.selectedReservationId = "";
+        state.selectedCustomerId = customerId;
+        closeBookingPrompt();
+        renderAll();
+        document.querySelector("[aria-label='Reservation editor']")?.scrollIntoView({ block: "start", behavior: "smooth" });
+      }
+
+      function renderBackend() {
+        dom.reservationEndpoint.textContent = endpoints.reservations;
+        dom.customerEndpoint.textContent = endpoints.customers;
+        dom.noteEndpoint.textContent = endpoints.notes;
+        dom.storageKeyLabel.textContent = STORAGE_KEY;
+      }
+
+      function draftReservation() {
+        return {
+          id: "",
+          customerId: state.selectedCustomerId || state.data.customers[0]?.id || "",
+          date: state.selectedDate,
+          time: "19:00",
+          durationMinutes: 0,
+          guests: 2,
+          seatingType: "table",
+          assignedTables: [],
+          assignedBarSeats: [],
+          status: "confirmed",
+          server: SERVERS[0],
+          source: "admin",
+          requests: "",
+          internalNote: ""
+        };
+      }
+
+      function readEditor(options = {}) {
+        const fallback = options.fallback || {};
+        const seatingType = dom.seatingType?.value || fallback.seatingType || "table";
+        const assignedTables = options.fallback
+          ? [...(fallback.assignedTables || [])]
+          : $$("input[name='tables']:checked", dom.tableResourceChoices).map((input) => input.value);
+        const assignedBarSeats = options.fallback
+          ? [...(fallback.assignedBarSeats || [])]
+          : $$("input[name='barSeats']:checked", dom.barResourceChoices).map((input) => input.value);
+        return {
+          id: dom.reservationId?.value || fallback.id || "",
+          customerId: dom.customerSelect?.value || fallback.customerId || "",
+          date: dom.bookingDate?.value || fallback.date || state.selectedDate,
+          time: dom.bookingTime?.value || fallback.time || "19:00",
+          durationMinutes: 0,
+          status: dom.bookingStatus?.value || fallback.status || "confirmed",
+          guests: Number(dom.guestCount?.value || fallback.guests || 1),
+          seatingType,
+          server: dom.serverName?.value || fallback.server || SERVERS[0],
+          source: dom.bookingSource?.value || fallback.source || "admin",
+          requests: dom.guestRequests?.value.trim() || fallback.requests || "",
+          internalNote: dom.internalNote?.value.trim() || fallback.internalNote || "",
+          assignedTables,
+          assignedBarSeats,
+          createdAt: fallback.createdAt || new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+      }
+
+      async function saveEditor(event) {
+        event?.preventDefault();
+        let candidate = readEditor();
+        if (candidate.seatingType === "table") {
+          candidate.assignedBarSeats = [];
+        } else {
+          candidate.assignedTables = [];
+        }
+        if (!candidate.assignedTables.length && !candidate.assignedBarSeats.length) {
+          candidate = autoAssign(candidate, candidate.id);
+        }
+        const issues = validateReservation(candidate, candidate.id);
+        if (issues.length) {
+          showMessage(issues.join(" "));
+          renderResourceChoices(candidate);
+          renderFloor();
+          return;
+        }
+        if (!candidate.id) {
+          candidate.id = uid("r");
+          state.data.reservations.push(candidate);
+        } else {
+          const index = state.data.reservations.findIndex((reservation) => reservation.id === candidate.id);
+          if (index >= 0) {
+            state.data.reservations[index] = candidate;
+          } else {
+            state.data.reservations.push(candidate);
+          }
+        }
+        const customer = getCustomer(candidate.customerId);
+        if (customer) {
+          customer.updatedAt = new Date().toISOString();
+        }
+        state.selectedReservationId = candidate.id;
+        state.selectedCustomerId = candidate.customerId;
+        state.selectedDate = candidate.date;
+        await AdminBackend.save(state.data);
+        showMessage("Booking saved.", true);
+        renderAll();
+      }
+
+      function showMessage(message, soft = false) {
+        dom.editorMessage.textContent = message;
+        dom.editorMessage.classList.add("is-visible");
+        dom.editorMessage.style.background = soft ? "#f7f7f7" : "#080808";
+        dom.editorMessage.style.color = soft ? "#080808" : "#f5f5f5";
+        window.setTimeout(() => dom.editorMessage.classList.remove("is-visible"), 3000);
+      }
+
+      function selectReservation(id) {
+        const reservation = getReservation(id);
+        if (!reservation) {
+          return;
+        }
+        state.selectedReservationId = id;
+        state.selectedCustomerId = reservation.customerId;
+        state.selectedDate = reservation.date;
+        renderAll();
+      }
+
+      function selectCustomer(id) {
+        state.selectedCustomerId = id;
+        const nextReservation = reservationsForDate().find((reservation) => reservation.customerId === id);
+        if (nextReservation) {
+          state.selectedReservationId = nextReservation.id;
+        }
+        renderAll();
+      }
+
+      function visitsForCustomer(customerId) {
+        return state.data.reservations
+          .filter((reservation) => reservation.customerId === customerId)
+          .sort((a, b) => `${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`));
+      }
+
+      function notesForCustomer(customerId) {
+        return state.data.notes
+          .filter((note) => note.customerId === customerId)
+          .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      }
+
+      async function addClientNote() {
+        const text = dom.clientNoteText.value.trim();
+        if (!text || !state.selectedCustomerId) {
+          return;
+        }
+        state.data.notes.push({
+          id: uid("n"),
+          customerId: state.selectedCustomerId,
+          author: dom.serverName.value || "Admin",
+          text,
+          createdAt: new Date().toISOString()
+        });
+        dom.clientNoteText.value = "";
+        await AdminBackend.save(state.data);
+        renderClients();
+      }
+
+      async function cancelSelected() {
+        const reservation = getReservation(state.selectedReservationId);
+        if (!reservation) {
+          return;
+        }
+        reservation.status = "cancelled";
+        reservation.updatedAt = new Date().toISOString();
+        await AdminBackend.save(state.data);
+        renderAll();
+      }
+
+      function duplicateSelected() {
+        const reservation = getReservation(state.selectedReservationId);
+        if (!reservation) {
+          return;
+        }
+        const copy = {
+          ...reservation,
+          id: "",
+          date: addDays(reservation.date, 1),
+          assignedTables: [],
+          assignedBarSeats: [],
+          status: "confirmed",
+          source: "admin",
+          internalNote: `${reservation.internalNote || ""} Duplicated from ${reservation.id}.`.trim()
+        };
+        state.selectedReservationId = "";
+        state.selectedCustomerId = copy.customerId;
+        state.selectedDate = copy.date;
+        renderAll();
+        dom.customerSelect.value = copy.customerId;
+        dom.bookingDate.value = copy.date;
+        dom.bookingTime.value = copy.time;
+        dom.durationMinutes.value = "0";
+        dom.bookingStatus.value = copy.status;
+        dom.guestCount.value = String(copy.guests);
+        dom.seatingType.value = copy.seatingType;
+        dom.serverName.value = copy.server;
+        dom.bookingSource.value = copy.source;
+        dom.guestRequests.value = copy.requests;
+        dom.internalNote.value = copy.internalNote;
+        renderResourceChoices(copy);
+        renderFloor();
+      }
+
+      function applyAutoSeat() {
+        const candidate = autoAssign(readEditor(), dom.reservationId.value);
+        renderResourceChoices(candidate);
+        candidate.assignedTables.forEach((id) => {
+          const input = $(`input[name='tables'][value='${id}']`, dom.tableResourceChoices);
+          if (input) input.checked = true;
+        });
+        candidate.assignedBarSeats.forEach((id) => {
+          const input = $(`input[name='barSeats'][value='${id}']`, dom.barResourceChoices);
+          if (input) input.checked = true;
+        });
+        renderFloor();
+      }
+
+      async function importPublicReservations() {
+        const raw = localStorage.getItem(PUBLIC_RECORDS_KEY);
+        if (!raw) {
+          showMessage("No public reservation records found.");
+          return;
+        }
+        const records = JSON.parse(raw);
+        let imported = 0;
+        records.forEach((record) => {
+          const marker = `${record.email || ""}|${record.booking_date || ""}|${record.booking_time || ""}|${record.created_at || ""}`;
+          const exists = state.data.reservations.some((reservation) => reservation.publicMarker === marker);
+          if (exists) {
+            return;
+          }
+          let customer = state.data.customers.find((item) => item.email && item.email === record.email);
+          if (!customer) {
+            customer = customerFromPublic(record);
+            state.data.customers.push(customer);
+          }
+          let reservation = {
+            id: uid("r"),
+            publicMarker: marker,
+            customerId: customer.id,
+            date: record.booking_date || state.selectedDate,
+            time: normalizeArrivalTime(record.booking_time || "19:00"),
+            durationMinutes: 0,
+            guests: Number(record.guests || 1),
+            seatingType: record.seating_type || "table",
+            assignedTables: [],
+            assignedBarSeats: [],
+            status: "confirmed",
+            server: "Admin",
+            source: "website",
+            requests: record.requests || "",
+            internalNote: "Imported from public reservation local save.",
+            createdAt: record.created_at || new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+          reservation = autoAssign(reservation, reservation.id);
+          const issues = validateReservation(reservation, reservation.id);
+          if (issues.length) {
+            reservation.status = "waitlist";
+            reservation.assignedTables = [];
+            reservation.assignedBarSeats = [];
+            reservation.internalNote = `${reservation.internalNote} Waitlisted on import: ${issues.join(" ")}`.trim();
+          }
+          state.data.reservations.push(reservation);
+          imported += 1;
+        });
+        await AdminBackend.save(state.data);
+        showMessage(`${imported} public saves imported.`, true);
+        renderAll();
+      }
+
+      function customerFromPublic(record) {
+        const name = `${record.first_name || ""} ${record.last_name || ""}`.trim() || "Website guest";
+        return {
+          id: uid("c"),
+          name,
+          email: record.email || "",
+          phone: record.phone || "",
+          tags: ["website"],
+          profileNote: "Created from public reservation save.",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+      }
+
+      function exportJson() {
+        const blob = new Blob([JSON.stringify(state.data, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `1820-admin-${state.selectedDate}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+
+      async function resetDemo() {
+        state.data = await AdminBackend.resetDemo();
+        state.selectedDate = todayIso();
+        state.selectedReservationId = state.data.reservations.find((reservation) => reservation.date === state.selectedDate)?.id || "";
+        state.selectedCustomerId = getReservation(state.selectedReservationId)?.customerId || state.data.customers[0]?.id || "";
+        renderAll();
+      }
+
+      function toggleResourceWraps() {
+        const table = dom.seatingType.value === "table";
+        dom.tableResourceWrap.hidden = !table;
+        dom.barResourceWrap.hidden = table;
+      }
+
+      function seatingLabel(value) {
+        return value === "barstand" ? "Barstand" : "Table";
+      }
+
+      function statusLabel(value) {
+        return String(value || "").replace("_", " ");
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      async function init() {
+        state.data = await AdminBackend.load();
+        state.selectedDate = todayIso();
+        const firstToday = state.data.reservations.find((reservation) => reservation.date === state.selectedDate);
+        state.selectedReservationId = firstToday?.id || state.data.reservations[0]?.id || "";
+        state.selectedCustomerId = firstToday?.customerId || state.data.customers[0]?.id || "";
+
+        dom.form.addEventListener("submit", saveEditor);
+        dom.adminDate.addEventListener("change", () => {
+          state.selectedDate = dom.adminDate.value || todayIso();
+          state.selectedReservationId = reservationsForDate(state.selectedDate)[0]?.id || "";
+          renderAll();
+        });
+        dom.statusFilter.addEventListener("change", () => {
+          state.status = dom.statusFilter.value;
+          renderAll();
+        });
+        dom.serverFilter.addEventListener("change", () => {
+          state.server = dom.serverFilter.value;
+          renderAll();
+        });
+        dom.searchInput.addEventListener("input", () => {
+          state.search = dom.searchInput.value;
+          renderReservationTable();
+        });
+        dom.clientSearchInput.addEventListener("input", () => {
+          state.clientSearch = dom.clientSearchInput.value;
+          renderClients();
+        });
+        dom.customerSelect.addEventListener("change", () => {
+          state.selectedCustomerId = dom.customerSelect.value;
+          renderClients();
+        });
+        dom.newReservationButton.addEventListener("click", openBookingPrompt);
+        dom.closeBookingPromptButton.addEventListener("click", closeBookingPrompt);
+        dom.cancelBookingPromptButton.addEventListener("click", closeBookingPrompt);
+        dom.bookingPrompt.addEventListener("click", (event) => {
+          if (event.target === dom.bookingPrompt) {
+            closeBookingPrompt();
+          }
+        });
+        dom.promptDatabaseModeButton.addEventListener("click", () => setPromptMode("database"));
+        dom.promptNewModeButton.addEventListener("click", () => setPromptMode("new"));
+        dom.promptClientSearch.addEventListener("input", () => {
+          state.promptSearch = dom.promptClientSearch.value;
+          renderBookingPrompt();
+        });
+        dom.bookingPromptForm.addEventListener("submit", startBookingFromPrompt);
+        dom.importPublicButton.addEventListener("click", importPublicReservations);
+        dom.exportButton.addEventListener("click", exportJson);
+        dom.resetDemoButton.addEventListener("click", resetDemo);
+        dom.duplicateButton.addEventListener("click", duplicateSelected);
+        dom.autoSeatButton.addEventListener("click", applyAutoSeat);
+        dom.cancelBookingButton.addEventListener("click", cancelSelected);
+        dom.addClientNoteButton.addEventListener("click", addClientNote);
+        dom.clientEditor.addEventListener("submit", saveClientProfile);
+        [dom.bookingDate, dom.bookingTime, dom.durationMinutes, dom.guestCount, dom.seatingType].forEach((input) => {
+          input.addEventListener("change", () => {
+            const candidate = readEditor();
+            renderResourceChoices(candidate);
+            toggleResourceWraps();
+            renderFloor();
+          });
+        });
+        [dom.tableResourceChoices, dom.barResourceChoices].forEach((wrap) => {
+          wrap.addEventListener("change", renderFloor);
+        });
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape" && !dom.bookingPrompt.hidden) {
+            closeBookingPrompt();
+          }
+        });
+
+        renderAll();
+      }
+
+      init().catch((error) => {
+        console.error(error);
+        document.body.insertAdjacentHTML("afterbegin", `<div class="message is-visible" style="position:fixed;z-index:100;left:20px;right:20px;top:20px;">Admin failed to load: ${escapeHtml(error.message)}</div>`);
+      });
+    })();
+  </script>
+</body>
+</html>

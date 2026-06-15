@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>1820 | Admin Access</title>
+  <style>
+    :root {
+      --paper: #f3f3f3;
+      --ink: #070707;
+      --line: rgba(0, 0, 0, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: clamp(22px, 5vw, 72px);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      background:
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.025) 0 1px, transparent 1px 8px),
+        linear-gradient(180deg, #f6f6f6 0%, #ececec 54%, #d8d8d8 100%);
+    }
+
+    body::before {
+      content: "1820";
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      color: #080808;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(7rem, 22vw, 20rem);
+      line-height: 0.76;
+      opacity: 0.055;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0.22;
+      background:
+        repeating-radial-gradient(circle at 24% 34%, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 5px),
+        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.03) 0 1px, transparent 1px 7px);
+      mix-blend-mode: multiply;
+    }
+
+    a,
+    button {
+      color: inherit;
+      font: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .access-panel {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 560px);
+      border: 1px solid var(--line);
+      background:
+        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.035) 0 1px, transparent 1px 5px),
+        rgba(244, 244, 244, 0.92);
+      box-shadow: 12px 12px 0 #080808;
+    }
+
+    .access-head,
+    .access-body,
+    .access-actions {
+      padding: clamp(20px, 4vw, 34px);
+    }
+
+    .access-head {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow,
+    .button,
+    .meta {
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow {
+      margin: 0 0 18px;
+      color: #4a4a4a;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(3.8rem, 11vw, 7.4rem);
+      font-weight: 400;
+      line-height: 0.86;
+      letter-spacing: 0;
+    }
+
+    .access-body {
+      display: grid;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .line {
+      display: grid;
+      grid-template-columns: minmax(130px, 0.36fr) minmax(0, 1fr);
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    }
+
+    .line:last-child {
+      border-bottom: 0;
+    }
+
+    .meta {
+      color: #555555;
+    }
+
+    .value {
+      font-size: 1rem;
+      font-weight: 720;
+      line-height: 1.45;
+    }
+
+    .access-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    .button {
+      min-height: 56px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #080808;
+      padding: 16px 22px;
+      background: #080808;
+      color: #f5f5f5;
+      text-decoration: none;
+      box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.18);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      transform: translate(3px, 3px);
+      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="access-panel" aria-label="Admin access">
+    <section class="access-head">
+      <p class="eyebrow">Admin access</p>
+      <h1>1820 control.</h1>
+    </section>
+
+    <section class="access-body">
+      <div class="line">
+        <span class="meta">Auth</span>
+        <span class="value">Cloudflare Access placeholder</span>
+      </div>
+      <div class="line">
+        <span class="meta">Login</span>
+        <span class="value">No local credentials are stored here.</span>
+      </div>
+      <div class="line">
+        <span class="meta">Future</span>
+        <span class="value">Protect this folder with Cloudflare, then pass identity to the admin data adapter.</span>
+      </div>
+    </section>
+
+    <section class="access-actions">
+      <a class="button" href="index.html">Open admin</a>
+    </section>
+  </main>
+</body>
+</html>
