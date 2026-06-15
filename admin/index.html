@@ -853,7 +853,7 @@
   <header class="topbar">
     <a class="brand" href="../index.html">1820</a>
     <div class="top-actions">
-      <span class="chip is-dark" id="connectionChip">Local database</span>
+      <span class="chip is-dark" id="connectionChip">D1 database</span>
       <a class="button is-quiet" href="login.html">Access</a>
     </div>
   </header>
@@ -1163,7 +1163,7 @@
           <h2>Backend.</h2>
           <span class="tiny">Adapter contract</span>
         </div>
-        <span class="chip is-dark" id="backendMode">localStorage</span>
+        <span class="chip is-dark" id="backendMode">Cloudflare D1</span>
       </div>
       <div class="panel-body backend-grid">
         <div class="schema-line">
@@ -1180,7 +1180,7 @@
         </div>
         <div class="schema-line">
           <span class="label">Storage key</span>
-          <code id="storageKeyLabel">1820AdminDataV3</code>
+          <code id="storageKeyLabel">CLIENTS_DB / BOOKINGS_DB</code>
         </div>
       </div>
     </section>
@@ -1246,8 +1246,6 @@
 
   <script>
     (() => {
-      const STORAGE_KEY = "1820AdminDataV3";
-      const PUBLIC_RECORDS_KEY = "1820ReservationRecords";
       const API_BASE = window.ADMIN_API_BASE || "";
       const SERVICE_OPEN_MINUTES = 19 * 60;
       const SERVICE_CLOSE_MINUTES = 24 * 60;
@@ -1363,31 +1361,57 @@
       };
 
       const AdminBackend = {
-        mode: API_BASE ? "remote-ready" : "localStorage",
-        async load() {
-          if (API_BASE) {
-            return this.loadLocal();
+        mode: "Cloudflare D1",
+        async request(path, options = {}) {
+          const response = await fetch(`${API_BASE}${path}`, {
+            ...options,
+            headers: {
+              accept: "application/json",
+              ...(options.body ? { "content-type": "application/json" } : {}),
+              ...(options.headers || {})
+            }
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok || data.ok === false) {
+            const message = data.issues?.join(" ") || data.error || `API request failed: ${path}`;
+            throw new Error(message);
           }
-          return this.loadLocal();
-        },
-        async save(data) {
-          data.meta.updatedAt = new Date().toISOString();
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
           return data;
         },
-        async loadLocal() {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if (raw) {
-            return normalizeData(JSON.parse(raw));
-          }
-          const seeded = createSeedData();
-          await this.save(seeded);
-          return seeded;
+        async load() {
+          const [reservations, customers, notes] = await Promise.all([
+            this.request("/api/admin/reservations"),
+            this.request("/api/admin/customers"),
+            this.request("/api/admin/client-notes")
+          ]);
+          return normalizeData({
+            meta: { schemaVersion: 3, updatedAt: new Date().toISOString() },
+            settings: { totalCoverLimit: TOTAL_COVER_LIMIT, tableCoverLimit: TABLE_COVER_LIMIT, barCoverLimit: BAR_LIMIT, serviceOpen: "19:00", serviceClose: "00:00" },
+            customers: customers.customers || [],
+            reservations: reservations.reservations || [],
+            notes: notes.notes || []
+          });
         },
-        async resetDemo() {
-          const seeded = createSeedData();
-          await this.save(seeded);
-          return seeded;
+        async saveReservation(reservation, method = "POST") {
+          const data = await this.request("/api/admin/reservations", {
+            method,
+            body: JSON.stringify(reservation)
+          });
+          return data.reservation;
+        },
+        async saveCustomer(customer, method = "POST") {
+          const data = await this.request("/api/admin/customers", {
+            method,
+            body: JSON.stringify(customer)
+          });
+          return data.customer;
+        },
+        async saveNote(note, method = "POST") {
+          const data = await this.request("/api/admin/client-notes", {
+            method,
+            body: JSON.stringify(note)
+          });
+          return data.note;
         }
       };
 
@@ -1756,7 +1780,7 @@
         dom.searchInput.value = state.search;
         dom.serverFilter.innerHTML = `<option value="all">All servers</option>${SERVERS.map((server) => `<option value="${server}">${server}</option>`).join("")}`;
         dom.serverFilter.value = state.server;
-        dom.connectionChip.textContent = AdminBackend.mode === "localStorage" ? "Local database" : "Remote ready";
+        dom.connectionChip.textContent = "D1 database";
         dom.backendMode.textContent = AdminBackend.mode;
       }
 
@@ -2001,7 +2025,12 @@
         customer.tags = dom.clientTags.value.split(",").map((tag) => tag.trim()).filter(Boolean);
         customer.profileNote = dom.clientProfileNote.value.trim();
         customer.updatedAt = new Date().toISOString();
-        await AdminBackend.save(state.data);
+        try {
+          await AdminBackend.saveCustomer(customer, "PUT");
+        } catch (error) {
+          showMessage(error.message || "Client could not be saved.");
+          return;
+        }
         renderAll();
       }
 
@@ -2100,9 +2129,14 @@
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           };
-          state.data.customers.push(nextCustomer);
-          customerId = nextCustomer.id;
-          await AdminBackend.save(state.data);
+          try {
+            const savedCustomer = await AdminBackend.saveCustomer(nextCustomer, "POST");
+            state.data.customers.push(savedCustomer || nextCustomer);
+            customerId = (savedCustomer || nextCustomer).id;
+          } catch (error) {
+            setPromptMessage(error.message || "Client could not be saved.");
+            return;
+          }
         }
         state.selectedReservationId = "";
         state.selectedCustomerId = customerId;
@@ -2115,7 +2149,7 @@
         dom.reservationEndpoint.textContent = endpoints.reservations;
         dom.customerEndpoint.textContent = endpoints.customers;
         dom.noteEndpoint.textContent = endpoints.notes;
-        dom.storageKeyLabel.textContent = STORAGE_KEY;
+        dom.storageKeyLabel.textContent = "CLIENTS_DB / BOOKINGS_DB";
       }
 
       function draftReservation() {
@@ -2184,7 +2218,8 @@
           renderFloor();
           return;
         }
-        if (!candidate.id) {
+        const isNew = !candidate.id;
+        if (isNew) {
           candidate.id = uid("r");
           state.data.reservations.push(candidate);
         } else {
@@ -2199,10 +2234,24 @@
         if (customer) {
           customer.updatedAt = new Date().toISOString();
         }
+        try {
+          const savedReservation = await AdminBackend.saveReservation(candidate, isNew ? "POST" : "PUT");
+          candidate = { ...candidate, ...savedReservation };
+          const index = state.data.reservations.findIndex((reservation) => reservation.id === candidate.id);
+          if (index >= 0) {
+            state.data.reservations[index] = candidate;
+          }
+        } catch (error) {
+          if (isNew) {
+            state.data.reservations = state.data.reservations.filter((reservation) => reservation.id !== candidate.id);
+          }
+          showMessage(error.message || "Booking could not be saved.");
+          renderAll();
+          return;
+        }
         state.selectedReservationId = candidate.id;
         state.selectedCustomerId = candidate.customerId;
         state.selectedDate = candidate.date;
-        await AdminBackend.save(state.data);
         showMessage("Booking saved.", true);
         renderAll();
       }
@@ -2252,15 +2301,22 @@
         if (!text || !state.selectedCustomerId) {
           return;
         }
-        state.data.notes.push({
+        const note = {
           id: uid("n"),
           customerId: state.selectedCustomerId,
           author: dom.serverName.value || "Admin",
           text,
           createdAt: new Date().toISOString()
-        });
+        };
+        let savedNote;
+        try {
+          savedNote = await AdminBackend.saveNote(note, "POST");
+        } catch (error) {
+          showMessage(error.message || "Client note could not be saved.");
+          return;
+        }
+        state.data.notes.push(savedNote || note);
         dom.clientNoteText.value = "";
-        await AdminBackend.save(state.data);
         renderClients();
       }
 
@@ -2271,7 +2327,12 @@
         }
         reservation.status = "cancelled";
         reservation.updatedAt = new Date().toISOString();
-        await AdminBackend.save(state.data);
+        try {
+          await AdminBackend.saveReservation(reservation, "PUT");
+        } catch (error) {
+          showMessage(error.message || "Booking could not be cancelled.");
+          return;
+        }
         renderAll();
       }
 
@@ -2324,56 +2385,8 @@
       }
 
       async function importPublicReservations() {
-        const raw = localStorage.getItem(PUBLIC_RECORDS_KEY);
-        if (!raw) {
-          showMessage("No public reservation records found.");
-          return;
-        }
-        const records = JSON.parse(raw);
-        let imported = 0;
-        records.forEach((record) => {
-          const marker = `${record.email || ""}|${record.booking_date || ""}|${record.booking_time || ""}|${record.created_at || ""}`;
-          const exists = state.data.reservations.some((reservation) => reservation.publicMarker === marker);
-          if (exists) {
-            return;
-          }
-          let customer = state.data.customers.find((item) => item.email && item.email === record.email);
-          if (!customer) {
-            customer = customerFromPublic(record);
-            state.data.customers.push(customer);
-          }
-          let reservation = {
-            id: uid("r"),
-            publicMarker: marker,
-            customerId: customer.id,
-            date: record.booking_date || state.selectedDate,
-            time: normalizeArrivalTime(record.booking_time || "19:00"),
-            durationMinutes: 0,
-            guests: Number(record.guests || 1),
-            seatingType: record.seating_type || "table",
-            assignedTables: [],
-            assignedBarSeats: [],
-            status: "confirmed",
-            server: "Admin",
-            source: "website",
-            requests: record.requests || "",
-            internalNote: "Imported from public reservation local save.",
-            createdAt: record.created_at || new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          };
-          reservation = autoAssign(reservation, reservation.id);
-          const issues = validateReservation(reservation, reservation.id);
-          if (issues.length) {
-            reservation.status = "waitlist";
-            reservation.assignedTables = [];
-            reservation.assignedBarSeats = [];
-            reservation.internalNote = `${reservation.internalNote} Waitlisted on import: ${issues.join(" ")}`.trim();
-          }
-          state.data.reservations.push(reservation);
-          imported += 1;
-        });
-        await AdminBackend.save(state.data);
-        showMessage(`${imported} public saves imported.`, true);
+        state.data = await AdminBackend.load();
+        showMessage("Public reservations now save directly to D1.", true);
         renderAll();
       }
 
@@ -2402,10 +2415,8 @@
       }
 
       async function resetDemo() {
-        state.data = await AdminBackend.resetDemo();
-        state.selectedDate = todayIso();
-        state.selectedReservationId = state.data.reservations.find((reservation) => reservation.date === state.selectedDate)?.id || "";
-        state.selectedCustomerId = getReservation(state.selectedReservationId)?.customerId || state.data.customers[0]?.id || "";
+        state.data = await AdminBackend.load();
+        showMessage("Demo reset is disabled for D1 production data. Reloaded from backend.", true);
         renderAll();
       }
 

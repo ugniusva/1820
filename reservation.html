@@ -986,9 +986,8 @@
 
   <script>
     (() => {
-      const draftKey = "1820ReservationDraft";
-      const recordsKey = "1820ReservationRecords";
       const transitionKey = "1820PageTransition";
+      const apiBase = "";
       const maxGuests = 4;
       const serviceOpenMinutes = 19 * 60;
       const serviceCloseMinutes = 24 * 60;
@@ -1008,6 +1007,8 @@
         return slots;
       };
       const timeSlots = buildTimeSlots();
+      const availabilityCache = new Map();
+      const availabilityLoading = new Set();
       const countryOptions = [
         { name: "Afghanistan", iso: "AF", code: "+93" },
         { name: "Albania", iso: "AL", code: "+355" },
@@ -1413,7 +1414,8 @@
           const button = document.createElement("button");
           const date = new Date(year, month, day, 12, 0, 0, 0);
           const iso = formatDateIso(date);
-          const disabled = iso < today;
+          const availability = availabilityForDate(iso);
+          const disabled = iso < today || Boolean(availability && availability.remaining.total <= 0);
 
           cell.className = "calendar-cell";
           button.type = "button";
@@ -1422,6 +1424,7 @@
           button.disabled = disabled;
           button.classList.toggle("is-selected", state.date === iso);
           button.classList.toggle("is-today", iso === today);
+          button.title = availability && availability.remaining.total <= 0 ? "Fully booked" : "";
           button.setAttribute("aria-pressed", String(state.date === iso));
           button.addEventListener("click", () => {
             state.date = iso;
@@ -1429,8 +1432,10 @@
             clearField("date");
             updateDateLabel();
             setDatePanelOpen(false);
-            renderCalendar();
-            renderChoices();
+            fetchAvailability(iso).then(() => {
+              renderCalendar();
+              renderChoices();
+            });
             saveDraft();
           });
 
@@ -1439,39 +1444,12 @@
         }
 
         calendarPrev.disabled = calendarCursor <= todayMonthStart;
+        hydrateCalendarAvailability();
       };
 
-      const loadDraft = () => {
-        try {
-          const draft = JSON.parse(localStorage.getItem(draftKey) || "{}");
-          const hadCountryId = Object.prototype.hasOwnProperty.call(draft, "countryId");
-          Object.assign(state, draft, { step: 1 });
-          if (!hadCountryId) {
-            state.countryId = "";
-          }
-          if (Number(state.guests) > maxGuests) {
-            state.guests = "";
-          }
-          if (!timeSlots.includes(state.time)) {
-            state.time = "";
-          }
-          if (!seatingOptions.some((option) => option.value === state.seating)) {
-            state.seating = "";
-          }
-          if (state.date && state.date < todayIso()) {
-            state.date = "";
-          }
-        } catch (error) {
-          localStorage.removeItem(draftKey);
-        }
-      };
+      const loadDraft = () => {};
 
-      const saveDraft = () => {
-        localStorage.setItem(draftKey, JSON.stringify({
-          ...state,
-          updated_at: new Date().toISOString()
-        }));
-      };
+      const saveDraft = () => {};
 
       const getFullPhone = () => {
         const local = state.phone.replace(/[^\d]/g, "");
@@ -1491,29 +1469,77 @@
         });
       };
 
-      const readSavedRecords = () => {
+      const normalizeAvailability = (availability) => ({
+        used: {
+          total: Number(availability?.used?.total || 0),
+          table: Number(availability?.used?.table || 0),
+          barstand: Number(availability?.used?.barstand || 0)
+        },
+        remaining: {
+          total: Number(availability?.remaining?.total ?? totalCoverLimit),
+          table: Number(availability?.remaining?.table ?? 12),
+          barstand: Number(availability?.remaining?.barstand ?? barCoverLimit)
+        }
+      });
+
+      const availabilityForDate = (date) => availabilityCache.get(date) || null;
+
+      const fetchAvailability = async (date) => {
+        if (!date) {
+          return null;
+        }
+        if (availabilityCache.has(date)) {
+          return availabilityCache.get(date);
+        }
+        if (availabilityLoading.has(date)) {
+          return null;
+        }
+        availabilityLoading.add(date);
         try {
-          const records = JSON.parse(localStorage.getItem(recordsKey) || "[]");
-          return Array.isArray(records) ? records : [];
+          const response = await fetch(`${apiBase}/api/availability?date=${encodeURIComponent(date)}`, {
+            headers: { accept: "application/json" }
+          });
+          if (!response.ok) {
+            throw new Error("Availability unavailable.");
+          }
+          const data = await response.json();
+          const availability = normalizeAvailability(data.availability);
+          availabilityCache.set(date, availability);
+          return availability;
         } catch (error) {
-          return [];
+          availabilityCache.set(date, null);
+          return null;
+        } finally {
+          availabilityLoading.delete(date);
         }
       };
 
-      const isActiveRecord = (record) => !["cancelled", "no_show", "declined"].includes(String(record.status || "").toLowerCase());
+      const ensureAvailability = async (date) => {
+        if (!date) {
+          return null;
+        }
+        return availabilityForDate(date) || fetchAvailability(date);
+      };
 
-      const localCapacityForDate = (date) => {
-        const records = readSavedRecords().filter((record) => record.booking_date === date && isActiveRecord(record));
-        const totalCovers = records.reduce((sum, record) => sum + Number(record.guests || 0), 0);
-        const barCovers = records
-          .filter((record) => record.seating_type === "barstand")
-          .reduce((sum, record) => sum + Number(record.guests || 0), 0);
-        return {
-          totalCovers,
-          barCovers,
-          totalRemaining: Math.max(0, totalCoverLimit - totalCovers),
-          barRemaining: Math.max(0, barCoverLimit - barCovers)
-        };
+      const hydrateCalendarAvailability = () => {
+        const year = calendarCursor.getFullYear();
+        const month = calendarCursor.getMonth();
+        const lastDay = new Date(year, month + 1, 0).getDate();
+        const today = todayIso();
+        const dates = [];
+        for (let day = 1; day <= lastDay; day += 1) {
+          const iso = formatDateIso(new Date(year, month, day, 12, 0, 0, 0));
+          if (iso >= today && !availabilityCache.has(iso) && !availabilityLoading.has(iso)) {
+            dates.push(iso);
+          }
+        }
+        if (!dates.length) {
+          return;
+        }
+        Promise.all(dates.map(fetchAvailability)).then(() => {
+          renderCalendar();
+          renderChoices();
+        });
       };
 
       const capacityIssue = () => {
@@ -1521,12 +1547,18 @@
           return "";
         }
         const guests = Number(state.guests || 0);
-        const capacity = localCapacityForDate(state.date);
-        if (capacity.totalCovers + guests > totalCoverLimit) {
-          return `This service has ${capacity.totalRemaining} local covers left.`;
+        const capacity = availabilityForDate(state.date);
+        if (!capacity) {
+          return "";
         }
-        if (state.seating === "barstand" && capacity.barCovers + guests > barCoverLimit) {
-          return `The barstand has ${capacity.barRemaining} local spaces left.`;
+        if (guests > capacity.remaining.total) {
+          return `This service has ${capacity.remaining.total} covers left.`;
+        }
+        if (state.seating === "table" && guests > capacity.remaining.table) {
+          return `The table room has ${capacity.remaining.table} spaces left.`;
+        }
+        if (state.seating === "barstand" && guests > capacity.remaining.barstand) {
+          return `The barstand has ${capacity.remaining.barstand} spaces left.`;
         }
         return "";
       };
@@ -1535,10 +1567,10 @@
         if (!capacityNote) {
           return;
         }
-        const capacity = state.date ? localCapacityForDate(state.date) : null;
+        const capacity = state.date ? availabilityForDate(state.date) : null;
         const base = "Times are arrivals only. Your reservation is held for the full service.";
         capacityNote.textContent = capacity
-          ? `${base} Local availability: ${capacity.totalRemaining}/${totalCoverLimit} covers, ${capacity.barRemaining}/${barCoverLimit} bar spaces.`
+          ? `${base} Availability: ${capacity.remaining.total}/${totalCoverLimit} covers, ${capacity.remaining.table}/12 tables, ${capacity.remaining.barstand}/${barCoverLimit} bar spaces.`
           : base;
       };
 
@@ -1619,7 +1651,7 @@
         return valid;
       };
 
-      const validateStep2 = () => {
+      const validateStep2 = async () => {
         syncStateFromInputs();
         ["date", "guests", "seating", "time"].forEach(clearField);
         let valid = true;
@@ -1646,6 +1678,11 @@
         } else if (!timeSlots.includes(state.time)) {
           setFieldError("time", "Choose an arrival between 19:00 and 23:45.");
           valid = false;
+        }
+
+        if (state.date && state.date >= today) {
+          await ensureAvailability(state.date);
+          updateCapacityNote();
         }
 
         const issue = capacityIssue();
@@ -1687,7 +1724,7 @@
         seating_display: formatSeating(state.seating),
         requests: state.requests,
         source: "1820-static-reservation",
-        status: "saved_locally_no_backend",
+        status: "confirmed",
         created_at: new Date().toISOString()
       });
 
@@ -1724,15 +1761,31 @@
         }
 
         seatingChoices.innerHTML = "";
+        const availability = state.date ? availabilityForDate(state.date) : null;
+        const selectedGuests = Number(state.guests || 0);
+        if (availability && selectedGuests && state.seating) {
+          const selectedRemaining = state.seating === "barstand" ? availability.remaining.barstand : availability.remaining.table;
+          if (availability.remaining.total < selectedGuests || selectedRemaining < selectedGuests) {
+            state.seating = "";
+          }
+        }
         seatingOptions.forEach((option) => {
+          const seatingRemaining = availability
+            ? (option.value === "barstand" ? availability.remaining.barstand : availability.remaining.table)
+            : Infinity;
+          const unavailable = Boolean(availability && selectedGuests && (availability.remaining.total < selectedGuests || seatingRemaining < selectedGuests));
           const button = document.createElement("button");
           button.type = "button";
           button.className = "choice-button";
           button.textContent = option.label;
           button.dataset.value = option.value;
+          button.disabled = unavailable;
           button.setAttribute("aria-pressed", String(state.seating === option.value));
           button.classList.toggle("is-selected", state.seating === option.value);
           button.addEventListener("click", () => {
+            if (unavailable) {
+              return;
+            }
             state.seating = option.value;
             clearField("seating");
             renderChoices();
@@ -1784,18 +1837,25 @@
         saveDraft();
       };
 
-      const saveFinalRecord = () => {
+      const saveFinalRecord = async () => {
         const payload = buildPayload();
-        const records = JSON.parse(localStorage.getItem(recordsKey) || "[]");
-        records.push(payload);
-        localStorage.setItem(recordsKey, JSON.stringify(records));
-        localStorage.setItem(draftKey, JSON.stringify({
-          ...state,
-          last_payload: payload,
-          updated_at: new Date().toISOString()
-        }));
-        window.__reservationPayload = payload;
-        return payload;
+        const response = await fetch(`${apiBase}/api/reservations`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            accept: "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || data.ok === false) {
+          const message = data.issues?.join(" ") || data.error || "Reservation could not be saved.";
+          throw new Error(message);
+        }
+        availabilityCache.delete(state.date);
+        await ensureAvailability(state.date);
+        window.__reservationPayload = data;
+        return data;
       };
 
       const initArrival = () => {
@@ -1878,14 +1938,14 @@
         showStep(state.step - 1);
       });
 
-      nextButton.addEventListener("click", () => {
+      nextButton.addEventListener("click", async () => {
         setStatus("", "");
         if (state.step === 1 && !validateStep1()) {
           setStatus("error", "Complete the guest details before continuing.");
           return;
         }
 
-        if (state.step === 2 && !validateStep2()) {
+        if (state.step === 2 && !(await validateStep2())) {
           setStatus("error", "Complete the service details before continuing.");
           return;
         }
@@ -1893,7 +1953,7 @@
         showStep(state.step + 1);
       });
 
-      form.addEventListener("submit", (event) => {
+      form.addEventListener("submit", async (event) => {
         event.preventDefault();
         setStatus("", "");
 
@@ -1903,7 +1963,7 @@
           return;
         }
 
-        if (!validateStep2()) {
+        if (!(await validateStep2())) {
           showStep(2);
           setStatus("error", "Complete the service details before saving.");
           return;
@@ -1911,9 +1971,16 @@
 
         syncStateFromInputs();
         updateSummary();
-        saveFinalRecord();
-        setStatus("success", "Reservation saved locally for the full evening service. Backend payload is ready.");
-        showStep(3);
+        submitButton.disabled = true;
+        try {
+          await saveFinalRecord();
+          setStatus("success", "Reservation saved for the full evening service.");
+          showStep(3);
+        } catch (error) {
+          setStatus("error", error.message || "Reservation could not be saved.");
+        } finally {
+          submitButton.disabled = false;
+        }
       });
     })();
   </script>
