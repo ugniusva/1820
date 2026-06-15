@@ -1362,6 +1362,10 @@
 
       const AdminBackend = {
         mode: "Cloudflare D1",
+        demoMode: false,
+        isLocalPreview() {
+          return ["127.0.0.1", "localhost", ""].includes(window.location.hostname);
+        },
         async request(path, options = {}) {
           const response = await fetch(`${API_BASE}${path}`, {
             ...options,
@@ -1379,39 +1383,57 @@
           return data;
         },
         async load() {
-          const [reservations, customers, notes] = await Promise.all([
-            this.request("/api/admin/reservations"),
-            this.request("/api/admin/customers"),
-            this.request("/api/admin/client-notes")
-          ]);
-          return normalizeData({
-            meta: { schemaVersion: 3, updatedAt: new Date().toISOString() },
-            settings: { totalCoverLimit: TOTAL_COVER_LIMIT, tableCoverLimit: TABLE_COVER_LIMIT, barCoverLimit: BAR_LIMIT, serviceOpen: "19:00", serviceClose: "00:00" },
-            customers: customers.customers || [],
-            reservations: reservations.reservations || [],
-            notes: notes.notes || []
-          });
+          try {
+            const [reservations, customers, notes] = await Promise.all([
+              this.request("/api/admin/reservations"),
+              this.request("/api/admin/customers"),
+              this.request("/api/admin/client-notes")
+            ]);
+            this.demoMode = false;
+            return normalizeData({
+              meta: { schemaVersion: 3, updatedAt: new Date().toISOString() },
+              settings: { totalCoverLimit: TOTAL_COVER_LIMIT, tableCoverLimit: TABLE_COVER_LIMIT, barCoverLimit: BAR_LIMIT, serviceOpen: "19:00", serviceClose: "00:00" },
+              customers: customers.customers || customers.clients || [],
+              reservations: reservations.reservations || reservations.bookings || [],
+              notes: notes.notes || []
+            });
+          } catch (error) {
+            if (!this.isLocalPreview()) {
+              throw error;
+            }
+            this.demoMode = true;
+            return normalizeData(createSeedData());
+          }
         },
         async saveReservation(reservation, method = "POST") {
+          if (this.demoMode) {
+            return normalizeReservationRecord(reservation);
+          }
           const data = await this.request("/api/admin/reservations", {
             method,
-            body: JSON.stringify(reservation)
+            body: JSON.stringify(toBookingApiPayload(reservation))
           });
-          return data.reservation;
+          return normalizeReservationRecord(data.reservation || data.booking || reservation);
         },
         async saveCustomer(customer, method = "POST") {
+          if (this.demoMode) {
+            return normalizeClientRecord(customer);
+          }
           const data = await this.request("/api/admin/customers", {
             method,
-            body: JSON.stringify(customer)
+            body: JSON.stringify(toClientApiPayload(customer))
           });
-          return data.customer;
+          return normalizeClientRecord(data.customer || data.client || customer);
         },
         async saveNote(note, method = "POST") {
+          if (this.demoMode) {
+            return normalizeNoteRecord(note);
+          }
           const data = await this.request("/api/admin/client-notes", {
             method,
-            body: JSON.stringify(note)
+            body: JSON.stringify(toNoteApiPayload(note))
           });
-          return data.note;
+          return normalizeNoteRecord(data.note || note);
         }
       };
 
@@ -1479,6 +1501,146 @@
         return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
       }
 
+      function parseStoredArray(value) {
+        if (Array.isArray(value)) {
+          return value;
+        }
+        if (typeof value === "string" && value.trim()) {
+          try {
+            const parsed = JSON.parse(value);
+            if (Array.isArray(parsed)) {
+              return parsed;
+            }
+          } catch (error) {
+            return value.split(",").map((item) => item.trim()).filter(Boolean);
+          }
+        }
+        return [];
+      }
+
+      function normalizeResources(value) {
+        if (!value) {
+          return { tables: [], barSeats: [] };
+        }
+        if (typeof value === "string") {
+          try {
+            return normalizeResources(JSON.parse(value));
+          } catch (error) {
+            return { tables: [], barSeats: [] };
+          }
+        }
+        return {
+          tables: parseStoredArray(value.tables || value.assignedTables),
+          barSeats: parseStoredArray(value.barSeats || value.assignedBarSeats)
+        };
+      }
+
+      function splitFullName(name) {
+        const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+        return {
+          firstName: parts[0] || "",
+          lastName: parts.slice(1).join(" ")
+        };
+      }
+
+      function normalizeClientRecord(client) {
+        const fullName = client.name || client.fullName || client.full_name || `${client.first_name || ""} ${client.last_name || ""}`.trim();
+        return {
+          ...client,
+          id: client.id,
+          name: fullName,
+          email: client.email || "",
+          phone: client.phone || client.phoneFull || client.phone_full || "",
+          tags: parseStoredArray(client.tags),
+          profileNote: client.profileNote || client.profile_note || "",
+          createdAt: client.createdAt || client.created_at || new Date().toISOString(),
+          updatedAt: client.updatedAt || client.updated_at || new Date().toISOString()
+        };
+      }
+
+      function normalizeReservationRecord(reservation) {
+        const resources = normalizeResources(reservation.resources);
+        return {
+          ...reservation,
+          id: reservation.id,
+          customerId: reservation.customerId || reservation.clientId || reservation.client_id || "",
+          date: reservation.date || reservation.booking_date || state.selectedDate || todayIso(),
+          time: reservation.time || reservation.booking_time || "19:00",
+          durationMinutes: 0,
+          guests: Number(reservation.guests || 1),
+          seatingType: reservation.seatingType || reservation.seating_type || "table",
+          assignedTables: parseStoredArray(reservation.assignedTables).length ? parseStoredArray(reservation.assignedTables) : resources.tables,
+          assignedBarSeats: parseStoredArray(reservation.assignedBarSeats).length ? parseStoredArray(reservation.assignedBarSeats) : resources.barSeats,
+          status: reservation.status || "confirmed",
+          server: reservation.server || "Admin",
+          source: reservation.source || "admin",
+          requests: reservation.requests || "",
+          internalNote: reservation.internalNote || reservation.internal_note || "",
+          createdAt: reservation.createdAt || reservation.created_at || new Date().toISOString(),
+          updatedAt: reservation.updatedAt || reservation.updated_at || new Date().toISOString()
+        };
+      }
+
+      function normalizeNoteRecord(note) {
+        return {
+          ...note,
+          customerId: note.customerId || note.clientId || note.client_id || "",
+          author: note.author || "Admin",
+          text: note.text || "",
+          createdAt: note.createdAt || note.created_at || new Date().toISOString()
+        };
+      }
+
+      function toClientApiPayload(customer) {
+        const split = splitFullName(customer.name);
+        return {
+          id: customer.id,
+          first_name: customer.firstName || customer.first_name || split.firstName,
+          last_name: customer.lastName || customer.last_name || split.lastName,
+          full_name: customer.fullName || customer.full_name || customer.name || "",
+          email: customer.email || "",
+          phone_country_iso: customer.phoneCountryIso || customer.phone_country_iso || "",
+          phone_country_code: customer.phoneCountryCode || customer.phone_country_code || "",
+          phone_local: customer.phoneLocal || customer.phone_local || String(customer.phone || "").replace(/[^\d]/g, ""),
+          phone_full: customer.phoneFull || customer.phone_full || customer.phone || "",
+          tags: parseStoredArray(customer.tags),
+          profile_note: customer.profileNote || customer.profile_note || "",
+          created_at: customer.createdAt || customer.created_at,
+          updated_at: new Date().toISOString()
+        };
+      }
+
+      function toBookingApiPayload(reservation) {
+        return {
+          id: reservation.id,
+          client_id: reservation.clientId || reservation.customerId || "",
+          booking_date: reservation.date,
+          booking_time: reservation.time,
+          guests: Number(reservation.guests || 1),
+          seating_type: reservation.seatingType || "table",
+          status: reservation.status || "confirmed",
+          source: reservation.source || "admin",
+          requests: reservation.requests || "",
+          internal_note: reservation.internalNote || "",
+          resources: {
+            tables: parseStoredArray(reservation.assignedTables),
+            barSeats: parseStoredArray(reservation.assignedBarSeats)
+          },
+          created_at: reservation.createdAt,
+          updated_at: new Date().toISOString()
+        };
+      }
+
+      function toNoteApiPayload(note) {
+        return {
+          id: note.id,
+          client_id: note.clientId || note.customerId || "",
+          author: note.author || "Admin",
+          text: note.text || "",
+          created_at: note.createdAt || new Date().toISOString()
+        };
+      }
+
       function normalizeData(data) {
         const base = {
           meta: { schemaVersion: 2, updatedAt: new Date().toISOString() },
@@ -1490,11 +1652,9 @@
         const next = { ...base, ...data };
         next.meta = { ...base.meta, ...(data.meta || {}) };
         next.settings = { ...base.settings, ...(data.settings || {}) };
-        next.customers = Array.isArray(data.customers) ? data.customers : [];
-        next.reservations = Array.isArray(data.reservations)
-          ? data.reservations.map((reservation) => ({ ...reservation, durationMinutes: 0 }))
-          : [];
-        next.notes = Array.isArray(data.notes) ? data.notes : [];
+        next.customers = (Array.isArray(data.customers) ? data.customers : data.clients || []).map(normalizeClientRecord);
+        next.reservations = (Array.isArray(data.reservations) ? data.reservations : data.bookings || []).map(normalizeReservationRecord);
+        next.notes = (Array.isArray(data.notes) ? data.notes : []).map(normalizeNoteRecord);
         return next;
       }
 
@@ -2517,6 +2677,9 @@
         });
 
         renderAll();
+        if (AdminBackend.demoMode) {
+          showMessage("Local preview: demo data only. D1 connects on Cloudflare Pages.", true);
+        }
       }
 
       init().catch((error) => {

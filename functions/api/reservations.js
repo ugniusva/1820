@@ -1,19 +1,19 @@
 import {
+  bookingFromPayload,
   capacityForDate,
-  customerFromPayload,
+  clientFromPayload,
   ensureBookingsSchema,
   ensureClientsSchema,
   error,
-  findCustomerByContact,
-  getReservationById,
+  findClientByContact,
+  getBookingById,
   json,
   readBody,
   requireBinding,
-  reservationFromPayload,
   uid,
-  upsertCustomer,
-  upsertReservation,
-  validateReservationCapacity
+  upsertBooking,
+  upsertClient,
+  validateBookingCapacity
 } from "../_lib/d1.js";
 
 export async function onRequestGet(context) {
@@ -26,9 +26,9 @@ export async function onRequestGet(context) {
     const bookingDate = url.searchParams.get("booking_date") || url.searchParams.get("date");
 
     if (id) {
-      const reservation = await getReservationById(db, id);
-      if (!reservation) return error("Reservation not found.", 404);
-      return json({ ok: true, reservation });
+      const booking = await getBookingById(db, id);
+      if (!booking) return error("Reservation not found.", 404);
+      return json({ ok: true, reservation: booking, booking });
     }
 
     if (bookingDate) {
@@ -56,24 +56,16 @@ export async function onRequestPost(context) {
       status: "confirmed"
     };
 
-    const marker = [
-      payload.email || "",
-      payload.booking_date || payload.date || "",
-      payload.booking_time || payload.time || "",
-      payload.created_at || ""
-    ].join("|");
+    let client = await findClientByContact(clientsDb, payload.email, payload.phone_full || payload.phone);
+    client = clientFromPayload(payload, client || {});
 
-    let customer = await findCustomerByContact(clientsDb, payload.email, payload.phone);
-    customer = customerFromPayload(payload, customer || {});
-
-    const reservationDraft = reservationFromPayload({
+    const bookingDraft = bookingFromPayload({
       ...publicPayload,
       id: payload.id || uid("r"),
-      customerId: customer.id,
-      publicMarker: marker
+      client_id: client.id
     });
 
-    const capacity = await validateReservationCapacity(bookingsDb, reservationDraft, reservationDraft.id);
+    const capacity = await validateBookingCapacity(bookingsDb, bookingDraft, bookingDraft.id);
     if (!capacity.ok) {
       return error("Reservation capacity exceeded.", 409, {
         issues: capacity.issues,
@@ -81,13 +73,11 @@ export async function onRequestPost(context) {
       });
     }
 
-    await upsertCustomer(clientsDb, customer);
+    await upsertClient(clientsDb, client);
+    await upsertBooking(bookingsDb, bookingDraft);
 
-    const reservation = reservationDraft;
-    await upsertReservation(bookingsDb, reservation);
-
-    const availability = await capacityForDate(bookingsDb, reservation.date);
-    return json({ ok: true, customer, reservation, availability }, { status: 201 });
+    const availability = await capacityForDate(bookingsDb, bookingDraft.date);
+    return json({ ok: true, client, reservation: bookingDraft, booking: bookingDraft, availability }, { status: 201 });
   } catch (cause) {
     return error(cause.message || "Reservation save failed.", 500);
   }
@@ -103,11 +93,11 @@ export async function onRequestPut(context) {
     const id = payload.id || url.searchParams.get("id");
     if (!id) return error("id is required.", 400);
 
-    const existing = await getReservationById(db, id);
+    const existing = await getBookingById(db, id);
     if (!existing) return error("Reservation not found.", 404);
 
-    const reservation = reservationFromPayload({ ...payload, id }, existing);
-    const capacity = await validateReservationCapacity(db, reservation, reservation.id);
+    const booking = bookingFromPayload({ ...payload, id }, existing);
+    const capacity = await validateBookingCapacity(db, booking, booking.id);
     if (!capacity.ok) {
       return error("Reservation capacity exceeded.", 409, {
         issues: capacity.issues,
@@ -115,9 +105,9 @@ export async function onRequestPut(context) {
       });
     }
 
-    await upsertReservation(db, reservation);
-    const availability = await capacityForDate(db, reservation.date);
-    return json({ ok: true, reservation, availability });
+    await upsertBooking(db, booking);
+    const availability = await capacityForDate(db, booking.date);
+    return json({ ok: true, reservation: booking, booking, availability });
   } catch (cause) {
     return error(cause.message || "Reservation update failed.", 500);
   }

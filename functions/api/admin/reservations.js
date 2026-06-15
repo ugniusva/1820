@@ -1,15 +1,15 @@
 import {
+  bookingFromPayload,
   capacityForDate,
   ensureBookingsSchema,
   error,
-  getReservationById,
+  getBookingById,
   json,
   readBody,
   requireBinding,
-  reservationFromPayload,
-  rowToReservation,
-  upsertReservation,
-  validateReservationCapacity
+  rowToBooking,
+  upsertBooking,
+  validateBookingCapacity
 } from "../../_lib/d1.js";
 
 export async function onRequestGet(context) {
@@ -20,14 +20,14 @@ export async function onRequestGet(context) {
     const url = new URL(context.request.url);
     const id = url.searchParams.get("id");
     if (id) {
-      const reservation = await getReservationById(db, id);
-      if (!reservation) return error("Reservation not found.", 404);
-      return json({ ok: true, reservation });
+      const booking = await getBookingById(db, id);
+      if (!booking) return error("Reservation not found.", 404);
+      return json({ ok: true, reservation: booking, booking });
     }
 
     const bookingDate = url.searchParams.get("booking_date") || url.searchParams.get("date");
     const status = url.searchParams.get("status");
-    const customerId = url.searchParams.get("customer_id") || url.searchParams.get("customerId");
+    const clientId = url.searchParams.get("client_id") || url.searchParams.get("clientId");
     const search = String(url.searchParams.get("search") || "").trim().toLowerCase();
 
     const filters = [];
@@ -40,26 +40,28 @@ export async function onRequestGet(context) {
       filters.push("status = ?");
       values.push(status);
     }
-    if (customerId) {
-      filters.push("customer_id = ?");
-      values.push(customerId);
+    if (clientId) {
+      filters.push("client_id = ?");
+      values.push(clientId);
     }
     if (search) {
-      filters.push("(lower(requests) LIKE ? OR lower(internal_note) LIKE ? OR lower(source) LIKE ? OR lower(server) LIKE ?)");
+      filters.push("(lower(requests) LIKE ? OR lower(internal_note) LIKE ? OR lower(source) LIKE ? OR lower(resources) LIKE ?)");
       values.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
     }
 
     const where = filters.length ? `WHERE ${filters.join(" AND ")}` : "";
     const statement = db.prepare(`
-      SELECT * FROM reservations
+      SELECT * FROM bookings
       ${where}
       ORDER BY booking_date DESC, booking_time ASC, created_at DESC
     `);
     const rows = values.length ? await statement.bind(...values).all() : await statement.all();
+    const bookings = (rows.results || []).map(rowToBooking);
 
     return json({
       ok: true,
-      reservations: (rows.results || []).map(rowToReservation)
+      reservations: bookings,
+      bookings
     });
   } catch (cause) {
     return error(cause.message || "Reservation list failed.", 500);
@@ -72,8 +74,8 @@ export async function onRequestPost(context) {
     await ensureBookingsSchema(db);
 
     const payload = await readBody(context);
-    const reservation = reservationFromPayload(payload);
-    const capacity = await validateReservationCapacity(db, reservation, reservation.id);
+    const booking = bookingFromPayload(payload);
+    const capacity = await validateBookingCapacity(db, booking, booking.id);
     if (!capacity.ok) {
       return error("Reservation capacity exceeded.", 409, {
         issues: capacity.issues,
@@ -81,9 +83,9 @@ export async function onRequestPost(context) {
       });
     }
 
-    await upsertReservation(db, reservation);
-    const availability = await capacityForDate(db, reservation.date);
-    return json({ ok: true, reservation, availability }, { status: 201 });
+    await upsertBooking(db, booking);
+    const availability = await capacityForDate(db, booking.date);
+    return json({ ok: true, reservation: booking, booking, availability }, { status: 201 });
   } catch (cause) {
     return error(cause.message || "Reservation save failed.", 500);
   }
@@ -99,11 +101,11 @@ export async function onRequestPut(context) {
     const id = payload.id || url.searchParams.get("id");
     if (!id) return error("id is required.", 400);
 
-    const existing = await getReservationById(db, id);
+    const existing = await getBookingById(db, id);
     if (!existing) return error("Reservation not found.", 404);
 
-    const reservation = reservationFromPayload({ ...payload, id }, existing);
-    const capacity = await validateReservationCapacity(db, reservation, reservation.id);
+    const booking = bookingFromPayload({ ...payload, id }, existing);
+    const capacity = await validateBookingCapacity(db, booking, booking.id);
     if (!capacity.ok) {
       return error("Reservation capacity exceeded.", 409, {
         issues: capacity.issues,
@@ -111,9 +113,9 @@ export async function onRequestPut(context) {
       });
     }
 
-    await upsertReservation(db, reservation);
-    const availability = await capacityForDate(db, reservation.date);
-    return json({ ok: true, reservation, availability });
+    await upsertBooking(db, booking);
+    const availability = await capacityForDate(db, booking.date);
+    return json({ ok: true, reservation: booking, booking, availability });
   } catch (cause) {
     return error(cause.message || "Reservation update failed.", 500);
   }

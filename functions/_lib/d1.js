@@ -61,6 +61,10 @@ export function asArray(value) {
     return value;
   }
   if (typeof value === "string" && value.trim()) {
+    const parsed = parseJson(value, null);
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
     return value.split(",").map((item) => item.trim()).filter(Boolean);
   }
   return [];
@@ -85,104 +89,79 @@ export function normalizeDate(value) {
 }
 
 export async function ensureClientsSchema(db) {
-  await db.prepare(`
-    CREATE TABLE IF NOT EXISTS customers (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL DEFAULT '',
-      email TEXT NOT NULL DEFAULT '',
-      phone TEXT NOT NULL DEFAULT '',
-      tags_json TEXT NOT NULL DEFAULT '[]',
-      profile_note TEXT NOT NULL DEFAULT '',
-      payload_json TEXT NOT NULL DEFAULT '{}',
-      created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL
-    )
-  `).run();
-  await db.prepare("CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(email)").run();
-  await db.prepare("CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(phone)").run();
-
-  await db.prepare(`
-    CREATE TABLE IF NOT EXISTS client_notes (
-      id TEXT PRIMARY KEY,
-      customer_id TEXT NOT NULL,
-      author TEXT NOT NULL DEFAULT 'Admin',
-      text TEXT NOT NULL DEFAULT '',
-      created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL
-    )
-  `).run();
-  await db.prepare("CREATE INDEX IF NOT EXISTS idx_client_notes_customer ON client_notes(customer_id)").run();
+  return db;
 }
 
 export async function ensureBookingsSchema(db) {
-  await db.prepare(`
-    CREATE TABLE IF NOT EXISTS reservations (
-      id TEXT PRIMARY KEY,
-      public_marker TEXT,
-      customer_id TEXT NOT NULL,
-      booking_date TEXT NOT NULL,
-      booking_time TEXT NOT NULL,
-      duration_minutes INTEGER NOT NULL DEFAULT 0,
-      guests INTEGER NOT NULL,
-      seating_type TEXT NOT NULL,
-      assigned_tables_json TEXT NOT NULL DEFAULT '[]',
-      assigned_bar_seats_json TEXT NOT NULL DEFAULT '[]',
-      status TEXT NOT NULL DEFAULT 'confirmed',
-      server TEXT NOT NULL DEFAULT 'Admin',
-      source TEXT NOT NULL DEFAULT 'website',
-      requests TEXT NOT NULL DEFAULT '',
-      internal_note TEXT NOT NULL DEFAULT '',
-      payload_json TEXT NOT NULL DEFAULT '{}',
-      created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL
-    )
-  `).run();
-  await db.prepare("CREATE INDEX IF NOT EXISTS idx_reservations_date ON reservations(booking_date)").run();
-  await db.prepare("CREATE INDEX IF NOT EXISTS idx_reservations_customer ON reservations(customer_id)").run();
-  await db.prepare("CREATE INDEX IF NOT EXISTS idx_reservations_status ON reservations(status)").run();
+  return db;
 }
 
-export function customerFromPayload(payload, existing = {}) {
-  const timestamp = nowIso();
-  const name = String(
-    payload.name
-    || `${payload.first_name || ""} ${payload.last_name || ""}`.trim()
+function splitName(payload, existing = {}) {
+  const sourceName = String(
+    payload.full_name
+    || payload.fullName
+    || payload.name
+    || existing.full_name
+    || existing.fullName
     || existing.name
-    || "Website guest"
+    || ""
   ).trim();
+  const firstFromName = sourceName.split(/\s+/)[0] || "";
+  const lastFromName = sourceName.split(/\s+/).slice(1).join(" ");
+  const firstName = String(payload.first_name || payload.firstName || existing.first_name || existing.firstName || firstFromName || "").trim();
+  const lastName = String(payload.last_name || payload.lastName || existing.last_name || existing.lastName || lastFromName || "").trim();
+  const fullName = String(sourceName || `${firstName} ${lastName}`.trim() || "Website guest").trim();
+  return { firstName, lastName, fullName };
+}
+
+function normalizeResources(payload, existing = {}) {
+  const value = payload.resources ?? existing.resources ?? null;
+  const parsed = typeof value === "string" ? parseJson(value, {}) : (value || {});
   return {
-    id: String(payload.id || payload.customerId || payload.customer_id || existing.id || uid("c")),
-    name,
+    tables: asArray(parsed.tables ?? parsed.assignedTables ?? payload.assignedTables ?? existing.assignedTables ?? []),
+    barSeats: asArray(parsed.barSeats ?? parsed.assignedBarSeats ?? payload.assignedBarSeats ?? existing.assignedBarSeats ?? [])
+  };
+}
+
+export function clientFromPayload(payload, existing = {}) {
+  const timestamp = nowIso();
+  const name = splitName(payload, existing);
+  const phoneFull = String(payload.phone_full || payload.phoneFull || payload.phone || existing.phone_full || existing.phoneFull || existing.phone || "").trim();
+  const phoneCountryCode = String(payload.phone_country_code || payload.phoneCountryCode || existing.phone_country_code || existing.phoneCountryCode || "").trim();
+  const phoneLocal = String(payload.phone_local || payload.phoneLocal || existing.phone_local || existing.phoneLocal || phoneFull.replace(/[^\d]/g, "")).trim();
+  return {
+    id: String(payload.id || existing.id || uid("c")),
+    firstName: name.firstName,
+    lastName: name.lastName,
+    fullName: name.fullName,
     email: String(payload.email ?? existing.email ?? "").trim(),
-    phone: String(payload.phone ?? existing.phone ?? "").trim(),
-    tags: asArray(payload.tags ?? payload.tags_json ?? existing.tags ?? []),
-    profileNote: String(payload.profileNote ?? payload.profile_note ?? existing.profileNote ?? "").trim(),
-    payloadJson: JSON.stringify(payload || {}),
+    phoneCountryIso: String(payload.phone_country_iso || payload.phoneCountryIso || existing.phone_country_iso || existing.phoneCountryIso || "").trim(),
+    phoneCountryCode,
+    phoneLocal,
+    phoneFull,
+    tags: asArray(payload.tags ?? existing.tags ?? []),
+    profileNote: String(payload.profile_note ?? payload.profileNote ?? existing.profile_note ?? existing.profileNote ?? "").trim(),
     createdAt: existing.createdAt || existing.created_at || payload.createdAt || payload.created_at || timestamp,
     updatedAt: timestamp
   };
 }
 
-export function reservationFromPayload(payload, existing = {}) {
+export function bookingFromPayload(payload, existing = {}) {
   const timestamp = nowIso();
-  const seatingType = String(payload.seatingType || payload.seating_type || existing.seatingType || existing.seating_type || "table").trim();
+  const seatingType = String(payload.seating_type || payload.seatingType || existing.seating_type || existing.seatingType || "table").trim();
+  const resources = normalizeResources(payload, existing);
   return {
     id: String(payload.id || existing.id || uid("r")),
-    publicMarker: String(payload.publicMarker || payload.public_marker || existing.publicMarker || existing.public_marker || ""),
-    customerId: String(payload.customerId || payload.customer_id || existing.customerId || existing.customer_id || ""),
-    date: normalizeDate(payload.date || payload.booking_date || existing.date || existing.booking_date),
-    time: normalizeArrivalTime(payload.time || payload.booking_time || existing.time || existing.booking_time),
-    durationMinutes: 0,
+    clientId: String(payload.client_id || payload.clientId || existing.client_id || existing.clientId || ""),
+    date: normalizeDate(payload.booking_date || payload.date || existing.booking_date || existing.date),
+    time: normalizeArrivalTime(payload.booking_time || payload.time || existing.booking_time || existing.time),
     guests: Number(payload.guests ?? existing.guests ?? 1),
     seatingType: seatingType === "barstand" ? "barstand" : "table",
-    assignedTables: asArray(payload.assignedTables ?? payload.assigned_tables ?? existing.assignedTables ?? []),
-    assignedBarSeats: asArray(payload.assignedBarSeats ?? payload.assigned_bar_seats ?? existing.assignedBarSeats ?? []),
     status: normalizeStatus(payload.status || existing.status || "confirmed"),
-    server: String(payload.server || existing.server || "Admin"),
     source: String(payload.source || existing.source || "admin"),
     requests: String(payload.requests ?? existing.requests ?? ""),
-    internalNote: String(payload.internalNote ?? payload.internal_note ?? existing.internalNote ?? ""),
-    payloadJson: JSON.stringify(payload || {}),
+    internalNote: String(payload.internal_note ?? payload.internalNote ?? existing.internal_note ?? existing.internalNote ?? ""),
+    resources,
     createdAt: existing.createdAt || existing.created_at || payload.createdAt || payload.created_at || timestamp,
     updatedAt: timestamp
   };
@@ -192,186 +171,232 @@ export function noteFromPayload(payload, existing = {}) {
   const timestamp = nowIso();
   return {
     id: String(payload.id || existing.id || uid("n")),
-    customerId: String(payload.customerId || payload.customer_id || existing.customerId || existing.customer_id || ""),
+    clientId: String(payload.client_id || payload.clientId || existing.client_id || existing.clientId || ""),
     author: String(payload.author || existing.author || "Admin"),
     text: String(payload.text ?? existing.text ?? "").trim(),
-    createdAt: existing.createdAt || existing.created_at || payload.createdAt || payload.created_at || timestamp,
-    updatedAt: timestamp
+    createdAt: existing.createdAt || existing.created_at || payload.createdAt || payload.created_at || timestamp
   };
 }
 
-export function rowToCustomer(row) {
+export function rowToClient(row) {
+  const tags = asArray(row.tags);
+  const fullName = row.full_name || `${row.first_name || ""} ${row.last_name || ""}`.trim();
   return {
     id: row.id,
-    name: row.name,
-    email: row.email,
-    phone: row.phone,
-    tags: parseJson(row.tags_json, []),
-    profileNote: row.profile_note,
+    firstName: row.first_name || "",
+    lastName: row.last_name || "",
+    fullName,
+    name: fullName,
+    email: row.email || "",
+    phoneCountryIso: row.phone_country_iso || "",
+    phoneCountryCode: row.phone_country_code || "",
+    phoneLocal: row.phone_local || "",
+    phoneFull: row.phone_full || "",
+    phone: row.phone_full || "",
+    tags,
+    profileNote: row.profile_note || "",
     createdAt: row.created_at,
-    updatedAt: row.updated_at
+    updatedAt: row.updated_at,
+    first_name: row.first_name || "",
+    last_name: row.last_name || "",
+    full_name: fullName,
+    phone_country_iso: row.phone_country_iso || "",
+    phone_country_code: row.phone_country_code || "",
+    phone_local: row.phone_local || "",
+    phone_full: row.phone_full || "",
+    profile_note: row.profile_note || ""
   };
 }
 
-export function rowToReservation(row) {
+export function rowToBooking(row) {
+  const resources = normalizeResources({ resources: row.resources });
   return {
     id: row.id,
-    publicMarker: row.public_marker || "",
-    customerId: row.customer_id,
+    clientId: row.client_id,
     date: row.booking_date,
     time: row.booking_time,
-    durationMinutes: Number(row.duration_minutes || 0),
+    durationMinutes: 0,
     guests: Number(row.guests || 0),
     seatingType: row.seating_type,
-    assignedTables: parseJson(row.assigned_tables_json, []),
-    assignedBarSeats: parseJson(row.assigned_bar_seats_json, []),
+    assignedTables: resources.tables,
+    assignedBarSeats: resources.barSeats,
     status: row.status,
-    server: row.server,
+    server: "Admin",
     source: row.source,
     requests: row.requests,
     internalNote: row.internal_note,
+    resources,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+    client_id: row.client_id,
     booking_date: row.booking_date,
     booking_time: row.booking_time,
-    seating_type: row.seating_type
+    seating_type: row.seating_type,
+    internal_note: row.internal_note
   };
 }
 
 export function rowToNote(row) {
   return {
     id: row.id,
-    customerId: row.customer_id,
-    customer_id: row.customer_id,
+    clientId: row.client_id,
+    client_id: row.client_id,
     author: row.author,
     text: row.text,
     createdAt: row.created_at,
-    updatedAt: row.updated_at
+    created_at: row.created_at
   };
 }
 
-export async function findCustomerByContact(db, email, phone) {
+export async function findClientByContact(db, email, phoneFull) {
   const cleanEmail = String(email || "").trim();
-  const cleanPhone = String(phone || "").trim();
+  const cleanPhone = String(phoneFull || "").trim();
   if (cleanEmail) {
-    const row = await db.prepare("SELECT * FROM customers WHERE lower(email) = lower(?) LIMIT 1").bind(cleanEmail).first();
-    if (row) return rowToCustomer(row);
+    const row = await db.prepare("SELECT * FROM clients WHERE lower(email) = lower(?) LIMIT 1").bind(cleanEmail).first();
+    if (row) return rowToClient(row);
   }
   if (cleanPhone) {
-    const row = await db.prepare("SELECT * FROM customers WHERE phone = ? LIMIT 1").bind(cleanPhone).first();
-    if (row) return rowToCustomer(row);
+    const row = await db.prepare("SELECT * FROM clients WHERE phone_full = ? LIMIT 1").bind(cleanPhone).first();
+    if (row) return rowToClient(row);
   }
   return null;
 }
 
-export async function getCustomerById(db, id) {
-  const row = await db.prepare("SELECT * FROM customers WHERE id = ? LIMIT 1").bind(id).first();
-  return row ? rowToCustomer(row) : null;
+export async function getClientById(db, id) {
+  const row = await db.prepare("SELECT * FROM clients WHERE id = ? LIMIT 1").bind(id).first();
+  return row ? rowToClient(row) : null;
 }
 
-export async function getReservationById(db, id) {
-  const row = await db.prepare("SELECT * FROM reservations WHERE id = ? LIMIT 1").bind(id).first();
-  return row ? rowToReservation(row) : null;
+export async function getBookingById(db, id) {
+  const row = await db.prepare("SELECT * FROM bookings WHERE id = ? LIMIT 1").bind(id).first();
+  return row ? rowToBooking(row) : null;
 }
 
-export async function upsertCustomer(db, customer) {
+export async function upsertClient(db, client) {
   await db.prepare(`
-    INSERT INTO customers (id, name, email, phone, tags_json, profile_note, payload_json, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO clients (
+      id,
+      first_name,
+      last_name,
+      full_name,
+      email,
+      phone_country_iso,
+      phone_country_code,
+      phone_local,
+      phone_full,
+      tags,
+      profile_note,
+      created_at,
+      updated_at
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(id) DO UPDATE SET
-      name = excluded.name,
+      first_name = excluded.first_name,
+      last_name = excluded.last_name,
+      full_name = excluded.full_name,
       email = excluded.email,
-      phone = excluded.phone,
-      tags_json = excluded.tags_json,
+      phone_country_iso = excluded.phone_country_iso,
+      phone_country_code = excluded.phone_country_code,
+      phone_local = excluded.phone_local,
+      phone_full = excluded.phone_full,
+      tags = excluded.tags,
       profile_note = excluded.profile_note,
-      payload_json = excluded.payload_json,
       updated_at = excluded.updated_at
   `).bind(
-    customer.id,
-    customer.name,
-    customer.email,
-    customer.phone,
-    JSON.stringify(customer.tags || []),
-    customer.profileNote || "",
-    customer.payloadJson || "{}",
-    customer.createdAt,
-    customer.updatedAt
+    client.id,
+    client.firstName,
+    client.lastName,
+    client.fullName,
+    client.email,
+    client.phoneCountryIso,
+    client.phoneCountryCode,
+    client.phoneLocal,
+    client.phoneFull,
+    JSON.stringify(client.tags || []),
+    client.profileNote || "",
+    client.createdAt,
+    client.updatedAt
   ).run();
-  return customer;
+  return client;
 }
 
-export async function upsertReservation(db, reservation) {
+export async function upsertBooking(db, booking) {
   await db.prepare(`
-    INSERT INTO reservations (
-      id, public_marker, customer_id, booking_date, booking_time, duration_minutes, guests,
-      seating_type, assigned_tables_json, assigned_bar_seats_json, status, server, source,
-      requests, internal_note, payload_json, created_at, updated_at
+    INSERT INTO bookings (
+      id,
+      client_id,
+      booking_date,
+      booking_time,
+      guests,
+      seating_type,
+      status,
+      source,
+      requests,
+      internal_note,
+      resources,
+      created_at,
+      updated_at
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(id) DO UPDATE SET
-      public_marker = excluded.public_marker,
-      customer_id = excluded.customer_id,
+      client_id = excluded.client_id,
       booking_date = excluded.booking_date,
       booking_time = excluded.booking_time,
-      duration_minutes = excluded.duration_minutes,
       guests = excluded.guests,
       seating_type = excluded.seating_type,
-      assigned_tables_json = excluded.assigned_tables_json,
-      assigned_bar_seats_json = excluded.assigned_bar_seats_json,
       status = excluded.status,
-      server = excluded.server,
       source = excluded.source,
       requests = excluded.requests,
       internal_note = excluded.internal_note,
-      payload_json = excluded.payload_json,
+      resources = excluded.resources,
       updated_at = excluded.updated_at
   `).bind(
-    reservation.id,
-    reservation.publicMarker,
-    reservation.customerId,
-    reservation.date,
-    reservation.time,
-    reservation.durationMinutes,
-    reservation.guests,
-    reservation.seatingType,
-    JSON.stringify(reservation.assignedTables || []),
-    JSON.stringify(reservation.assignedBarSeats || []),
-    reservation.status,
-    reservation.server,
-    reservation.source,
-    reservation.requests,
-    reservation.internalNote,
-    reservation.payloadJson || "{}",
-    reservation.createdAt,
-    reservation.updatedAt
+    booking.id,
+    booking.clientId,
+    booking.date,
+    booking.time,
+    booking.guests,
+    booking.seatingType,
+    booking.status,
+    booking.source,
+    booking.requests,
+    booking.internalNote,
+    JSON.stringify(booking.resources || { tables: [], barSeats: [] }),
+    booking.createdAt,
+    booking.updatedAt
   ).run();
-  return reservation;
+  return booking;
 }
 
 export async function upsertNote(db, note) {
   await db.prepare(`
-    INSERT INTO client_notes (id, customer_id, author, text, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO client_notes (
+      id,
+      client_id,
+      author,
+      text,
+      created_at
+    )
+    VALUES (?, ?, ?, ?, ?)
     ON CONFLICT(id) DO UPDATE SET
-      customer_id = excluded.customer_id,
+      client_id = excluded.client_id,
       author = excluded.author,
-      text = excluded.text,
-      updated_at = excluded.updated_at
-  `).bind(note.id, note.customerId, note.author, note.text, note.createdAt, note.updatedAt).run();
+      text = excluded.text
+  `).bind(note.id, note.clientId, note.author, note.text, note.createdAt).run();
   return note;
 }
 
-export async function capacityForDate(db, bookingDate, ignoreReservationId = "") {
+export async function capacityForDate(db, bookingDate, ignoreBookingId = "") {
   const row = await db.prepare(`
     SELECT
       COALESCE(SUM(guests), 0) AS total_guests,
       COALESCE(SUM(CASE WHEN seating_type = 'table' THEN guests ELSE 0 END), 0) AS table_guests,
       COALESCE(SUM(CASE WHEN seating_type = 'barstand' THEN guests ELSE 0 END), 0) AS barstand_guests
-    FROM reservations
+    FROM bookings
     WHERE booking_date = ?
       AND id != ?
       AND lower(COALESCE(status, '')) NOT IN ('cancelled', 'no_show')
-  `).bind(bookingDate, ignoreReservationId || "").first();
+  `).bind(bookingDate, ignoreBookingId || "").first();
   const used = {
     total: Number(row?.total_guests || 0),
     table: Number(row?.table_guests || 0),
@@ -389,24 +414,24 @@ export async function capacityForDate(db, bookingDate, ignoreReservationId = "")
   };
 }
 
-export async function validateReservationCapacity(db, reservation, ignoreReservationId = "") {
+export async function validateBookingCapacity(db, booking, ignoreBookingId = "") {
   const issues = [];
-  if (!reservation.customerId) issues.push("customer_id is required.");
-  if (!reservation.date) issues.push("booking_date is required.");
-  if (!Number.isInteger(reservation.guests) || reservation.guests < 1) issues.push("guests must be a positive integer.");
-  if (!["table", "barstand"].includes(reservation.seatingType)) issues.push("seating_type must be table or barstand.");
-  if (issues.length || !countsForCapacity(reservation.status)) {
-    return { ok: issues.length === 0, issues, availability: reservation.date ? await capacityForDate(db, reservation.date, ignoreReservationId) : null };
+  if (!booking.clientId) issues.push("client_id is required.");
+  if (!booking.date) issues.push("booking_date is required.");
+  if (!Number.isInteger(booking.guests) || booking.guests < 1) issues.push("guests must be a positive integer.");
+  if (!["table", "barstand"].includes(booking.seatingType)) issues.push("seating_type must be table or barstand.");
+  if (issues.length || !countsForCapacity(booking.status)) {
+    return { ok: issues.length === 0, issues, availability: booking.date ? await capacityForDate(db, booking.date, ignoreBookingId) : null };
   }
 
-  const availability = await capacityForDate(db, reservation.date, ignoreReservationId);
-  const nextTotal = availability.used.total + reservation.guests;
-  const nextTable = availability.used.table + (reservation.seatingType === "table" ? reservation.guests : 0);
-  const nextBarstand = availability.used.barstand + (reservation.seatingType === "barstand" ? reservation.guests : 0);
+  const availability = await capacityForDate(db, booking.date, ignoreBookingId);
+  const nextTotal = availability.used.total + booking.guests;
+  const nextTable = availability.used.table + (booking.seatingType === "table" ? booking.guests : 0);
+  const nextBarstand = availability.used.barstand + (booking.seatingType === "barstand" ? booking.guests : 0);
 
-  if (nextTotal > LIMITS.total) issues.push(`24 total guests exceeded for ${reservation.date}.`);
-  if (nextTable > LIMITS.table) issues.push(`12 table guests exceeded for ${reservation.date}.`);
-  if (nextBarstand > LIMITS.barstand) issues.push(`12 barstand guests exceeded for ${reservation.date}.`);
+  if (nextTotal > LIMITS.total) issues.push(`24 total guests exceeded for ${booking.date}.`);
+  if (nextTable > LIMITS.table) issues.push(`12 table guests exceeded for ${booking.date}.`);
+  if (nextBarstand > LIMITS.barstand) issues.push(`12 barstand guests exceeded for ${booking.date}.`);
 
   return { ok: issues.length === 0, issues, availability };
 }

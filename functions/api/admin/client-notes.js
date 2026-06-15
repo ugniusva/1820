@@ -27,9 +27,9 @@ export async function onRequestGet(context) {
       return json({ ok: true, note });
     }
 
-    const customerId = url.searchParams.get("customer_id") || url.searchParams.get("customerId");
-    const rows = customerId
-      ? await db.prepare("SELECT * FROM client_notes WHERE customer_id = ? ORDER BY created_at DESC").bind(customerId).all()
+    const clientId = url.searchParams.get("client_id") || url.searchParams.get("clientId");
+    const rows = clientId
+      ? await db.prepare("SELECT * FROM client_notes WHERE client_id = ? ORDER BY created_at DESC").bind(clientId).all()
       : await db.prepare("SELECT * FROM client_notes ORDER BY created_at DESC").all();
 
     return json({
@@ -48,7 +48,7 @@ export async function onRequestPost(context) {
 
     const payload = await readBody(context);
     const note = noteFromPayload(payload);
-    if (!note.customerId) return error("customer_id is required.", 400);
+    if (!note.clientId) return error("client_id is required.", 400);
     if (!note.text) return error("text is required.", 400);
 
     await upsertNote(db, note);
@@ -72,7 +72,7 @@ export async function onRequestPut(context) {
     if (!existing) return error("Client note not found.", 404);
 
     const note = noteFromPayload({ ...payload, id }, existing);
-    if (!note.customerId) return error("customer_id is required.", 400);
+    if (!note.clientId) return error("client_id is required.", 400);
     if (!note.text) return error("text is required.", 400);
 
     await upsertNote(db, note);

@@ -1,13 +1,13 @@
 import {
-  customerFromPayload,
+  clientFromPayload,
   ensureClientsSchema,
   error,
-  getCustomerById,
+  getClientById,
   json,
   readBody,
   requireBinding,
-  rowToCustomer,
-  upsertCustomer
+  rowToClient,
+  upsertClient
 } from "../../_lib/d1.js";
 
 export async function onRequestGet(context) {
@@ -18,30 +18,33 @@ export async function onRequestGet(context) {
     const url = new URL(context.request.url);
     const id = url.searchParams.get("id");
     if (id) {
-      const customer = await getCustomerById(db, id);
-      if (!customer) return error("Customer not found.", 404);
-      return json({ ok: true, customer });
+      const client = await getClientById(db, id);
+      if (!client) return error("Client not found.", 404);
+      return json({ ok: true, client });
     }
 
     const search = String(url.searchParams.get("search") || "").trim().toLowerCase();
     const rows = search
       ? await db.prepare(`
-          SELECT * FROM customers
-          WHERE lower(name) LIKE ?
+          SELECT * FROM clients
+          WHERE lower(full_name) LIKE ?
+             OR lower(first_name) LIKE ?
+             OR lower(last_name) LIKE ?
              OR lower(email) LIKE ?
-             OR lower(phone) LIKE ?
+             OR lower(phone_full) LIKE ?
              OR lower(profile_note) LIKE ?
-             OR lower(tags_json) LIKE ?
-          ORDER BY updated_at DESC, name ASC
-        `).bind(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`).all()
-      : await db.prepare("SELECT * FROM customers ORDER BY updated_at DESC, name ASC").all();
+             OR lower(tags) LIKE ?
+          ORDER BY updated_at DESC, full_name ASC
+        `).bind(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`).all()
+      : await db.prepare("SELECT * FROM clients ORDER BY updated_at DESC, full_name ASC").all();
 
+    const clients = (rows.results || []).map(rowToClient);
     return json({
       ok: true,
-      customers: (rows.results || []).map(rowToCustomer)
+      clients
     });
   } catch (cause) {
-    return error(cause.message || "Customer list failed.", 500);
+    return error(cause.message || "Client list failed.", 500);
   }
 }
 
@@ -51,13 +54,13 @@ export async function onRequestPost(context) {
     await ensureClientsSchema(db);
 
     const payload = await readBody(context);
-    const customer = customerFromPayload(payload);
-    if (!customer.name) return error("name is required.", 400);
+    const client = clientFromPayload(payload);
+    if (!client.fullName) return error("full_name is required.", 400);
 
-    await upsertCustomer(db, customer);
-    return json({ ok: true, customer }, { status: 201 });
+    await upsertClient(db, client);
+    return json({ ok: true, client }, { status: 201 });
   } catch (cause) {
-    return error(cause.message || "Customer save failed.", 500);
+    return error(cause.message || "Client save failed.", 500);
   }
 }
 
@@ -71,15 +74,15 @@ export async function onRequestPut(context) {
     const id = payload.id || url.searchParams.get("id");
     if (!id) return error("id is required.", 400);
 
-    const existing = await getCustomerById(db, id);
-    if (!existing) return error("Customer not found.", 404);
+    const existing = await getClientById(db, id);
+    if (!existing) return error("Client not found.", 404);
 
-    const customer = customerFromPayload({ ...payload, id }, existing);
-    if (!customer.name) return error("name is required.", 400);
+    const client = clientFromPayload({ ...payload, id }, existing);
+    if (!client.fullName) return error("full_name is required.", 400);
 
-    await upsertCustomer(db, customer);
-    return json({ ok: true, customer });
+    await upsertClient(db, client);
+    return json({ ok: true, client });
   } catch (cause) {
-    return error(cause.message || "Customer update failed.", 500);
+    return error(cause.message || "Client update failed.", 500);
   }
 }
