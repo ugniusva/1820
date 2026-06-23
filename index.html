@@ -260,21 +260,23 @@
       color: #222222;
     }
 
-    .balloon-field {
+    .boulder-field {
       position: absolute;
       inset: -12vh 0;
       z-index: 4;
       pointer-events: none;
-      filter: grayscale(1) contrast(1.08);
+      filter: grayscale(1) contrast(1.12);
     }
 
-    .balloon {
+    .boulder {
       position: absolute;
       left: 0;
       top: 0;
       width: var(--size);
-      height: calc(var(--size) * 1.22);
+      height: calc(var(--size) * var(--h-ratio));
       opacity: var(--alpha, 0);
+      overflow: hidden;
+      border-radius: var(--radius);
       transform:
         translate3d(
           calc(var(--x) * 1vw),
@@ -284,90 +286,68 @@
         translate(-50%, -50%)
         rotate(var(--rot))
         scale(var(--scale, 1));
-      transform-origin: 50% 58%;
+      transform-origin: 50% 52%;
       will-change: transform, opacity;
     }
 
-    .balloon::before,
-    .balloon::after,
-    .balloon .sketch {
+    .boulder::before,
+    .boulder::after,
+    .boulder .sketch {
       content: "";
       position: absolute;
       inset: 0;
       border-radius: var(--radius);
     }
 
-    .balloon::before {
+    .boulder::before {
       border: var(--stroke) solid var(--line);
       background:
-        radial-gradient(circle at 29% 22%, rgba(255, 255, 255, 0.76) 0 6%, transparent 7%),
-        repeating-linear-gradient(var(--angle-a), rgba(0, 0, 0, var(--grain-a)) 0 1px, transparent 1px 5px),
-        repeating-linear-gradient(var(--angle-b), rgba(255, 255, 255, var(--grain-b)) 0 1px, transparent 1px 7px),
+        radial-gradient(circle at 34% 29%, rgba(255, 255, 255, var(--stone-light)) 0 14%, transparent 44%),
+        radial-gradient(circle at 77% 78%, rgba(0, 0, 0, var(--stone-shade)) 0 27%, transparent 56%),
+        repeating-linear-gradient(var(--angle-a), rgba(0, 0, 0, var(--grain-a)) 0 1px, transparent 1px 6px),
+        repeating-linear-gradient(var(--angle-b), rgba(255, 255, 255, var(--grain-b)) 0 1px, transparent 1px 8px),
         linear-gradient(145deg, var(--tone-a), var(--tone-b) 56%, var(--tone-c));
       box-shadow:
-        inset -12px -18px 0 rgba(0, 0, 0, var(--flat-shade)),
-        inset 10px 8px 0 rgba(255, 255, 255, var(--flat-light)),
-        0 14px 32px rgba(0, 0, 0, 0.11);
+        inset -14px -18px 28px rgba(0, 0, 0, var(--flat-shade)),
+        inset 10px 8px 18px rgba(255, 255, 255, var(--flat-light)),
+        0 18px 42px rgba(0, 0, 0, 0.16);
     }
 
-    .balloon::after {
-      inset: 9% 14% 12% 12%;
-      border: 1px solid rgba(255, 255, 255, 0.22);
+    .boulder::after {
+      inset: 10% 9% 9% 11%;
       background:
-        repeating-linear-gradient(calc(var(--angle-a) + 42deg), transparent 0 4px, rgba(0, 0, 0, 0.08) 4px 5px);
+        linear-gradient(118deg, transparent 0 40%, rgba(0, 0, 0, 0.18) 41%, transparent 43%),
+        linear-gradient(28deg, transparent 0 56%, rgba(255, 255, 255, 0.15) 57%, transparent 59%),
+        repeating-radial-gradient(circle at 54% 48%, rgba(0, 0, 0, 0.09) 0 1px, transparent 1px 8px);
       mix-blend-mode: multiply;
-      opacity: 0.72;
+      opacity: 0.58;
     }
 
-    .balloon .sketch {
+    .boulder .sketch {
       border: calc(var(--stroke) * 0.72) solid var(--line);
-      opacity: 0.68;
+      opacity: 0.72;
       transform: translate(var(--jitter-x), var(--jitter-y)) rotate(var(--sketch-rot));
     }
 
-    .balloon .sketch-b {
-      inset: 2px -2px -1px 1px;
-      opacity: 0.38;
+    .boulder .sketch-b {
+      inset: 3px -2px -2px 2px;
+      opacity: 0.34;
       transform: translate(calc(var(--jitter-x) * -1), calc(var(--jitter-y) * 0.7)) rotate(calc(var(--sketch-rot) * -1));
     }
 
-    .balloon .knot {
-      position: absolute;
-      left: 50%;
-      top: calc(100% - 3px);
-      width: calc(var(--size) * 0.11);
-      height: calc(var(--size) * 0.1);
-      transform: translateX(-50%);
-      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+    .boulder.variant-outline::before {
       background:
-        repeating-linear-gradient(35deg, rgba(255, 255, 255, 0.18) 0 1px, transparent 1px 4px),
-        var(--tone-c);
-      border: 1px solid var(--line);
-    }
-
-    .balloon .string {
-      position: absolute;
-      top: calc(100% + (var(--size) * 0.07));
-      left: 50%;
-      width: 1px;
-      height: calc(var(--size) * 0.62);
-      transform: translateX(-50%) rotate(calc(var(--rot) * -0.32));
-      transform-origin: top center;
-      background:
-        repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.44) 0 2px, transparent 2px 5px);
-      opacity: 0.5;
-    }
-
-    .balloon.variant-outline::before {
-      background:
-        repeating-linear-gradient(var(--angle-a), rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 5px),
-        rgba(255, 255, 255, 0.08);
+        radial-gradient(circle at 36% 30%, rgba(255, 255, 255, 0.32) 0 14%, transparent 43%),
+        radial-gradient(circle at 75% 78%, rgba(0, 0, 0, 0.11) 0 28%, transparent 58%),
+        repeating-linear-gradient(var(--angle-a), rgba(0, 0, 0, 0.1) 0 1px, transparent 1px 6px),
+        linear-gradient(145deg, #f2f2f2, #d6d6d6 58%, #adadad);
       box-shadow:
-        inset -8px -10px 0 rgba(0, 0, 0, 0.04),
-        0 10px 22px rgba(0, 0, 0, 0.07);
+        inset -12px -14px 24px rgba(0, 0, 0, 0.1),
+        inset 8px 8px 18px rgba(255, 255, 255, 0.24),
+        0 12px 28px rgba(0, 0, 0, 0.09);
     }
 
-    .balloon.variant-black::before {
+    .boulder.variant-black::before {
       border-color: rgba(0, 0, 0, 0.92);
     }
 
@@ -1030,7 +1010,7 @@
 </head>
 <body>
   <div class="stage" aria-hidden="true">
-    <div class="balloon-field" id="balloonField"></div>
+    <div class="boulder-field" id="boulderField"></div>
   </div>
   <div class="image-stage" aria-hidden="true">
     <img class="image-layer image-layer--room" src="images/interior.png" width="1402" height="1122" alt="" decoding="async" fetchpriority="high" />
@@ -1132,7 +1112,7 @@
   <script>
     (() => {
       const root = document.documentElement;
-      const field = document.getElementById("balloonField");
+      const field = document.getElementById("boulderField");
       const panel = document.getElementById("restaurantPanel");
       const platePanel = document.getElementById("platePanel");
       const detailPanel = document.getElementById("detailPanel");
@@ -1167,12 +1147,12 @@
       const palette = [
         {
           name: "variant-outline",
-          a: "rgba(255, 255, 255, 0.1)",
-          b: "rgba(235, 235, 235, 0.36)",
-          c: "rgba(180, 180, 180, 0.22)",
-          line: "rgba(12, 12, 12, 0.64)",
-          shade: 0.04,
-          light: 0.32,
+          a: "#f2f2f2",
+          b: "#d6d6d6",
+          c: "#adadad",
+          line: "rgba(12, 12, 12, 0.66)",
+          shade: 0.1,
+          light: 0.24,
           grainA: 0.12,
           grainB: 0.16
         },
@@ -1243,12 +1223,12 @@
         { x: 63, y: 44 }, { x: 50, y: 45 }, { x: 58, y: 48 }
       ];
 
-      const balloons = cells.concat(edgeCells).map((cell, index, all) => {
+      const boulders = cells.concat(edgeCells).map((cell, index, all) => {
         const cellProgress = index / Math.max(1, all.length - 1);
         const cluster = clusterSeeds[index % clusterSeeds.length];
         const tone = palette[Math.floor(random() * palette.length)];
         const edgeBoost = cell.edge ? (cell.x > 100 || cell.x < 0 ? 1.42 : 1.28) : 1;
-        const sizeBase = lerp(70, 194, Math.pow(random(), 0.68)) * edgeBoost;
+        const sizeBase = lerp(78, 206, Math.pow(random(), 0.66)) * edgeBoost;
         const originRadius = lerp(0.5, 6.5, random());
         const originAngle = random() * Math.PI * 2;
         const originX = cluster.x + Math.cos(originAngle) * originRadius;
@@ -1259,14 +1239,15 @@
         const rotation = `${lerp(-10, 10, random()).toFixed(2)}deg`;
 
         const el = document.createElement("div");
-        el.className = `balloon ${tone.name}`;
-        el.innerHTML = "<span class=\"sketch sketch-a\" aria-hidden=\"true\"></span><span class=\"sketch sketch-b\" aria-hidden=\"true\"></span><span class=\"knot\" aria-hidden=\"true\"></span><span class=\"string\" aria-hidden=\"true\"></span>";
+        el.className = `boulder ${tone.name}`;
+        el.innerHTML = "<span class=\"sketch sketch-a\" aria-hidden=\"true\"></span><span class=\"sketch sketch-b\" aria-hidden=\"true\"></span>";
         el.style.setProperty("--size", `${sizeBase.toFixed(2)}px`);
+        el.style.setProperty("--h-ratio", `${lerp(0.78, 1.08, random()).toFixed(3)}`);
         el.style.setProperty("--rot", rotation);
         el.style.setProperty("--sketch-rot", `${lerp(-2.8, 2.8, random()).toFixed(2)}deg`);
         el.style.setProperty("--jitter-x", `${lerp(-2.5, 2.5, random()).toFixed(2)}px`);
         el.style.setProperty("--jitter-y", `${lerp(-2.2, 2.2, random()).toFixed(2)}px`);
-        el.style.setProperty("--radius", `${lerp(42, 51, random()).toFixed(1)}% ${lerp(49, 58, random()).toFixed(1)}% ${lerp(43, 52, random()).toFixed(1)}% ${lerp(47, 56, random()).toFixed(1)}% / ${lerp(41, 49, random()).toFixed(1)}% ${lerp(41, 49, random()).toFixed(1)}% ${lerp(55, 62, random()).toFixed(1)}% ${lerp(52, 60, random()).toFixed(1)}%`);
+        el.style.setProperty("--radius", `${lerp(38, 56, random()).toFixed(1)}% ${lerp(44, 62, random()).toFixed(1)}% ${lerp(40, 58, random()).toFixed(1)}% ${lerp(36, 54, random()).toFixed(1)}% / ${lerp(38, 56, random()).toFixed(1)}% ${lerp(34, 52, random()).toFixed(1)}% ${lerp(44, 62, random()).toFixed(1)}% ${lerp(42, 60, random()).toFixed(1)}%`);
         el.style.setProperty("--stroke", `${lerp(1.8, 3.3, random()).toFixed(2)}px`);
         el.style.setProperty("--line", tone.line);
         el.style.setProperty("--tone-a", tone.a);
@@ -1274,6 +1255,8 @@
         el.style.setProperty("--tone-c", tone.c);
         el.style.setProperty("--flat-shade", tone.shade);
         el.style.setProperty("--flat-light", tone.light);
+        el.style.setProperty("--stone-light", `${lerp(0.1, 0.38, random()).toFixed(2)}`);
+        el.style.setProperty("--stone-shade", `${lerp(0.16, 0.4, random()).toFixed(2)}`);
         el.style.setProperty("--grain-a", tone.grainA);
         el.style.setProperty("--grain-b", tone.grainB);
         el.style.setProperty("--angle-a", `${lerp(18, 34, random()).toFixed(1)}deg`);
@@ -1364,40 +1347,40 @@
         setLive(detailPanel, "interlude", interlude > 0.82);
         setLive(bookingPanel, "booking", booking > 0.82);
 
-        balloons.forEach((balloon) => {
-          const inProgress = smooth(clamp((progress - balloon.appear) / 0.07));
-          const travel = smooth(clamp((progress - balloon.release) / balloon.duration));
-          const micro = Math.sin((progress * 11) + balloon.phase) * balloon.sway * (1 - story * 0.7);
-          const baseX = lerp(balloon.originX, balloon.finalX, travel) + micro;
-          const baseY = lerp(balloon.originY, balloon.finalY, travel) - curtain * 3 + Math.cos((progress * 8) + balloon.phase) * 1.15;
-          const packCenterX = balloon.edge ? (balloon.finalX > 50 ? 58 : 42) : 50;
-          const packRatioX = balloon.edge ? 0.96 : 0.84;
+        boulders.forEach((boulder) => {
+          const inProgress = smooth(clamp((progress - boulder.appear) / 0.07));
+          const travel = smooth(clamp((progress - boulder.release) / boulder.duration));
+          const micro = Math.sin((progress * 11) + boulder.phase) * boulder.sway * (1 - story * 0.7);
+          const baseX = lerp(boulder.originX, boulder.finalX, travel) + micro;
+          const baseY = lerp(boulder.originY, boulder.finalY, travel) - curtain * 3 + Math.cos((progress * 8) + boulder.phase) * 1.15;
+          const packCenterX = boulder.edge ? (boulder.finalX > 50 ? 58 : 42) : 50;
+          const packRatioX = boulder.edge ? 0.96 : 0.84;
           const x = lerp(baseX, packCenterX + ((baseX - packCenterX) * packRatioX), pack);
           const y = lerp(baseY, 50 + ((baseY - 50) * 0.76), pack);
-          const scaleIn = lerp(0.18, 1, smooth(clamp((progress - balloon.appear) / 0.18)));
+          const scaleIn = lerp(0.18, 1, smooth(clamp((progress - boulder.appear) / 0.18)));
           const closeScale = 1 + (pack * (narrow ? 0.66 : 0.54)) + (fade * 0.12);
           const alpha = inProgress * (1 - fade);
           const opacity = alpha.toFixed(3);
 
           if (alpha <= 0.003) {
-            if (balloon.visible || balloon.lastOpacity !== "0") {
-              balloon.style.opacity = "0";
-              balloon.visible = false;
-              balloon.lastOpacity = "0";
+            if (boulder.visible || boulder.lastOpacity !== "0") {
+              boulder.style.opacity = "0";
+              boulder.visible = false;
+              boulder.lastOpacity = "0";
             }
             return;
           }
 
-          const transform = `translate3d(${x.toFixed(3)}vw, ${y.toFixed(3)}vh, 0) translate(-50%, -50%) rotate(${balloon.rotation}) scale(${(scaleIn * closeScale).toFixed(3)})`;
-          if (transform !== balloon.lastTransform) {
-            balloon.style.transform = transform;
-            balloon.lastTransform = transform;
+          const transform = `translate3d(${x.toFixed(3)}vw, ${y.toFixed(3)}vh, 0) translate(-50%, -50%) rotate(${boulder.rotation}) scale(${(scaleIn * closeScale).toFixed(3)})`;
+          if (transform !== boulder.lastTransform) {
+            boulder.style.transform = transform;
+            boulder.lastTransform = transform;
           }
-          if (opacity !== balloon.lastOpacity) {
-            balloon.style.opacity = opacity;
-            balloon.lastOpacity = opacity;
+          if (opacity !== boulder.lastOpacity) {
+            boulder.style.opacity = opacity;
+            boulder.lastOpacity = opacity;
           }
-          balloon.visible = true;
+          boulder.visible = true;
         });
       }
 

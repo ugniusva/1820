@@ -19,6 +19,12 @@
       --line: rgba(0, 0, 0, 0.28);
       --ghost: rgba(0, 0, 0, 0.055);
       --transition: 0;
+      --radius-xs: 8px;
+      --radius-sm: 12px;
+      --radius-md: 16px;
+      --radius-lg: 22px;
+      --shadow-ink: 12px 14px 0 #080808;
+      --shadow-lift: 0 26px 70px rgba(0, 0, 0, 0.14);
     }
 
     * {
@@ -177,10 +183,12 @@
     .booking-surface {
       align-self: center;
       border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
       background:
         repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.035) 0 1px, transparent 1px 5px),
         rgba(244, 244, 244, 0.88);
-      box-shadow: 12px 12px 0 #080808;
+      box-shadow: var(--shadow-ink), var(--shadow-lift);
+      overflow: hidden;
     }
 
     .surface-head {
@@ -210,6 +218,7 @@
       display: inline-flex;
       align-items: center;
       border: 1px solid rgba(0, 0, 0, 0.24);
+      border-radius: 999px;
       padding: 8px 10px;
       color: #666666;
       background: rgba(255, 255, 255, 0.4);
@@ -224,12 +233,14 @@
     .progress-track {
       height: 4px;
       background: rgba(0, 0, 0, 0.12);
+      border-radius: 999px;
       overflow: hidden;
     }
 
     .progress-bar {
       width: 33.333%;
       height: 100%;
+      border-radius: inherit;
       background: #080808;
       transition: width 520ms cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -328,7 +339,7 @@
       width: 100%;
       min-height: 56px;
       border: 1px solid rgba(0, 0, 0, 0.34);
-      border-radius: 0;
+      border-radius: var(--radius-sm);
       background:
         repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.025) 0 1px, transparent 1px 5px),
         #f7f7f7;
@@ -337,7 +348,7 @@
       outline: none;
       font-size: 1rem;
       font-weight: 620;
-      transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+      transition: border-color 220ms ease, box-shadow 220ms ease, background 220ms ease, transform 220ms ease;
     }
 
     textarea {
@@ -345,14 +356,18 @@
       resize: vertical;
       padding: 14px;
       line-height: 1.45;
+      border-radius: var(--radius-md);
     }
 
     input:focus,
     select:focus,
     textarea:focus {
       border-color: #080808;
-      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.18);
+      box-shadow:
+        0 0 0 4px rgba(0, 0, 0, 0.055),
+        6px 7px 0 rgba(0, 0, 0, 0.16);
       background: #ffffff;
+      transform: translateY(-1px);
     }
 
     .phone-grid {
@@ -366,12 +381,14 @@
       text-overflow: ellipsis;
     }
 
-    .datepicker-wrap {
+    .datepicker-wrap,
+    .timepicker-wrap {
       position: relative;
       z-index: 5;
     }
 
-    .date-trigger {
+    .date-trigger,
+    .time-trigger {
       width: 100%;
       min-height: 56px;
       display: flex;
@@ -379,7 +396,7 @@
       justify-content: space-between;
       gap: 14px;
       border: 1px solid rgba(0, 0, 0, 0.34);
-      border-radius: 0;
+      border-radius: var(--radius-sm);
       background:
         repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.025) 0 1px, transparent 1px 5px),
         #f7f7f7;
@@ -388,31 +405,40 @@
       font-size: 1rem;
       font-weight: 720;
       text-align: left;
-      transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+      transition: border-color 220ms ease, box-shadow 220ms ease, background 220ms ease, transform 220ms ease;
     }
 
     .date-trigger:hover,
     .date-trigger:focus-visible,
-    .date-trigger[aria-expanded="true"] {
+    .date-trigger[aria-expanded="true"],
+    .time-trigger:hover,
+    .time-trigger:focus-visible,
+    .time-trigger[aria-expanded="true"] {
       border-color: #080808;
-      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.18);
+      box-shadow:
+        0 0 0 4px rgba(0, 0, 0, 0.055),
+        6px 7px 0 rgba(0, 0, 0, 0.16);
       background: #ffffff;
+      transform: translateY(-1px);
       outline: none;
     }
 
-    .date-trigger span:first-child {
+    .date-trigger span:first-child,
+    .time-trigger span:first-child {
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    .date-mark {
+    .date-mark,
+    .time-mark {
       display: inline-grid;
       place-items: center;
       width: 28px;
       height: 28px;
       border: 1px solid rgba(0, 0, 0, 0.34);
+      border-radius: 999px;
       color: #080808;
       font-size: 0.82rem;
       font-weight: 950;
@@ -421,21 +447,45 @@
     }
 
     .date-panel {
-      position: absolute;
-      left: 0;
-      top: calc(100% + 10px);
-      z-index: 30;
-      width: min(386px, calc(100vw - 40px));
+      position: relative;
+      width: 100%;
       border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 18px;
       background:
         repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 5px),
         #25252b;
       color: #f4f4f4;
-      padding: 14px;
-      box-shadow: 12px 12px 0 rgba(0, 0, 0, 0.42);
+      padding: clamp(14px, 2.4vw, 20px);
+      box-shadow:
+        10px 12px 0 rgba(0, 0, 0, 0.36),
+        0 24px 70px rgba(0, 0, 0, 0.28);
+      overflow: hidden;
     }
 
     .date-panel[hidden] {
+      display: none;
+    }
+
+    .time-panel {
+      position: absolute;
+      left: 0;
+      top: calc(100% + 10px);
+      z-index: 32;
+      width: min(100%, 386px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 18px;
+      background:
+        repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 5px),
+        #25252b;
+      color: #f4f4f4;
+      padding: 12px;
+      box-shadow:
+        10px 12px 0 rgba(0, 0, 0, 0.36),
+        0 22px 58px rgba(0, 0, 0, 0.28);
+      overflow: hidden;
+    }
+
+    .time-panel[hidden] {
       display: none;
     }
 
@@ -451,7 +501,7 @@
       width: 42px;
       height: 42px;
       border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 0;
+      border-radius: 999px;
       background: #f4f4f4;
       color: #080808;
       font-size: 1.24rem;
@@ -462,7 +512,7 @@
     .calendar-nav:hover:not(:disabled),
     .calendar-nav:focus-visible {
       transform: translateY(-1px);
-      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35);
+      box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.35);
       outline: none;
     }
 
@@ -486,7 +536,7 @@
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(7, minmax(0, 1fr));
-      gap: 6px;
+      gap: clamp(6px, 1vw, 8px);
     }
 
     .calendar-weekdays {
@@ -501,14 +551,14 @@
     }
 
     .calendar-cell {
-      min-height: 40px;
+      min-height: clamp(38px, 5.2vw, 46px);
     }
 
     .calendar-day {
       width: 100%;
-      min-height: 40px;
+      min-height: clamp(38px, 5.2vw, 46px);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 0;
+      border-radius: 10px;
       background: rgba(255, 255, 255, 0.09);
       color: #f7f7f7;
       font-size: 0.88rem;
@@ -527,7 +577,7 @@
       border-color: #f7f7f7;
       background: #f7f7f7;
       color: #080808;
-      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.42);
+      box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.42);
     }
 
     .calendar-day.is-today {
@@ -555,28 +605,55 @@
       gap: 10px;
     }
 
-    .time-grid {
+    .time-menu {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-      max-height: 308px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      max-height: 278px;
       overflow-y: auto;
       overscroll-behavior: contain;
-      padding: 2px 8px 8px 2px;
-      scrollbar-color: #080808 rgba(0, 0, 0, 0.12);
+      padding: 2px 7px 4px 2px;
+      scrollbar-color: #f4f4f4 rgba(255, 255, 255, 0.12);
       scrollbar-width: thin;
     }
 
-    .time-grid::-webkit-scrollbar {
+    .time-menu::-webkit-scrollbar {
       width: 8px;
     }
 
-    .time-grid::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.1);
+    .time-menu::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
     }
 
-    .time-grid::-webkit-scrollbar-thumb {
-      background: #080808;
+    .time-menu::-webkit-scrollbar-thumb {
+      background: #f4f4f4;
+      border-radius: 999px;
+    }
+
+    .time-option {
+      min-height: 46px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #f6f6f6;
+      font-size: 0.92rem;
+      font-weight: 850;
+      transition: transform 180ms ease, background 180ms ease, color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .time-option:hover,
+    .time-option:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.52);
+      outline: none;
+    }
+
+    .time-option.is-selected {
+      border-color: #f7f7f7;
+      background: #f7f7f7;
+      color: #080808;
+      box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.42);
     }
 
     .seating-grid {
@@ -586,24 +663,24 @@
     .choice-button {
       min-height: 54px;
       border: 1px solid rgba(0, 0, 0, 0.34);
-      border-radius: 0;
+      border-radius: var(--radius-sm);
       background: #f7f7f7;
       color: #080808;
       font-weight: 850;
-      transition: transform 180ms ease, background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+      transition: transform 220ms ease, background 220ms ease, color 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
     }
 
     .choice-button:hover,
     .choice-button:focus-visible {
       transform: translateY(-1px);
       outline: none;
-      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.18);
+      box-shadow: 4px 5px 0 rgba(0, 0, 0, 0.16);
     }
 
     .choice-button.is-selected {
       background: #080808;
       color: #f5f5f5;
-      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.2);
+      box-shadow: 5px 6px 0 rgba(0, 0, 0, 0.2);
     }
 
     .choice-button:disabled {
@@ -632,16 +709,21 @@
     .field.has-error input,
     .field.has-error select,
     .field.has-error textarea,
-    .field.has-error .date-trigger {
+    .field.has-error .date-trigger,
+    .field.has-error .time-trigger {
       border-color: #080808;
-      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.26);
+      box-shadow:
+        0 0 0 4px rgba(0, 0, 0, 0.06),
+        6px 7px 0 rgba(0, 0, 0, 0.22);
       background: #ffffff;
     }
 
     .summary {
       display: grid;
       border: 1px solid rgba(0, 0, 0, 0.34);
-      background: rgba(255, 255, 255, 0.42);
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.5);
+      overflow: hidden;
     }
 
     .summary-row {
@@ -681,12 +763,12 @@
       min-height: 58px;
       min-width: min(100%, 180px);
       border: 2px solid #080808;
-      border-radius: 0;
+      border-radius: var(--radius-md);
       padding: 18px 22px;
       background: #080808;
       color: #f5f5f5;
-      box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.18);
-      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, color 180ms ease;
+      box-shadow: 7px 8px 0 rgba(0, 0, 0, 0.18);
+      transition: transform 220ms ease, box-shadow 220ms ease, background 220ms ease, color 220ms ease;
     }
 
     .button.is-secondary {
@@ -696,8 +778,8 @@
 
     .button:hover,
     .button:focus-visible {
-      transform: translate(3px, 3px);
-      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
+      transform: translate(2px, 2px);
+      box-shadow: 5px 6px 0 rgba(0, 0, 0, 0.18);
       outline: none;
     }
 
@@ -709,6 +791,7 @@
       opacity: 0.52;
       cursor: not-allowed;
       transform: none;
+      box-shadow: none;
     }
 
     .quiet-note {
@@ -807,7 +890,7 @@
       .phone-grid,
       .choice-grid,
       .service-facts,
-      .time-grid,
+      .time-menu,
       .summary-row {
         grid-template-columns: 1fr;
       }
@@ -821,7 +904,9 @@
       }
 
       .booking-surface {
-        box-shadow: 8px 8px 0 #080808;
+        box-shadow:
+          8px 9px 0 #080808,
+          0 18px 48px rgba(0, 0, 0, 0.12);
       }
     }
 
@@ -908,14 +993,33 @@
 
         <section data-step-panel="2">
           <div class="field-grid">
-            <div class="field" data-field="date">
-              <label id="dateLabelTitle">Date</label>
-              <div class="datepicker-wrap" id="datePicker">
-                <button class="date-trigger" id="dateTrigger" type="button" aria-expanded="false" aria-haspopup="dialog" aria-labelledby="dateLabelTitle dateText">
-                  <span id="dateText">Select date</span>
-                  <span class="date-mark" aria-hidden="true">+</span>
+            <div class="field" data-field="time">
+              <label id="timeLabelTitle">Time</label>
+              <div class="timepicker-wrap" id="timePicker">
+                <button class="time-trigger" id="timeTrigger" type="button" aria-expanded="false" aria-haspopup="listbox" aria-labelledby="timeLabelTitle timeText">
+                  <span id="timeText">Select time</span>
+                  <span class="time-mark" aria-hidden="true">+</span>
                 </button>
-                <div class="date-panel" id="datePanel" hidden>
+                <div class="time-panel" id="timePanel" hidden>
+                  <div class="time-menu" id="timeChoices" role="listbox" aria-label="Reservation time"></div>
+                </div>
+              </div>
+              <span class="error" data-error="time"></span>
+            </div>
+            <div class="field" data-field="guests">
+              <label>Guests</label>
+              <div class="choice-grid" id="guestChoices" aria-label="Guest count"></div>
+              <span class="error" data-error="guests"></span>
+            </div>
+            <div class="field is-wide" data-field="seating">
+              <label>Seating</label>
+              <div class="choice-grid seating-grid" id="seatingChoices" aria-label="Seating choice"></div>
+              <span class="error" data-error="seating"></span>
+            </div>
+            <div class="field is-wide" data-field="date">
+              <label>Date</label>
+              <div class="datepicker-wrap" id="datePicker">
+                <div class="date-panel" id="datePanel">
                   <div class="calendar-head">
                     <button class="calendar-nav" id="calendarPrev" type="button" aria-label="Previous month">&lsaquo;</button>
                     <div class="calendar-title" id="calendarTitle">Month Year</div>
@@ -935,23 +1039,8 @@
                 </div>
               </div>
               <input id="date" name="booking_date" type="hidden" />
-              <span class="error" data-error="date"></span>
-            </div>
-            <div class="field" data-field="guests">
-              <label>Guests</label>
-              <div class="choice-grid" id="guestChoices" aria-label="Guest count"></div>
-              <span class="error" data-error="guests"></span>
-            </div>
-            <div class="field is-wide" data-field="seating">
-              <label>Seating</label>
-              <div class="choice-grid seating-grid" id="seatingChoices" aria-label="Seating choice"></div>
-              <span class="error" data-error="seating"></span>
-            </div>
-            <div class="field is-wide" data-field="time">
-              <label>Time</label>
-              <div class="time-grid" id="timeChoices" aria-label="Reservation time"></div>
               <p class="capacity-note" id="capacityNote">Times are arrivals only. Your reservation is held for the full service.</p>
-              <span class="error" data-error="time"></span>
+              <span class="error" data-error="date"></span>
             </div>
           </div>
         </section>
@@ -991,6 +1080,7 @@
       const maxGuests = 4;
       const serviceOpenMinutes = 19 * 60;
       const serviceCloseMinutes = 24 * 60;
+      const latestArrivalMinutes = 22 * 60;
       const totalCoverLimit = 24;
       const barCoverLimit = 12;
       const seatingOptions = [
@@ -999,7 +1089,7 @@
       ];
       const buildTimeSlots = () => {
         const slots = [];
-        for (let minutes = serviceOpenMinutes; minutes < serviceCloseMinutes; minutes += 15) {
+        for (let minutes = serviceOpenMinutes; minutes <= latestArrivalMinutes; minutes += 30) {
           const hour = String(Math.floor(minutes / 60)).padStart(2, "0");
           const minute = String(minutes % 60).padStart(2, "0");
           slots.push(`${hour}:${minute}`);
@@ -1009,6 +1099,7 @@
       const timeSlots = buildTimeSlots();
       const availabilityCache = new Map();
       const availabilityLoading = new Set();
+      let hasShownInitialStep = false;
       const countryOptions = [
         { name: "Afghanistan", iso: "AF", code: "+93" },
         { name: "Albania", iso: "AL", code: "+355" },
@@ -1251,6 +1342,7 @@
 
       const form = document.getElementById("reservationForm");
       const status = document.getElementById("status");
+      const bookingSurface = document.querySelector(".booking-surface");
       const progressBar = document.getElementById("progressBar");
       const stepLabel = document.getElementById("stepLabel");
       const backButton = document.getElementById("backButton");
@@ -1260,8 +1352,9 @@
       const timeChoices = document.getElementById("timeChoices");
       const seatingChoices = document.getElementById("seatingChoices");
       const capacityNote = document.getElementById("capacityNote");
-      const dateTrigger = document.getElementById("dateTrigger");
-      const dateText = document.getElementById("dateText");
+      const timeTrigger = document.getElementById("timeTrigger");
+      const timeText = document.getElementById("timeText");
+      const timePanel = document.getElementById("timePanel");
       const datePanel = document.getElementById("datePanel");
       const calendarTitle = document.getElementById("calendarTitle");
       const calendarPrev = document.getElementById("calendarPrev");
@@ -1314,18 +1407,6 @@
         return new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0, 0);
       };
 
-      const formatDateCompact = (value) => {
-        const date = parseIsoDate(value);
-        if (!date) {
-          return "Select date";
-        }
-        return date.toLocaleDateString("en-US", {
-          month: "2-digit",
-          day: "2-digit",
-          year: "numeric"
-        });
-      };
-
       const getCountryId = (country) => `${country.iso}|${country.code}`;
 
       const isoToFlagEmoji = (iso) => iso
@@ -1371,19 +1452,15 @@
         }
       };
 
-      const updateDateLabel = () => {
-        dateText.textContent = formatDateCompact(state.date);
+      const updateTimeLabel = () => {
+        timeText.textContent = state.time || "Select time";
       };
 
-      const setDatePanelOpen = (open) => {
-        datePanel.hidden = !open;
-        dateTrigger.setAttribute("aria-expanded", String(open));
+      const setTimePanelOpen = (open) => {
+        timePanel.hidden = !open;
+        timeTrigger.setAttribute("aria-expanded", String(open));
         if (open) {
-          const selectedDate = parseIsoDate(state.date);
-          if (selectedDate) {
-            calendarCursor = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
-          }
-          renderCalendar();
+          renderChoices();
         }
       };
 
@@ -1430,8 +1507,7 @@
             state.date = iso;
             fields.date.value = iso;
             clearField("date");
-            updateDateLabel();
-            setDatePanelOpen(false);
+            renderCalendar();
             fetchAvailability(iso).then(() => {
               renderCalendar();
               renderChoices();
@@ -1620,7 +1696,7 @@
         fields.phone.value = state.phone;
         fields.requests.value = state.requests;
         fields.date.value = state.date;
-        updateDateLabel();
+        updateTimeLabel();
       };
 
       const validateStep1 = () => {
@@ -1676,7 +1752,7 @@
           setFieldError("time", "Select a time.");
           valid = false;
         } else if (!timeSlots.includes(state.time)) {
-          setFieldError("time", "Choose an arrival between 19:00 and 23:45.");
+          setFieldError("time", "Choose an arrival between 19:00 and 22:00.");
           valid = false;
         }
 
@@ -1793,21 +1869,37 @@
         timeSlots.forEach((slot) => {
           const button = document.createElement("button");
           button.type = "button";
-          button.className = "choice-button";
+          button.className = "time-option";
+          button.setAttribute("role", "option");
           button.textContent = slot;
           button.dataset.value = slot;
           button.setAttribute("aria-label", `${slot} arrival`);
           button.setAttribute("aria-pressed", String(state.time === slot));
+          button.setAttribute("aria-selected", String(state.time === slot));
           button.classList.toggle("is-selected", state.time === slot);
           button.addEventListener("click", () => {
             state.time = slot;
             clearField("time");
+            updateTimeLabel();
+            setTimePanelOpen(false);
             renderChoices();
             saveDraft();
           });
           timeChoices.appendChild(button);
         });
         updateCapacityNote();
+      };
+
+      const frameBookingSurface = () => {
+        if (!bookingSurface) {
+          return;
+        }
+
+        const top = bookingSurface.getBoundingClientRect().top + window.scrollY - 88;
+        window.scrollTo({
+          top: Math.max(0, top),
+          behavior: "smooth"
+        });
       };
 
       const showStep = (step) => {
@@ -1830,6 +1922,11 @@
         }
 
         saveDraft();
+
+        if (hasShownInitialStep) {
+          window.requestAnimationFrame(frameBookingSurface);
+        }
+        hasShownInitialStep = true;
       };
 
       const saveFinalRecord = async () => {
@@ -1864,12 +1961,12 @@
         }, 760);
       };
 
-      dateTrigger.addEventListener("click", (event) => {
+      timeTrigger.addEventListener("click", (event) => {
         event.stopPropagation();
-        setDatePanelOpen(datePanel.hidden);
+        setTimePanelOpen(timePanel.hidden);
       });
 
-      datePanel.addEventListener("click", (event) => {
+      timePanel.addEventListener("click", (event) => {
         event.stopPropagation();
       });
 
@@ -1890,12 +1987,12 @@
       });
 
       document.addEventListener("click", () => {
-        setDatePanelOpen(false);
+        setTimePanelOpen(false);
       });
 
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
-          setDatePanelOpen(false);
+          setTimePanelOpen(false);
         }
       });
 
