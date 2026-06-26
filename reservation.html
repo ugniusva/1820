@@ -145,11 +145,9 @@
     }
 
     .kicker,
-    .step-label,
     .field label,
     .summary-row span:first-child,
-    .button,
-    .chip {
+    .button {
       font-size: clamp(0.68rem, 0.62rem + 0.18vw, 0.82rem);
       font-weight: 900;
       letter-spacing: 0.16em;
@@ -192,57 +190,103 @@
     }
 
     .surface-head {
-      display: grid;
-      gap: 18px;
-      padding: clamp(18px, 2.6vw, 30px);
+      padding: 10px clamp(18px, 2.6vw, 30px) 8px;
       border-bottom: 1px solid var(--line);
       background: rgba(255, 255, 255, 0.35);
     }
 
-    .step-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
+    .fish-journey {
+      position: relative;
+      width: min(100%, 330px);
+      height: 76px;
+      margin-left: auto;
+      isolation: isolate;
     }
 
-    .chip-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+    .fish-stop {
+      position: absolute;
+      top: 58px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.24);
+      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.04);
+      transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1), background 500ms ease, box-shadow 500ms ease;
     }
 
-    .chip {
-      min-height: 34px;
-      display: inline-flex;
-      align-items: center;
-      border: 1px solid rgba(0, 0, 0, 0.24);
-      border-radius: 999px;
-      padding: 8px 10px;
-      color: #666666;
-      background: rgba(255, 255, 255, 0.4);
+    .fish-stop:nth-of-type(1) {
+      left: 14%;
     }
 
-    .chip.is-active {
-      color: #f5f5f5;
-      border-color: #080808;
+    .fish-stop:nth-of-type(2) {
+      left: 50%;
+    }
+
+    .fish-stop:nth-of-type(3) {
+      left: 86%;
+    }
+
+    .fish-stop.is-active {
       background: #080808;
+      box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.08);
+      transform: scale(1.22);
     }
 
-    .progress-track {
-      height: 4px;
-      background: rgba(0, 0, 0, 0.12);
-      border-radius: 999px;
-      overflow: hidden;
+    .fish-progress {
+      position: absolute;
+      z-index: 1;
+      top: -3px;
+      left: 14%;
+      width: 112px;
+      height: 75px;
+      display: block;
+      pointer-events: none;
+      transition: left 900ms cubic-bezier(0.16, 1, 0.3, 1), transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateX(-48%) rotate(-1.5deg);
     }
 
-    .progress-bar {
-      width: 33.333%;
+    .fish-progress img {
+      display: block;
+      width: 100%;
       height: 100%;
-      border-radius: inherit;
-      background: #080808;
-      transition: width 520ms cubic-bezier(0.16, 1, 0.3, 1);
+      object-fit: cover;
+      mix-blend-mode: multiply;
+      filter: grayscale(1) contrast(1.25) brightness(1.08);
+      opacity: 0.88;
+      animation: fish-drift 2.8s ease-in-out infinite;
+    }
+
+    .fish-journey[data-step="2"] .fish-progress {
+      left: 50%;
+      transform: translateX(-48%) translateY(-2px) rotate(0.5deg);
+    }
+
+    .fish-journey[data-step="3"] .fish-progress {
+      left: 86%;
+      transform: translateX(-48%) translateY(1px) rotate(1.5deg);
+    }
+
+    @keyframes fish-drift {
+      0%,
+      100% {
+        transform: translateY(0) rotate(0.4deg);
+      }
+
+      50% {
+        transform: translateY(-2px) rotate(-0.7deg);
+      }
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     .status {
@@ -812,10 +856,10 @@
       z-index: 90;
       display: grid;
       place-items: center;
-      background: #f7f7f7;
+      background: #ffffff;
       opacity: var(--transition);
       pointer-events: none;
-      transition: opacity 1080ms cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 1120ms cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     html.is-arriving {
@@ -836,7 +880,7 @@
       transform-origin: center;
       object-fit: contain;
       filter: grayscale(1) contrast(1.05);
-      animation: rockBlink 980ms ease-in-out infinite;
+      animation: rockBlink 1600ms ease-in-out infinite;
     }
 
     html.is-arriving .rock-loader {
@@ -936,17 +980,15 @@
 
     <section class="booking-surface" aria-label="Reservation form">
       <div class="surface-head">
-        <div class="step-row">
-          <span class="step-label" id="stepLabel">Step 1 of 3</span>
-          <div class="chip-row" aria-hidden="true">
-            <span class="chip is-active" data-chip="1">Guest</span>
-            <span class="chip" data-chip="2">Table</span>
-            <span class="chip" data-chip="3">Review</span>
-          </div>
+        <div class="fish-journey" id="fishJourney" data-step="1" aria-hidden="true">
+          <span class="fish-stop is-active" data-fish-stop="1"></span>
+          <span class="fish-stop" data-fish-stop="2"></span>
+          <span class="fish-stop" data-fish-stop="3"></span>
+          <span class="fish-progress">
+            <img src="images/fih.png" alt="" />
+          </span>
         </div>
-        <div class="progress-track" aria-hidden="true">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
+        <span class="sr-only" id="stepLabel">Guest details, stage 1 of 3</span>
       </div>
 
       <p class="status" id="status" role="status" aria-live="polite"></p>
@@ -1343,7 +1385,7 @@
       const form = document.getElementById("reservationForm");
       const status = document.getElementById("status");
       const bookingSurface = document.querySelector(".booking-surface");
-      const progressBar = document.getElementById("progressBar");
+      const fishJourney = document.getElementById("fishJourney");
       const stepLabel = document.getElementById("stepLabel");
       const backButton = document.getElementById("backButton");
       const nextButton = document.getElementById("nextButton");
@@ -1907,11 +1949,15 @@
         document.querySelectorAll("[data-step-panel]").forEach((panel) => {
           panel.classList.toggle("is-active", Number(panel.dataset.stepPanel) === state.step);
         });
-        document.querySelectorAll("[data-chip]").forEach((chip) => {
-          chip.classList.toggle("is-active", Number(chip.dataset.chip) === state.step);
+        document.querySelectorAll("[data-fish-stop]").forEach((stop) => {
+          stop.classList.toggle("is-active", Number(stop.dataset.fishStop) === state.step);
         });
-        stepLabel.textContent = `Step ${state.step} of 3`;
-        progressBar.style.width = `${(state.step / 3) * 100}%`;
+        fishJourney.dataset.step = String(state.step);
+        stepLabel.textContent = [
+          "Guest details, stage 1 of 3",
+          "Arrival details, stage 2 of 3",
+          "Review reservation, stage 3 of 3"
+        ][state.step - 1];
         backButton.hidden = state.step === 1;
         nextButton.hidden = state.step === 3;
         submitButton.hidden = state.step !== 3;
