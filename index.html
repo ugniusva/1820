@@ -262,7 +262,7 @@
 
     .boulder-field {
       position: absolute;
-      inset: -12vh 0;
+      inset: 0;
       z-index: 4;
       pointer-events: none;
       filter: grayscale(1) contrast(1.12);
@@ -619,6 +619,7 @@
     }
 
     .plate-showcase {
+      position: relative;
       width: min(100%, 760px);
       margin: 0;
       justify-self: end;
@@ -634,7 +635,7 @@
       min-height: 560px;
       aspect-ratio: 7 / 8;
       object-fit: cover;
-      object-position: center;
+      object-position: center 66%;
       border: 1px solid rgba(255, 255, 255, 0.42);
       border-radius: 30px;
       background: #111111;
@@ -643,7 +644,12 @@
     }
 
     .plate-showcase figcaption {
-      margin-top: 14px;
+      position: absolute;
+      left: clamp(18px, 2.6vw, 28px);
+      right: clamp(18px, 2.6vw, 28px);
+      bottom: clamp(16px, 2.4vw, 26px);
+      z-index: 1;
+      margin: 0;
       color: rgba(245, 245, 245, 0.74);
       font-size: clamp(0.66rem, 0.62rem + 0.14vw, 0.78rem);
       font-weight: 900;
@@ -651,6 +657,7 @@
       line-height: 1.4;
       text-transform: uppercase;
       text-shadow: 0 6px 22px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
     }
 
     @media (min-width: 1440px) {
@@ -680,47 +687,6 @@
       font-size: clamp(1rem, 0.9rem + 0.44vw, 1.34rem);
       font-weight: 580;
       line-height: 1.5;
-    }
-
-    .story-details {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1px;
-      width: min(100%, 1260px);
-      margin: 0 auto;
-      border: 1px solid rgba(0, 0, 0, 0.34);
-      border-radius: 18px;
-      background: rgba(0, 0, 0, 0.28);
-      overflow: hidden;
-      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
-    }
-
-    .story-item {
-      min-height: clamp(112px, 15vh, 158px);
-      padding: clamp(18px, 2.4vw, 28px);
-      background:
-        repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 5px),
-        rgba(246, 246, 246, 0.14);
-      backdrop-filter: blur(7px);
-    }
-
-    .story-item b {
-      display: block;
-      margin-bottom: 18px;
-      font-size: clamp(0.68rem, 0.62rem + 0.16vw, 0.82rem);
-      font-weight: 900;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.9);
-    }
-
-    .story-item span {
-      display: block;
-      max-width: 22rem;
-      color: rgba(248, 248, 248, 0.82);
-      font-size: clamp(0.92rem, 0.84rem + 0.24vw, 1.06rem);
-      font-weight: 560;
-      line-height: 1.48;
     }
 
     .story-meta {
@@ -840,8 +806,8 @@
       z-index: 22;
       display: inline-grid;
       place-items: center;
-      width: 38px;
-      min-height: 112px;
+      width: 40px;
+      min-height: 118px;
       padding: 10px 0;
       border: 2px solid #090909;
       border-radius: 13px;
@@ -851,6 +817,7 @@
       font: 900 0.67rem/1 Inter, ui-sans-serif, system-ui, sans-serif;
       letter-spacing: 0.08em;
       text-transform: uppercase;
+      text-decoration: none;
       writing-mode: vertical-rl;
       box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
     }
@@ -948,21 +915,6 @@
           repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.035) 0 1px, transparent 1px 6px);
       }
 
-      .story-details {
-        grid-template-columns: 1fr;
-        margin-right: 46px;
-        width: auto;
-      }
-
-      .story-item {
-        min-height: 72px;
-        padding: 13px 14px;
-      }
-
-      .story-item b {
-        margin-bottom: 6px;
-      }
-
       .story-copy p,
       .detail-copy p,
       .booking-copy p {
@@ -972,11 +924,6 @@
 
       .story-kicker {
         margin-bottom: 8px;
-      }
-
-      .story-item span {
-        font-size: 0.88rem;
-        line-height: 1.36;
       }
 
       .reserve-link {
@@ -992,7 +939,7 @@
       .skip {
         right: 7px;
         width: 34px;
-        min-height: 96px;
+        min-height: 108px;
         font-size: 0.62rem;
       }
     }
@@ -1048,17 +995,17 @@
       </div>
     </section>
 
-    <section class="plate-panel" id="platePanel" aria-label="Tasting plate">
+    <section class="plate-panel" id="platePanel" aria-label="Chef profile">
       <div class="plate-layout">
         <div class="plate-copy">
-          <p class="story-kicker">From the first pass</p>
-          <h2 class="plate-title">Seven quiet bites.</h2>
-          <p>The table receives the first plate without theatre: polished shell, candlelight, and small compositions that hold the room's contrast.</p>
-          <p class="story-meta">Color enters once. Carefully. Then the room returns to graphite.</p>
+          <p class="story-kicker">About the chef</p>
+          <h2 class="plate-title">The chef's hand.</h2>
+          <p>The kitchen is led with restraint: smoke, acid, shellfish, heat, and color used only when it earns the room's attention.</p>
+          <p class="story-meta">A small pass, close to the table, serving fewer decisions with more intent.</p>
         </div>
         <figure class="plate-showcase">
-          <img src="images/plate.png" width="1086" height="1448" alt="A composed tasting plate at 1820" loading="lazy" decoding="async" />
-          <figcaption>Seven bites. One quiet service.</figcaption>
+          <img src="images/plate.png" width="1086" height="1448" alt="A composed tasting plate from the chef at 1820" loading="lazy" decoding="async" />
+          <figcaption>A first plate from the chef's hand.</figcaption>
         </figure>
       </div>
     </section>
@@ -1072,20 +1019,6 @@
         <div class="detail-copy">
           <p>This section can hold menu notes, opening hours, a chef statement, private dining copy, or whatever comes next once the visual moment has cleared.</p>
           <p class="story-meta">For now it is a polished placeholder with enough weight to feel like part of the page.</p>
-        </div>
-      </div>
-      <div class="story-details" aria-label="Restaurant details">
-        <div class="story-item">
-          <b>Private tables</b>
-          <span>Wide spacing, low voices, and service that moves without interrupting the room.</span>
-        </div>
-        <div class="story-item">
-          <b>Graphite bar</b>
-          <span>Glass, steel, and monochrome pours before dinner or after the last course.</span>
-        </div>
-        <div class="story-item">
-          <b>Late seating</b>
-          <span>A smaller final sitting for longer evenings, celebrations, and quiet returns.</span>
         </div>
       </div>
     </section>
@@ -1106,7 +1039,7 @@
   </main>
 
   <div class="progress-rail" aria-hidden="true"></div>
-  <button class="skip" id="skipToEnd" type="button">Bottom</button>
+  <a class="skip" href="reservation.html" data-page-transition aria-label="Open booking page">Booking</a>
   <div class="scroll-length" aria-hidden="true"></div>
 
   <script>
@@ -1117,7 +1050,6 @@
       const platePanel = document.getElementById("platePanel");
       const detailPanel = document.getElementById("detailPanel");
       const bookingPanel = document.getElementById("bookingPanel");
-      const skip = document.getElementById("skipToEnd");
       const pageTransition = document.getElementById("pageTransition");
       const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -1142,8 +1074,8 @@
       const random = mulberry32(1820);
       const isNarrow = () => window.matchMedia("(max-width: 760px)").matches;
       let narrow = isNarrow();
-      const columns = 14;
-      const rows = 10;
+      const columns = 12;
+      const rows = 8;
       const palette = [
         {
           name: "variant-outline",
@@ -1194,8 +1126,8 @@
       const cells = Array.from({ length: columns * rows }, (_, index) => {
         const col = index % columns;
         const row = Math.floor(index / columns);
-        const x = ((col + 0.5) / columns) * 100 + (random() - 0.5) * 8;
-        const y = ((row + 0.5) / rows) * 100 + (random() - 0.5) * 8;
+        const x = (((col + 0.5) / columns) * 108) - 4 + (random() - 0.5) * 7;
+        const y = (((row + 0.5) / rows) * 112) - 6 + (random() - 0.5) * 7;
         const dx = x - 50;
         const dy = y - 50;
         return {
@@ -1210,7 +1142,9 @@
         { x: -3, y: 8 }, { x: 104, y: 10 }, { x: 5, y: 94 }, { x: 100, y: 92 },
         { x: 20, y: -3 }, { x: 80, y: -2 }, { x: 34, y: 104 }, { x: 68, y: 103 },
         { x: -4, y: 48 }, { x: 108, y: 30 }, { x: 106, y: 52 }, { x: 109, y: 74 },
-        { x: 50, y: -5 }, { x: 50, y: 106 }, { x: 114, y: 18 }, { x: 114, y: 87 }
+        { x: 50, y: -5 }, { x: 50, y: 106 }, { x: 114, y: 18 }, { x: 114, y: 87 },
+        { x: -7, y: 78 }, { x: 8, y: 109 }, { x: 24, y: 111 }, { x: 42, y: 109 },
+        { x: 60, y: 112 }, { x: 78, y: 109 }, { x: 94, y: 111 }, { x: 108, y: 106 }
       ].map((cell) => ({
         ...cell,
         edge: true,
@@ -1223,12 +1157,28 @@
         { x: 63, y: 44 }, { x: 50, y: 45 }, { x: 58, y: 48 }
       ];
 
+      const gapHotspots = [
+        { x: 1, y: 30, rx: 14, ry: 18, force: 1.12 },
+        { x: 5, y: 51, rx: 11, ry: 13, force: 0.9 },
+        { x: 59, y: 36, rx: 13, ry: 13, force: 0.86 },
+        { x: 73, y: 31, rx: 18, ry: 17, force: 1.18 },
+        { x: 1, y: 72, rx: 16, ry: 18, force: 0.62 },
+        { x: 66, y: 66, rx: 18, ry: 16, force: 0.62 }
+      ];
+
       const boulders = cells.concat(edgeCells).map((cell, index, all) => {
         const cellProgress = index / Math.max(1, all.length - 1);
         const cluster = clusterSeeds[index % clusterSeeds.length];
         const tone = palette[Math.floor(random() * palette.length)];
-        const edgeBoost = cell.edge ? (cell.x > 100 || cell.x < 0 ? 1.42 : 1.28) : 1;
-        const sizeBase = lerp(78, 206, Math.pow(random(), 0.66)) * edgeBoost;
+        const floorWeight = clamp((cell.y - 70) / 36);
+        const gapWeight = gapHotspots.reduce((strongest, gap) => {
+          const weight = clamp(1 - Math.hypot((cell.x - gap.x) / gap.rx, (cell.y - gap.y) / gap.ry)) * gap.force;
+          return Math.max(strongest, weight);
+        }, 0);
+        const edgeBoost = cell.edge ? (cell.x > 100 || cell.x < 0 || cell.y > 100 ? 1.38 : 1.22) : 1;
+        const floorBoost = 1 + (floorWeight * (cell.edge ? 0.42 : 0.3));
+        const gapBoost = 1 + (gapWeight * 0.34);
+        const sizeBase = lerp(104, 258, Math.pow(random(), 0.66)) * edgeBoost * floorBoost * gapBoost;
         const originRadius = lerp(0.5, 6.5, random());
         const originAngle = random() * Math.PI * 2;
         const originX = cluster.x + Math.cos(originAngle) * originRadius;
@@ -1242,7 +1192,7 @@
         el.className = `boulder ${tone.name}`;
         el.innerHTML = "<span class=\"sketch sketch-a\" aria-hidden=\"true\"></span><span class=\"sketch sketch-b\" aria-hidden=\"true\"></span>";
         el.style.setProperty("--size", `${sizeBase.toFixed(2)}px`);
-        el.style.setProperty("--h-ratio", `${lerp(0.78, 1.08, random()).toFixed(3)}`);
+        el.style.setProperty("--h-ratio", `${lerp(0.82 + (floorWeight * 0.08) + (gapWeight * 0.04), 1.1 + (floorWeight * 0.1) + (gapWeight * 0.06), random()).toFixed(3)}`);
         el.style.setProperty("--rot", rotation);
         el.style.setProperty("--sketch-rot", `${lerp(-2.8, 2.8, random()).toFixed(2)}deg`);
         el.style.setProperty("--jitter-x", `${lerp(-2.5, 2.5, random()).toFixed(2)}px`);
@@ -1275,6 +1225,8 @@
           release,
           duration,
           edge: Boolean(cell.edge),
+          floorWeight,
+          gapWeight,
           sizeBase,
           rotation,
           phase: random() * Math.PI * 2,
@@ -1352,13 +1304,14 @@
           const travel = smooth(clamp((progress - boulder.release) / boulder.duration));
           const micro = Math.sin((progress * 11) + boulder.phase) * boulder.sway * (1 - story * 0.7);
           const baseX = lerp(boulder.originX, boulder.finalX, travel) + micro;
-          const baseY = lerp(boulder.originY, boulder.finalY, travel) - curtain * 3 + Math.cos((progress * 8) + boulder.phase) * 1.15;
+          const floorLock = boulder.floorWeight * pack;
+          const baseY = lerp(boulder.originY, boulder.finalY, travel) - (curtain * (3 - (floorLock * 2.4))) + Math.cos((progress * 8) + boulder.phase) * (1.15 - (floorLock * 0.55));
           const packCenterX = boulder.edge ? (boulder.finalX > 50 ? 58 : 42) : 50;
-          const packRatioX = boulder.edge ? 0.96 : 0.84;
+          const packRatioX = (boulder.edge ? 0.96 : 0.84) + (boulder.floorWeight * 0.11) + (boulder.gapWeight * 0.05);
           const x = lerp(baseX, packCenterX + ((baseX - packCenterX) * packRatioX), pack);
-          const y = lerp(baseY, 50 + ((baseY - 50) * 0.76), pack);
+          const y = lerp(baseY, 52 + ((baseY - 52) * (0.96 + (boulder.floorWeight * 0.1))), pack);
           const scaleIn = lerp(0.18, 1, smooth(clamp((progress - boulder.appear) / 0.18)));
-          const closeScale = 1 + (pack * (narrow ? 0.66 : 0.54)) + (fade * 0.12);
+          const closeScale = 1 + (pack * (narrow ? 0.78 : 0.68)) + (pack * boulder.floorWeight * 0.2) + (pack * boulder.gapWeight * 0.18) + (fade * 0.12);
           const alpha = inProgress * (1 - fade);
           const opacity = alpha.toFixed(3);
 
@@ -1508,10 +1461,6 @@
         }
         window.requestAnimationFrame(frame);
       }
-
-      skip.addEventListener("click", () => {
-        setTargetProgress(1);
-      });
 
       document.querySelectorAll("[data-page-transition]").forEach((link) => {
         link.addEventListener("click", (event) => {
