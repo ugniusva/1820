@@ -259,6 +259,68 @@
       background: #ffffff;
     }
 
+    .check-card {
+      position: relative;
+      min-height: 48px;
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.28);
+      background:
+        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.025) 0 1px, transparent 1px 5px),
+        rgba(255, 255, 255, 0.46);
+      padding: 11px 12px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 820;
+      letter-spacing: 0;
+      line-height: 1.25;
+      text-transform: none;
+    }
+
+    .check-card input {
+      position: absolute;
+      width: 1px;
+      min-height: 1px;
+      margin: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .check-box {
+      position: relative;
+      width: 20px;
+      height: 20px;
+      border: 1px solid rgba(0, 0, 0, 0.55);
+      background: #f7f7f7;
+      box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.72);
+    }
+
+    .check-card input:checked + .check-box {
+      border-color: #080808;
+      background: #080808;
+    }
+
+    .check-card input:checked + .check-box::after {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 3px;
+      width: 6px;
+      height: 11px;
+      border: solid #f7f7f7;
+      border-width: 0 2px 2px 0;
+      transform: rotate(42deg);
+    }
+
+    .check-card:focus-within,
+    .check-card:hover {
+      border-color: #080808;
+      box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.12);
+      background: #ffffff;
+    }
+
     .button-row {
       display: flex;
       gap: 10px;
@@ -1102,6 +1164,14 @@
               <input id="clientEmail" type="email" />
             </div>
             <div class="field">
+              <label for="clientNewsletter">Newsletter</label>
+              <label class="check-card" for="clientNewsletter">
+                <input id="clientNewsletter" type="checkbox" />
+                <span class="check-box" aria-hidden="true"></span>
+                <span>Receives news and invitations</span>
+              </label>
+            </div>
+            <div class="field">
               <label for="clientTags">Tags</label>
               <input id="clientTags" placeholder="quiet, vegan, window" />
             </div>
@@ -1157,6 +1227,34 @@
       </div>
     </section>
 
+    <section class="panel" aria-label="Waitlist database">
+      <div class="panel-head">
+        <div>
+          <h2>Waitlist.</h2>
+          <span class="tiny" id="waitlistCountLabel">Requests</span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Client</th>
+                <th>Guests</th>
+                <th>Seating</th>
+                <th>Status</th>
+                <th>Requests</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="waitlistRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <section class="panel" aria-label="Backend readiness">
       <div class="panel-head">
         <div>
@@ -1177,6 +1275,10 @@
         <div class="schema-line">
           <span class="label">Notes</span>
           <code id="noteEndpoint">/api/admin/client-notes</code>
+        </div>
+        <div class="schema-line">
+          <span class="label">Waitlist</span>
+          <code id="waitlistEndpoint">/api/admin/waitlist</code>
         </div>
         <div class="schema-line">
           <span class="label">Storage key</span>
@@ -1261,7 +1363,8 @@
       const endpoints = {
         reservations: `${API_BASE || ""}/api/admin/reservations`,
         customers: `${API_BASE || ""}/api/admin/customers`,
-        notes: `${API_BASE || ""}/api/admin/client-notes`
+        notes: `${API_BASE || ""}/api/admin/client-notes`,
+        waitlist: `${API_BASE || ""}/api/admin/waitlist`
       };
 
       const $ = (selector, root = document) => root.querySelector(selector);
@@ -1285,6 +1388,8 @@
         editorModeLabel: $("#editorModeLabel"),
         reservationRows: $("#reservationRows"),
         databaseCountLabel: $("#databaseCountLabel"),
+        waitlistRows: $("#waitlistRows"),
+        waitlistCountLabel: $("#waitlistCountLabel"),
         clientList: $("#clientList"),
         clientSearchInput: $("#clientSearchInput"),
         clientEditor: $("#clientEditor"),
@@ -1292,6 +1397,7 @@
         clientName: $("#clientName"),
         clientPhone: $("#clientPhone"),
         clientEmail: $("#clientEmail"),
+        clientNewsletter: $("#clientNewsletter"),
         clientTags: $("#clientTags"),
         clientProfileNote: $("#clientProfileNote"),
         clientVisitSummary: $("#clientVisitSummary"),
@@ -1305,6 +1411,7 @@
         reservationEndpoint: $("#reservationEndpoint"),
         customerEndpoint: $("#customerEndpoint"),
         noteEndpoint: $("#noteEndpoint"),
+        waitlistEndpoint: $("#waitlistEndpoint"),
         storageKeyLabel: $("#storageKeyLabel"),
         form: $("#reservationEditor"),
         reservationId: $("#reservationId"),
@@ -1384,10 +1491,11 @@
         },
         async load() {
           try {
-            const [reservations, customers, notes] = await Promise.all([
+            const [reservations, customers, notes, waitlist] = await Promise.all([
               this.request("/api/admin/reservations"),
               this.request("/api/admin/customers"),
-              this.request("/api/admin/client-notes")
+              this.request("/api/admin/client-notes"),
+              this.request("/api/admin/waitlist")
             ]);
             this.demoMode = false;
             return normalizeData({
@@ -1395,7 +1503,8 @@
               settings: { totalCoverLimit: TOTAL_COVER_LIMIT, tableCoverLimit: TABLE_COVER_LIMIT, barCoverLimit: BAR_LIMIT, serviceOpen: "19:00", serviceClose: "00:00" },
               customers: customers.customers || customers.clients || [],
               reservations: reservations.reservations || reservations.bookings || [],
-              notes: notes.notes || []
+              notes: notes.notes || [],
+              waitlist: waitlist.waitlist || []
             });
           } catch (error) {
             if (!this.isLocalPreview()) {
@@ -1434,6 +1543,20 @@
             body: JSON.stringify(toNoteApiPayload(note))
           });
           return normalizeNoteRecord(data.note || note);
+        },
+        async convertWaitlist(item) {
+          if (this.demoMode) {
+            return null;
+          }
+          return this.request("/api/admin/waitlist", {
+            method: "PUT",
+            body: JSON.stringify({
+              id: item.id,
+              action: "convert",
+              booking_time: item.time,
+              resources: item.resources
+            })
+          });
         }
       };
 
@@ -1535,6 +1658,13 @@
         };
       }
 
+      function normalizeNewsletter(value) {
+        if (typeof value === "boolean") {
+          return value ? 1 : 0;
+        }
+        return ["1", "true", "yes", "on"].includes(String(value ?? "").trim().toLowerCase()) ? 1 : 0;
+      }
+
       function splitFullName(name) {
         const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
         return {
@@ -1553,6 +1683,7 @@
           phone: client.phone || client.phoneFull || client.phone_full || "",
           tags: parseStoredArray(client.tags),
           profileNote: client.profileNote || client.profile_note || "",
+          newsletter: normalizeNewsletter(client.newsletter),
           createdAt: client.createdAt || client.created_at || new Date().toISOString(),
           updatedAt: client.updatedAt || client.updated_at || new Date().toISOString()
         };
@@ -1591,6 +1722,23 @@
         };
       }
 
+      function normalizeWaitlistRecord(item) {
+        return {
+          ...item,
+          id: item.id,
+          customerId: item.customerId || item.clientId || item.client_id || "",
+          date: item.date || item.booking_date || state.selectedDate || todayIso(),
+          time: item.time || item.preferredTime || item.preferred_time || "19:00",
+          guests: Number(item.guests || 1),
+          seatingType: item.seatingType || item.seating_type || "table",
+          requests: item.requests || "",
+          status: item.status || "waiting",
+          source: item.source || "website",
+          createdAt: item.createdAt || item.created_at || new Date().toISOString(),
+          updatedAt: item.updatedAt || item.updated_at || new Date().toISOString()
+        };
+      }
+
       function toClientApiPayload(customer) {
         const split = splitFullName(customer.name);
         return {
@@ -1605,6 +1753,7 @@
           phone_full: customer.phoneFull || customer.phone_full || customer.phone || "",
           tags: parseStoredArray(customer.tags),
           profile_note: customer.profileNote || customer.profile_note || "",
+          newsletter: normalizeNewsletter(customer.newsletter),
           created_at: customer.createdAt || customer.created_at,
           updated_at: new Date().toISOString()
         };
@@ -1647,7 +1796,8 @@
           settings: { totalCoverLimit: TOTAL_COVER_LIMIT, tableCoverLimit: TABLE_COVER_LIMIT, barCoverLimit: BAR_LIMIT, serviceOpen: "19:00", serviceClose: "00:00" },
           customers: [],
           reservations: [],
-          notes: []
+          notes: [],
+          waitlist: []
         };
         const next = { ...base, ...data };
         next.meta = { ...base.meta, ...(data.meta || {}) };
@@ -1655,6 +1805,7 @@
         next.customers = (Array.isArray(data.customers) ? data.customers : data.clients || []).map(normalizeClientRecord);
         next.reservations = (Array.isArray(data.reservations) ? data.reservations : data.bookings || []).map(normalizeReservationRecord);
         next.notes = (Array.isArray(data.notes) ? data.notes : []).map(normalizeNoteRecord);
+        next.waitlist = (Array.isArray(data.waitlist) ? data.waitlist : []).map(normalizeWaitlistRecord);
         return next;
       }
 
@@ -1697,12 +1848,18 @@
           note("n-004", "c-lina", "Noa", addDays(today, -10), "Mentioned birthday in early June.")
         ];
 
+        const waitlist = [
+          waitlistItem("w-001", "c-noor", today, "20:15", 2, "table", "Can come in quickly if table space opens."),
+          waitlistItem("w-002", "c-lina", addDays(today, 1), "21:00", 2, "barstand", "Prefers later barstand.")
+        ];
+
         return normalizeData({
           meta: { schemaVersion: 2, updatedAt: new Date().toISOString() },
           settings: { totalCoverLimit: TOTAL_COVER_LIMIT, tableCoverLimit: TABLE_COVER_LIMIT, barCoverLimit: BAR_LIMIT, serviceOpen: "19:00", serviceClose: "00:00" },
           customers,
           reservations,
-          notes
+          notes,
+          waitlist
         });
       }
 
@@ -1714,6 +1871,7 @@
           phone,
           tags,
           profileNote,
+          newsletter: 0,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
@@ -1747,6 +1905,22 @@
           author,
           text,
           createdAt: `${dateIso}T12:00:00.000Z`
+        };
+      }
+
+      function waitlistItem(id, customerId, date, time, guests, seatingType, requests, status = "waiting") {
+        return {
+          id,
+          customerId,
+          date,
+          time,
+          guests,
+          seatingType,
+          requests,
+          status,
+          source: "website",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
         };
       }
 
@@ -1928,6 +2102,7 @@
         renderMetrics();
         renderTimetable();
         renderReservationTable();
+        renderWaitlist();
         renderEditor();
         renderFloor();
         renderClients();
@@ -2022,6 +2197,44 @@
         }).join("") || `<tr><td colspan="8">No reservations match this view.</td></tr>`;
         $$("tr[data-id]", dom.reservationRows).forEach((row) => {
           row.addEventListener("click", () => selectReservation(row.dataset.id));
+        });
+      }
+
+      function waitlistForDate(date = state.selectedDate) {
+        return state.data.waitlist
+          .filter((item) => item.date === date)
+          .sort((a, b) => `${a.date} ${a.time} ${a.createdAt}`.localeCompare(`${b.date} ${b.time} ${b.createdAt}`));
+      }
+
+      function renderWaitlist() {
+        const rows = state.data.waitlist
+          .slice()
+          .sort((a, b) => `${a.date} ${a.time} ${a.createdAt}`.localeCompare(`${b.date} ${b.time} ${b.createdAt}`));
+        const activeCount = rows.filter((item) => ["waiting", "offered"].includes(item.status)).length;
+        dom.waitlistCountLabel.textContent = `${activeCount} active / ${rows.length} total`;
+
+        let lastDate = "";
+        dom.waitlistRows.innerHTML = rows.map((item) => {
+          const customer = getCustomer(item.customerId);
+          const dateCell = item.date === lastDate ? "" : `<strong>${formatDate(item.date)}</strong>`;
+          lastDate = item.date;
+          const canConvert = ["waiting", "offered"].includes(item.status);
+          return `
+            <tr data-waitlist-id="${item.id}">
+              <td>${dateCell}</td>
+              <td>${escapeHtml(item.time)}<br><span class="tiny">${escapeHtml(item.source)}</span></td>
+              <td>${escapeHtml(customer?.name || "Unknown")}<br><span class="tiny">${escapeHtml(customer?.phone || "")}</span></td>
+              <td>${item.guests}</td>
+              <td>${seatingLabel(item.seatingType)}</td>
+              <td><span class="status ${item.status}">${statusLabel(item.status)}</span></td>
+              <td>${escapeHtml(item.requests || "")}</td>
+              <td>${canConvert ? `<button class="button is-secondary waitlist-convert" data-id="${item.id}" type="button">Convert</button>` : `<span class="tiny">${statusLabel(item.status)}</span>`}</td>
+            </tr>
+          `;
+        }).join("") || `<tr><td colspan="8">No waitlist entries.</td></tr>`;
+
+        $$(".waitlist-convert", dom.waitlistRows).forEach((button) => {
+          button.addEventListener("click", () => convertWaitlist(button.dataset.id));
         });
       }
 
@@ -2159,6 +2372,7 @@
         dom.clientName.value = customer.name || "";
         dom.clientPhone.value = customer.phone || "";
         dom.clientEmail.value = customer.email || "";
+        dom.clientNewsletter.checked = normalizeNewsletter(customer.newsletter) === 1;
         dom.clientTags.value = (customer.tags || []).join(", ");
         dom.clientProfileNote.value = customer.profileNote || "";
         dom.clientVisitSummary.textContent = last
@@ -2182,6 +2396,7 @@
         customer.name = dom.clientName.value.trim() || customer.name;
         customer.phone = dom.clientPhone.value.trim();
         customer.email = dom.clientEmail.value.trim();
+        customer.newsletter = dom.clientNewsletter.checked ? 1 : 0;
         customer.tags = dom.clientTags.value.split(",").map((tag) => tag.trim()).filter(Boolean);
         customer.profileNote = dom.clientProfileNote.value.trim();
         customer.updatedAt = new Date().toISOString();
@@ -2286,6 +2501,7 @@
             email: dom.promptClientEmail.value.trim(),
             tags: ["admin"],
             profileNote: dom.promptClientNote.value.trim(),
+            newsletter: 0,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           };
@@ -2309,6 +2525,7 @@
         dom.reservationEndpoint.textContent = endpoints.reservations;
         dom.customerEndpoint.textContent = endpoints.customers;
         dom.noteEndpoint.textContent = endpoints.notes;
+        dom.waitlistEndpoint.textContent = endpoints.waitlist;
         dom.storageKeyLabel.textContent = "CLIENTS_DB / BOOKINGS_DB";
       }
 
@@ -2496,6 +2713,62 @@
         renderAll();
       }
 
+      async function convertWaitlist(id) {
+        const item = state.data.waitlist.find((entry) => entry.id === id);
+        if (!item) {
+          return;
+        }
+
+        let candidate = autoAssign({
+          id: "",
+          customerId: item.customerId,
+          date: item.date,
+          time: item.time,
+          durationMinutes: 0,
+          guests: item.guests,
+          seatingType: item.seatingType,
+          assignedTables: [],
+          assignedBarSeats: [],
+          status: "confirmed",
+          server: SERVERS[0],
+          source: "admin",
+          requests: item.requests,
+          internalNote: `Converted from waitlist ${item.id}.`,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }, "");
+
+        const issues = validateReservation(candidate, "");
+        if (issues.length) {
+          showMessage(issues.join(" "));
+          return;
+        }
+
+        try {
+          const data = await AdminBackend.convertWaitlist({
+            ...item,
+            resources: {
+              tables: candidate.assignedTables,
+              barSeats: candidate.assignedBarSeats
+            }
+          });
+          const savedReservation = normalizeReservationRecord(data?.reservation || data?.booking || candidate);
+          const savedWaitlist = normalizeWaitlistRecord(data?.waitlist || { ...item, status: "converted" });
+          state.data.reservations.push(savedReservation);
+          const index = state.data.waitlist.findIndex((entry) => entry.id === item.id);
+          if (index >= 0) {
+            state.data.waitlist[index] = savedWaitlist;
+          }
+          state.selectedReservationId = savedReservation.id;
+          state.selectedCustomerId = savedReservation.customerId;
+          state.selectedDate = savedReservation.date;
+          showMessage("Waitlist converted to booking.", true);
+          renderAll();
+        } catch (error) {
+          showMessage(error.message || "Waitlist could not be converted.");
+        }
+      }
+
       function duplicateSelected() {
         const reservation = getReservation(state.selectedReservationId);
         if (!reservation) {
@@ -2559,6 +2832,7 @@
           phone: record.phone || "",
           tags: ["website"],
           profileNote: "Created from public reservation save.",
+          newsletter: normalizeNewsletter(record.newsletter),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };

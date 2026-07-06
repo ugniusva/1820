@@ -190,32 +190,49 @@
     }
 
     .surface-head {
-      padding: 10px clamp(18px, 2.6vw, 30px) 8px;
+      padding: 14px clamp(18px, 2.6vw, 30px) 12px;
       border-bottom: 1px solid var(--line);
       background: rgba(255, 255, 255, 0.35);
     }
 
     .fish-journey {
       position: relative;
-      width: min(100%, 330px);
-      height: 76px;
-      margin-left: auto;
+      width: min(100%, 380px);
+      height: 86px;
+      margin: 0 auto;
       isolation: isolate;
     }
 
     .fish-stop {
       position: absolute;
-      top: 58px;
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.24);
-      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.04);
-      transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1), background 500ms ease, box-shadow 500ms ease;
+      top: 61px;
+      z-index: 2;
+      min-width: 86px;
+      padding: 8px 11px 7px;
+      border: 1px solid rgba(0, 0, 0, 0.24);
+      border-radius: 999px;
+      background:
+        repeating-linear-gradient(110deg, rgba(0, 0, 0, 0.04) 0 1px, transparent 1px 5px),
+        rgba(255, 255, 255, 0.54);
+      color: rgba(8, 8, 8, 0.58);
+      font-size: 0.62rem;
+      font-weight: 950;
+      letter-spacing: 0.11em;
+      line-height: 1;
+      text-align: center;
+      text-transform: uppercase;
+      transform: translateX(-50%);
+      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.06);
+      transition:
+        transform 500ms cubic-bezier(0.16, 1, 0.3, 1),
+        background 500ms ease,
+        color 500ms ease,
+        box-shadow 500ms ease,
+        border-color 500ms ease;
     }
 
     .fish-stop:nth-of-type(1) {
-      left: 14%;
+      left: 16%;
     }
 
     .fish-stop:nth-of-type(2) {
@@ -223,26 +240,30 @@
     }
 
     .fish-stop:nth-of-type(3) {
-      left: 86%;
+      left: 84%;
     }
 
     .fish-stop.is-active {
+      border-color: #080808;
       background: #080808;
-      box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.08);
-      transform: scale(1.22);
+      color: #f5f5f5;
+      box-shadow:
+        0 0 0 5px rgba(0, 0, 0, 0.07),
+        0 7px 0 rgba(0, 0, 0, 0.16);
+      transform: translateX(-50%) translateY(-1px);
     }
 
     .fish-progress {
       position: absolute;
       z-index: 1;
-      top: -3px;
-      left: 14%;
-      width: 112px;
-      height: 75px;
+      top: -4px;
+      left: 16%;
+      width: 98px;
+      height: 66px;
       display: block;
       pointer-events: none;
       transition: left 900ms cubic-bezier(0.16, 1, 0.3, 1), transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
-      transform: translateX(-48%) rotate(-1.5deg);
+      transform: translateX(-50%) rotate(-1.5deg);
     }
 
     .fish-progress img {
@@ -258,12 +279,12 @@
 
     .fish-journey[data-step="2"] .fish-progress {
       left: 50%;
-      transform: translateX(-48%) translateY(-2px) rotate(0.5deg);
+      transform: translateX(-50%) translateY(-2px) rotate(0.5deg);
     }
 
     .fish-journey[data-step="3"] .fish-progress {
-      left: 86%;
-      transform: translateX(-48%) translateY(1px) rotate(1.5deg);
+      left: 84%;
+      transform: translateX(-50%) translateY(1px) rotate(1.5deg);
     }
 
     @keyframes fish-drift {
@@ -313,7 +334,7 @@
 
     .service-facts {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 1px;
       border-top: 1px solid var(--line);
       border-bottom: 1px solid var(--line);
@@ -429,6 +450,10 @@
     .timepicker-wrap {
       position: relative;
       z-index: 5;
+    }
+
+    .timepicker-wrap.is-open {
+      z-index: 80;
     }
 
     .date-trigger,
@@ -600,7 +625,10 @@
 
     .calendar-day {
       width: 100%;
-      min-height: clamp(38px, 5.2vw, 46px);
+      min-height: clamp(48px, 6vw, 56px);
+      display: grid;
+      place-items: center;
+      gap: 2px;
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.09);
@@ -608,6 +636,27 @@
       font-size: 0.88rem;
       font-weight: 800;
       transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+    }
+
+    .calendar-day.is-open:not(:disabled) {
+      border-color: #f7f7f7;
+      background:
+        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.035) 0 1px, transparent 1px 5px),
+        #f7f7f7;
+      color: #080808;
+      box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.1),
+        3px 4px 0 rgba(0, 0, 0, 0.36);
+    }
+
+    .calendar-day.is-open:not(:disabled)::after {
+      content: "Open";
+      color: rgba(8, 8, 8, 0.66);
+      font-size: 0.48rem;
+      font-weight: 950;
+      letter-spacing: 0.12em;
+      line-height: 1;
+      text-transform: uppercase;
     }
 
     .calendar-day:hover:not(:disabled),
@@ -619,9 +668,21 @@
 
     .calendar-day.is-selected {
       border-color: #f7f7f7;
-      background: #f7f7f7;
-      color: #080808;
-      box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.42);
+      background: #080808;
+      color: #f7f7f7;
+      box-shadow:
+        0 0 0 2px #f7f7f7,
+        4px 5px 0 rgba(0, 0, 0, 0.52);
+    }
+
+    .calendar-day.is-selected::after {
+      color: rgba(247, 247, 247, 0.72);
+    }
+
+    .calendar-day.is-waitlist {
+      border-color: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.09);
+      color: rgba(247, 247, 247, 0.78);
     }
 
     .calendar-day.is-today {
@@ -633,6 +694,10 @@
       opacity: 0.28;
       cursor: not-allowed;
       transform: none;
+    }
+
+    .calendar-day.is-waitlist:disabled {
+      opacity: 0.72;
     }
 
     .calendar-legend {
@@ -794,6 +859,100 @@
       word-break: break-word;
     }
 
+    .consent-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .consent-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      min-height: 56px;
+      padding: 14px 16px;
+      border: 1px solid rgba(0, 0, 0, 0.28);
+      border-radius: var(--radius-md);
+      background:
+        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.025) 0 1px, transparent 1px 5px),
+        rgba(255, 255, 255, 0.48);
+      cursor: pointer;
+      letter-spacing: 0;
+      text-transform: none;
+      transition: border-color 220ms ease, box-shadow 220ms ease, background 220ms ease, transform 220ms ease;
+    }
+
+    .consent-card:hover,
+    .consent-card:focus-within {
+      border-color: #080808;
+      box-shadow:
+        0 0 0 4px rgba(0, 0, 0, 0.045),
+        5px 6px 0 rgba(0, 0, 0, 0.12);
+      background: rgba(255, 255, 255, 0.68);
+      transform: translateY(-1px);
+    }
+
+    .consent-card input {
+      position: absolute;
+      width: 1px;
+      min-height: 1px;
+      margin: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .consent-box {
+      position: relative;
+      width: 22px;
+      height: 22px;
+      margin-top: 1px;
+      border: 1px solid rgba(0, 0, 0, 0.55);
+      border-radius: 7px;
+      background: #f7f7f7;
+      box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.72);
+    }
+
+    .consent-card input:checked + .consent-box {
+      border-color: #080808;
+      background: #080808;
+    }
+
+    .consent-card input:checked + .consent-box::after {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 3px;
+      width: 7px;
+      height: 12px;
+      border: solid #f7f7f7;
+      border-width: 0 2px 2px 0;
+      transform: rotate(42deg);
+    }
+
+    .consent-copy {
+      color: #151515;
+      font-size: 0.92rem;
+      font-weight: 760;
+      letter-spacing: 0;
+      line-height: 1.45;
+      text-transform: none;
+    }
+
+    .consent-copy a {
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+    }
+
+    .field.has-error .consent-card {
+      border-color: #080808;
+      box-shadow:
+        0 0 0 4px rgba(0, 0, 0, 0.06),
+        6px 7px 0 rgba(0, 0, 0, 0.2);
+      background: #ffffff;
+    }
+
     .form-actions {
       display: flex;
       justify-content: space-between;
@@ -934,13 +1093,21 @@
       .phone-grid,
       .choice-grid,
       .service-facts,
-      .time-menu,
       .summary-row {
         grid-template-columns: 1fr;
       }
 
       .form-actions {
         display: grid;
+      }
+
+      .time-panel {
+        width: 100%;
+      }
+
+      .time-menu {
+        max-height: min(296px, 68vh);
+        padding-bottom: 10px;
       }
 
       .button {
@@ -975,15 +1142,15 @@
     <section class="reservation-hero" aria-label="Reservation introduction">
       <p class="kicker">Private reservations</p>
       <h1>Hold the room.</h1>
-      <p class="hero-copy">A quiet request for the table, the arrival, and the shape of the evening. One service, twenty-four seats, no table turns.</p>
+      <p class="hero-copy">A quiet request for the table, the arrival, and the shape of the evening. One service, no table turns.</p>
     </section>
 
     <section class="booking-surface" aria-label="Reservation form">
       <div class="surface-head">
         <div class="fish-journey" id="fishJourney" data-step="1" aria-hidden="true">
-          <span class="fish-stop is-active" data-fish-stop="1"></span>
-          <span class="fish-stop" data-fish-stop="2"></span>
-          <span class="fish-stop" data-fish-stop="3"></span>
+          <span class="fish-stop is-active" data-fish-stop="1">Contact</span>
+          <span class="fish-stop" data-fish-stop="2">Evening</span>
+          <span class="fish-stop" data-fish-stop="3">Review</span>
           <span class="fish-progress">
             <img src="images/fih.png" alt="" />
           </span>
@@ -995,7 +1162,6 @@
 
       <div class="service-facts" aria-label="Service rules">
         <div class="service-fact"><span>Service</span><span>19:00-midnight</span></div>
-        <div class="service-fact"><span>Capacity</span><span>24 guests total</span></div>
         <div class="service-fact"><span>Stay</span><span>Open-ended</span></div>
       </div>
 
@@ -1077,7 +1243,7 @@
                     <span class="calendar-weekday">Sun</span>
                   </div>
                   <div class="calendar-grid" id="calendarGrid"></div>
-                  <p class="calendar-legend">Past dates are unavailable. Each service holds 24 guests.</p>
+                  <p class="calendar-legend">Past dates are unavailable.</p>
                 </div>
               </div>
               <input id="date" name="booking_date" type="hidden" />
@@ -1098,6 +1264,21 @@
             <div class="summary-row"><span>Seating</span><span id="summarySeating">-</span></div>
             <div class="summary-row"><span>Service</span><span id="summaryService">19:00-midnight, open-ended</span></div>
             <div class="summary-row"><span>Requests</span><span id="summaryRequests">None</span></div>
+          </div>
+          <div class="field is-wide" data-field="tos">
+            <div class="consent-stack">
+              <label class="consent-card" for="tosAccepted">
+                <input id="tosAccepted" name="tos_accepted" type="checkbox" required />
+                <span class="consent-box" aria-hidden="true"></span>
+                <span class="consent-copy">I accept the <a href="1820TOS.pdf" target="_blank" rel="noopener">Terms of Service</a>.</span>
+              </label>
+              <span class="error" data-error="tos"></span>
+              <label class="consent-card" for="newsletterConsent">
+                <input id="newsletterConsent" name="newsletter" type="checkbox" />
+                <span class="consent-box" aria-hidden="true"></span>
+                <span class="consent-copy">I want to receive news, updates, and invitations from 1820.</span>
+              </label>
+            </div>
           </div>
           <p class="quiet-note">The request saves locally for now, with a backend-ready full-service payload prepared in the browser.</p>
         </section>
@@ -1394,6 +1575,7 @@
       const timeChoices = document.getElementById("timeChoices");
       const seatingChoices = document.getElementById("seatingChoices");
       const capacityNote = document.getElementById("capacityNote");
+      const timePicker = document.getElementById("timePicker");
       const timeTrigger = document.getElementById("timeTrigger");
       const timeText = document.getElementById("timeText");
       const timePanel = document.getElementById("timePanel");
@@ -1409,7 +1591,9 @@
         countryCode: document.getElementById("countryCode"),
         phone: document.getElementById("phone"),
         requests: document.getElementById("requests"),
-        date: document.getElementById("date")
+        date: document.getElementById("date"),
+        tosAccepted: document.getElementById("tosAccepted"),
+        newsletterConsent: document.getElementById("newsletterConsent")
       };
 
       const state = {
@@ -1426,7 +1610,10 @@
         date: "",
         guests: "",
         time: "",
-        seating: ""
+        seating: "",
+        tosAccepted: false,
+        newsletter: 0,
+        waitlistMode: false
       };
 
       let calendarCursor = new Date();
@@ -1500,6 +1687,7 @@
 
       const setTimePanelOpen = (open) => {
         timePanel.hidden = !open;
+        timePicker.classList.toggle("is-open", open);
         timeTrigger.setAttribute("aria-expanded", String(open));
         if (open) {
           renderChoices();
@@ -1534,17 +1722,23 @@
           const date = new Date(year, month, day, 12, 0, 0, 0);
           const iso = formatDateIso(date);
           const availability = availabilityForDate(iso);
-          const disabled = iso < today || Boolean(availability && availability.remaining.total <= 0);
+          const isPast = iso < today;
+          const isWaitlist = Boolean(!isPast && availability && availability.remaining.total <= 0);
+          const isOpen = !isPast && !isWaitlist;
+          const disabled = isPast;
 
           cell.className = "calendar-cell";
           button.type = "button";
           button.className = "calendar-day";
           button.textContent = String(day);
           button.disabled = disabled;
+          button.classList.toggle("is-open", isOpen);
+          button.classList.toggle("is-waitlist", isWaitlist);
           button.classList.toggle("is-selected", state.date === iso);
           button.classList.toggle("is-today", iso === today);
-          button.title = availability && availability.remaining.total <= 0 ? "Fully booked" : "";
+          button.title = isWaitlist ? "Join waitlist" : "";
           button.setAttribute("aria-pressed", String(state.date === iso));
+          button.setAttribute("aria-label", `${day} ${isOpen ? "open" : isWaitlist ? "waitlist available" : "unavailable"}`);
           button.addEventListener("click", () => {
             state.date = iso;
             fields.date.value = iso;
@@ -1670,25 +1864,32 @@
           return "";
         }
         if (guests > capacity.remaining.total) {
-          return `This service has ${capacity.remaining.total} covers left.`;
+          return "This service is fully reserved for the selected date.";
         }
         if (state.seating === "table" && guests > capacity.remaining.table) {
-          return `The table room has ${capacity.remaining.table} spaces left.`;
+          return "Tables are no longer available for the selected date.";
         }
         if (state.seating === "barstand" && guests > capacity.remaining.barstand) {
-          return `The barstand has ${capacity.remaining.barstand} spaces left.`;
+          return "Barstand is no longer available for the selected date.";
         }
         return "";
+      };
+
+      const canBookSelectedService = () => !capacityIssue();
+
+      const syncWaitlistMode = () => {
+        state.waitlistMode = Boolean(state.date && state.guests && state.seating && !canBookSelectedService());
+        submitButton.textContent = state.waitlistMode ? "Join waitlist" : "Save reservation";
+        return state.waitlistMode;
       };
 
       const updateCapacityNote = () => {
         if (!capacityNote) {
           return;
         }
-        const capacity = state.date ? availabilityForDate(state.date) : null;
         const base = "Times are arrivals only. Your reservation is held for the full service.";
-        capacityNote.textContent = capacity
-          ? `${base} Availability: ${capacity.remaining.total}/${totalCoverLimit} covers, ${capacity.remaining.table}/12 tables, ${capacity.remaining.barstand}/${barCoverLimit} bar spaces.`
+        capacityNote.textContent = syncWaitlistMode()
+          ? "This service is full. Continue to join the waitlist for the same details."
           : base;
       };
 
@@ -1728,6 +1929,8 @@
         state.phone = fields.phone.value.trim();
         state.requests = fields.requests.value.trim();
         state.date = fields.date.value;
+        state.tosAccepted = fields.tosAccepted.checked;
+        state.newsletter = fields.newsletterConsent.checked ? 1 : 0;
       };
 
       const applyStateToInputs = () => {
@@ -1738,8 +1941,16 @@
         fields.phone.value = state.phone;
         fields.requests.value = state.requests;
         fields.date.value = state.date;
+        fields.tosAccepted.checked = Boolean(state.tosAccepted);
+        fields.newsletterConsent.checked = Number(state.newsletter) === 1;
         updateTimeLabel();
       };
+
+      const fieldNameForInput = (input) => ({
+        countryCode: "phone",
+        tosAccepted: "tos",
+        newsletterConsent: "newsletter"
+      })[input.id] || input.id;
 
       const validateStep1 = () => {
         syncStateFromInputs();
@@ -1767,6 +1978,16 @@
         }
 
         return valid;
+      };
+
+      const validateConsents = () => {
+        syncStateFromInputs();
+        clearField("tos");
+        if (!state.tosAccepted) {
+          setFieldError("tos", "Accept the Terms of Service before saving.");
+          return false;
+        }
+        return true;
       };
 
       const validateStep2 = async () => {
@@ -1805,8 +2026,10 @@
 
         const issue = capacityIssue();
         if (issue) {
-          setFieldError(state.seating === "barstand" && issue.includes("barstand") ? "seating" : "guests", issue);
-          valid = false;
+          state.waitlistMode = true;
+          setStatus("error", "That service is full. You can continue and join the waitlist.");
+        } else {
+          state.waitlistMode = false;
         }
 
         return valid;
@@ -1831,6 +2054,8 @@
         guests: Number(state.guests),
         seating_type: state.seating,
         requests: state.requests,
+        tos_accepted: state.tosAccepted,
+        newsletter: state.newsletter ? 1 : 0,
         internal_note: "",
         resources: {
           tables: [],
@@ -1849,7 +2074,7 @@
         document.getElementById("summaryTime").textContent = state.time || "-";
         document.getElementById("summaryGuests").textContent = state.guests || "-";
         document.getElementById("summarySeating").textContent = formatSeating(state.seating);
-        document.getElementById("summaryService").textContent = "19:00-midnight, open-ended stay";
+        document.getElementById("summaryService").textContent = state.waitlistMode ? "Waitlist request" : "19:00-midnight, open-ended stay";
         document.getElementById("summaryRequests").textContent = state.requests || "None";
         window.__reservationPayload = buildPayload();
       };
@@ -1876,12 +2101,6 @@
         seatingChoices.innerHTML = "";
         const availability = state.date ? availabilityForDate(state.date) : null;
         const selectedGuests = Number(state.guests || 0);
-        if (availability && selectedGuests && state.seating) {
-          const selectedRemaining = state.seating === "barstand" ? availability.remaining.barstand : availability.remaining.table;
-          if (availability.remaining.total < selectedGuests || selectedRemaining < selectedGuests) {
-            state.seating = "";
-          }
-        }
         seatingOptions.forEach((option) => {
           const seatingRemaining = availability
             ? (option.value === "barstand" ? availability.remaining.barstand : availability.remaining.table)
@@ -1890,15 +2109,11 @@
           const button = document.createElement("button");
           button.type = "button";
           button.className = "choice-button";
-          button.textContent = option.label;
+          button.textContent = unavailable ? `${option.label} waitlist` : option.label;
           button.dataset.value = option.value;
-          button.disabled = unavailable;
           button.setAttribute("aria-pressed", String(state.seating === option.value));
           button.classList.toggle("is-selected", state.seating === option.value);
           button.addEventListener("click", () => {
-            if (unavailable) {
-              return;
-            }
             state.seating = option.value;
             clearField("seating");
             renderChoices();
@@ -1977,7 +2192,8 @@
 
       const saveFinalRecord = async () => {
         const payload = buildPayload();
-        const response = await fetch(`${apiBase}/api/reservations`, {
+        const endpoint = state.waitlistMode ? "/api/waitlist" : "/api/reservations";
+        const response = await fetch(`${apiBase}${endpoint}`, {
           method: "POST",
           headers: {
             "content-type": "application/json",
@@ -1987,6 +2203,11 @@
         });
         const data = await response.json().catch(() => ({}));
         if (!response.ok || data.ok === false) {
+          if (!state.waitlistMode && response.status === 409 && (data.waitlist_available || data.waitlistAvailable)) {
+            state.waitlistMode = true;
+            updateSummary();
+            return saveFinalRecord();
+          }
           const message = data.issues?.join(" ") || data.error || "Reservation could not be saved.";
           throw new Error(message);
         }
@@ -2057,7 +2278,7 @@
       Object.values(fields).forEach((input) => {
         input.addEventListener("input", () => {
           syncStateFromInputs();
-          clearField(input.id === "countryCode" ? "phone" : input.id);
+          clearField(fieldNameForInput(input));
           if (input.id === "phone") {
             fields.phone.value = fields.phone.value.replace(/[^\d\s()+-]/g, "");
             state.phone = fields.phone.value.trim();
@@ -2066,7 +2287,7 @@
         });
         input.addEventListener("change", () => {
           syncStateFromInputs();
-          clearField(input.id === "countryCode" ? "phone" : input.id);
+          clearField(fieldNameForInput(input));
           saveDraft();
         });
       });
@@ -2107,12 +2328,18 @@
           return;
         }
 
+        if (!validateConsents()) {
+          showStep(3);
+          setStatus("error", "Accept the Terms of Service before saving.");
+          return;
+        }
+
         syncStateFromInputs();
         updateSummary();
         submitButton.disabled = true;
         try {
           await saveFinalRecord();
-          setStatus("success", "Reservation saved for the full evening service.");
+          setStatus("success", state.waitlistMode ? "Waitlist request saved." : "Reservation saved for the full evening service.");
           showStep(3);
         } catch (error) {
           setStatus("error", error.message || "Reservation could not be saved.");

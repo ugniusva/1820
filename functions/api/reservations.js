@@ -1,15 +1,15 @@
 import {
   bookingFromPayload,
   capacityForDate,
-  clientFromPayload,
   ensureBookingsSchema,
   ensureClientsSchema,
   error,
-  findClientByContact,
   getBookingById,
   json,
   readBody,
   requireBinding,
+  resolveClientForReservation,
+  termsAccepted,
   uid,
   upsertBooking,
   upsertClient,
@@ -50,14 +50,20 @@ export async function onRequestPost(context) {
     await ensureBookingsSchema(bookingsDb);
 
     const payload = await readBody(context);
+    if (!termsAccepted(payload)) {
+      return error("Terms of Service must be accepted before creating a reservation.", 400, {
+        field: "tos_accepted"
+      });
+    }
+
     const publicPayload = {
       ...payload,
       source: payload.source || "website",
       status: "confirmed"
     };
 
-    let client = await findClientByContact(clientsDb, payload.email, payload.phone_full || payload.phone);
-    client = clientFromPayload(payload, client || {});
+    const clientResolution = await resolveClientForReservation(clientsDb, payload);
+    const client = clientResolution.client;
 
     const bookingDraft = bookingFromPayload({
       ...publicPayload,
@@ -69,7 +75,9 @@ export async function onRequestPost(context) {
     if (!capacity.ok) {
       return error("Reservation capacity exceeded.", 409, {
         issues: capacity.issues,
-        availability: capacity.availability
+        availability: capacity.availability,
+        waitlist_available: true,
+        waitlistAvailable: true
       });
     }
 
@@ -77,7 +85,16 @@ export async function onRequestPost(context) {
     await upsertBooking(bookingsDb, bookingDraft);
 
     const availability = await capacityForDate(bookingsDb, bookingDraft.date);
-    return json({ ok: true, client, reservation: bookingDraft, booking: bookingDraft, availability }, { status: 201 });
+    return json({
+      ok: true,
+      client,
+      reservation: bookingDraft,
+      booking: bookingDraft,
+      availability,
+      client_match: clientResolution.matchType,
+      possible_duplicate: clientResolution.possibleDuplicate,
+      possibleDuplicate: clientResolution.possibleDuplicate
+    }, { status: 201 });
   } catch (cause) {
     return error(cause.message || "Reservation save failed.", 500);
   }
