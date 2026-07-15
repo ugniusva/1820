@@ -1,5 +1,6 @@
 import {
   bookingFromPayload,
+  cancelBookingAsAdmin,
   capacityForDate,
   ensureBookingsSchema,
   error,
@@ -11,6 +12,7 @@ import {
   upsertBooking,
   validateBookingCapacity
 } from "../../_lib/d1.js";
+import { cancellationPath, createCancellationSecret } from "../../_lib/cancellation.js";
 
 export async function onRequestGet(context) {
   try {
@@ -75,6 +77,9 @@ export async function onRequestPost(context) {
 
     const payload = await readBody(context);
     const booking = bookingFromPayload(payload);
+    if (await getBookingById(db, booking.id)) {
+      return error("A reservation with that id already exists.", 409);
+    }
     const capacity = await validateBookingCapacity(db, booking, booking.id);
     if (!capacity.ok) {
       return error("Reservation capacity exceeded.", 409, {
@@ -83,9 +88,19 @@ export async function onRequestPost(context) {
       });
     }
 
-    await upsertBooking(db, booking);
+    const cancellation = await createCancellationSecret();
+    await upsertBooking(db, booking, {
+      cancelTokenHash: cancellation.tokenHash
+    });
     const availability = await capacityForDate(db, booking.date);
-    return json({ ok: true, reservation: booking, booking, availability }, { status: 201 });
+    return json({
+      ok: true,
+      reservation: booking,
+      booking,
+      cancellation_url: cancellationPath(cancellation.token),
+      cancellationUrl: cancellationPath(cancellation.token),
+      availability
+    }, { status: 201 });
   } catch (cause) {
     return error(cause.message || "Reservation save failed.", 500);
   }
@@ -105,6 +120,21 @@ export async function onRequestPut(context) {
     if (!existing) return error("Reservation not found.", 404);
 
     const booking = bookingFromPayload({ ...payload, id }, existing);
+    if (booking.status === "cancelled" && existing.status !== "cancelled") {
+      const changes = await cancelBookingAsAdmin(db, id);
+      if (changes !== 1) {
+        return error("Reservation could not be cancelled.", 409);
+      }
+      const cancelledBooking = await getBookingById(db, id);
+      const availability = await capacityForDate(db, booking.date);
+      return json({
+        ok: true,
+        reservation: cancelledBooking,
+        booking: cancelledBooking,
+        availability
+      });
+    }
+
     const capacity = await validateBookingCapacity(db, booking, booking.id);
     if (!capacity.ok) {
       return error("Reservation capacity exceeded.", 409, {

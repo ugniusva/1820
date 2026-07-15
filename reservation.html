@@ -6,9 +6,19 @@
   <title>1820 | Reservation</title>
   <link rel="preload" as="image" href="images/rockguy.png" />
   <script>
-    if (sessionStorage.getItem("1820PageTransition") === "reservation") {
-      document.documentElement.classList.add("is-arriving");
-    }
+    (() => {
+      const navigation = performance.getEntriesByType("navigation")[0];
+      if (navigation?.type === "back_forward") {
+        return;
+      }
+      try {
+        if (sessionStorage.getItem("1820PageTransition") === "reservation") {
+          document.documentElement.classList.add("is-arriving");
+        }
+      } catch (error) {
+        // Direct visits do not need an incoming cross-page transition.
+      }
+    })();
   </script>
   <style>
     :root {
@@ -1053,15 +1063,38 @@
       background: #ffffff;
       opacity: var(--transition);
       pointer-events: none;
-      transition: opacity 1120ms cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 1240ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .page-transition.is-active {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     html.is-arriving {
       --transition: 1;
     }
 
+    html.is-arriving,
+    html.is-revealing {
+      overflow: hidden;
+    }
+
     html.is-arriving .page-transition {
       pointer-events: auto;
+    }
+
+    html.is-revealing .page-transition {
+      pointer-events: auto;
+    }
+
+    .rock-loader-stage {
+      position: relative;
+      display: grid;
+      place-items: center;
+      opacity: 1;
+      transform: scale(1);
+      will-change: opacity, transform;
     }
 
     .rock-loader {
@@ -1074,11 +1107,21 @@
       transform-origin: center;
       object-fit: contain;
       filter: grayscale(1) contrast(1.05);
-      animation: rockBlink 1600ms ease-in-out infinite;
+      will-change: opacity;
     }
 
-    html.is-arriving .rock-loader {
-      opacity: 0.9;
+    .page-transition.is-active .rock-loader,
+    html.is-arriving .rock-loader,
+    html.is-revealing .rock-loader {
+      animation: rockBlink 1760ms ease-in-out infinite;
+    }
+
+    html.is-arriving .rock-loader-stage {
+      animation: rockStageIn 600ms cubic-bezier(0.22, 1, 0.36, 1) 220ms both;
+    }
+
+    html.is-revealing .rock-loader-stage {
+      animation: rockStageOut 980ms cubic-bezier(0.22, 1, 0.36, 1) both;
     }
 
     @keyframes rockBlink {
@@ -1089,6 +1132,30 @@
 
       48% {
         opacity: 0.92;
+      }
+    }
+
+    @keyframes rockStageIn {
+      from {
+        opacity: 0;
+        transform: scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes rockStageOut {
+      from {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      to {
+        opacity: 0;
+        transform: scale(0.975);
       }
     }
 
@@ -1169,7 +1236,7 @@
 </head>
 <body>
   <header class="topbar" aria-label="Site header">
-    <a class="brand" href="index.html" aria-label="1820 home">1820</a>
+    <a class="brand" href="index.html" aria-label="1820 home" data-page-transition="index">1820</a>
     <div class="date">Reservation</div>
   </header>
 
@@ -1328,12 +1395,23 @@
   </main>
 
   <div class="page-transition" id="pageTransition" aria-hidden="true">
-    <img class="rock-loader" src="images/rockguy.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="high" />
+    <span class="rock-loader-stage">
+      <img class="rock-loader" src="images/rockguy.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="high" />
+    </span>
   </div>
 
   <script>
     (() => {
       const transitionKey = "1820PageTransition";
+      const pageTransition = document.getElementById("pageTransition");
+      const root = document.documentElement;
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const arrivalHold = 880;
+      const revealDuration = 1240;
+      const departureDuration = 1740;
+      let arrivalTimer = 0;
+      let revealTimer = 0;
+      let departureTimer = 0;
       const apiBase = "";
       const maxGuests = 4;
       const serviceOpenMinutes = 19 * 60;
@@ -2277,16 +2355,93 @@
         return data;
       };
 
+      const clearStoredTransition = (expectedValue = "") => {
+        try {
+          if (!expectedValue || sessionStorage.getItem(transitionKey) === expectedValue) {
+            sessionStorage.removeItem(transitionKey);
+          }
+        } catch (error) {
+          // The page remains usable when session storage is unavailable.
+        }
+      };
+
+      const resetPageTransition = (clearStored = false) => {
+        window.clearTimeout(arrivalTimer);
+        window.clearTimeout(revealTimer);
+        window.clearTimeout(departureTimer);
+        root.classList.remove("is-arriving", "is-revealing");
+        pageTransition.classList.remove("is-active");
+        if (clearStored) {
+          clearStoredTransition();
+        }
+      };
+
       const initArrival = () => {
-        if (!document.documentElement.classList.contains("is-arriving")) {
+        if (!root.classList.contains("is-arriving")) {
           return;
         }
 
-        window.setTimeout(() => {
-          sessionStorage.removeItem(transitionKey);
-          document.documentElement.classList.remove("is-arriving");
-        }, 760);
+        if (prefersReduced) {
+          resetPageTransition();
+          clearStoredTransition("reservation");
+          return;
+        }
+
+        arrivalTimer = window.setTimeout(() => {
+          root.classList.add("is-revealing");
+          root.classList.remove("is-arriving");
+          clearStoredTransition("reservation");
+          revealTimer = window.setTimeout(() => {
+            root.classList.remove("is-revealing");
+          }, revealDuration);
+        }, arrivalHold);
       };
+
+      document.querySelectorAll("[data-page-transition]").forEach((link) => {
+        link.addEventListener("click", (event) => {
+          if (
+            event.defaultPrevented ||
+            event.button !== 0 ||
+            event.metaKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            event.altKey
+          ) {
+            return;
+          }
+
+          const target = link.getAttribute("href");
+          if (!target || target.startsWith("#")) {
+            return;
+          }
+
+          event.preventDefault();
+          if (pageTransition.classList.contains("is-active")) {
+            return;
+          }
+
+          try {
+            sessionStorage.setItem(transitionKey, link.dataset.pageTransition || "index");
+          } catch (error) {
+            // Navigation remains available without the incoming-page marker.
+          }
+
+          window.clearTimeout(arrivalTimer);
+          window.clearTimeout(revealTimer);
+          root.classList.remove("is-arriving", "is-revealing");
+          pageTransition.classList.add("is-active");
+          departureTimer = window.setTimeout(() => {
+            window.location.href = target;
+          }, prefersReduced ? 0 : departureDuration);
+        });
+      });
+
+      window.addEventListener("pageshow", (event) => {
+        const navigation = performance.getEntriesByType("navigation")[0];
+        if (event.persisted || navigation?.type === "back_forward") {
+          resetPageTransition(true);
+        }
+      });
 
       timeTrigger.addEventListener("click", (event) => {
         event.stopPropagation();

@@ -15,6 +15,7 @@ import {
   upsertClient,
   validateBookingCapacity
 } from "../_lib/d1.js";
+import { cancellationPath, createCancellationSecret } from "../_lib/cancellation.js";
 
 export async function onRequestGet(context) {
   try {
@@ -67,7 +68,7 @@ export async function onRequestPost(context) {
 
     const bookingDraft = bookingFromPayload({
       ...publicPayload,
-      id: payload.id || uid("r"),
+      id: uid("r"),
       client_id: client.id
     });
 
@@ -81,8 +82,11 @@ export async function onRequestPost(context) {
       });
     }
 
+    const cancellation = await createCancellationSecret();
     await upsertClient(clientsDb, client);
-    await upsertBooking(bookingsDb, bookingDraft);
+    await upsertBooking(bookingsDb, bookingDraft, {
+      cancelTokenHash: cancellation.tokenHash
+    });
 
     const availability = await capacityForDate(bookingsDb, bookingDraft.date);
     return json({
@@ -90,6 +94,8 @@ export async function onRequestPost(context) {
       client,
       reservation: bookingDraft,
       booking: bookingDraft,
+      cancellation_url: cancellationPath(cancellation.token),
+      cancellationUrl: cancellationPath(cancellation.token),
       availability,
       client_match: clientResolution.matchType,
       possible_duplicate: clientResolution.possibleDuplicate,

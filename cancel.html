@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="referrer" content="no-referrer" />
+  <title>Cancel reservation | 1820</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #080808;
+      --paper: #f4f4f2;
+      --soft: #e9e9e6;
+      --muted: #626262;
+      --line: rgba(8, 8, 8, 0.22);
+      --serif: Georgia, "Times New Roman", serif;
+      --sans: Arial, Helvetica, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--paper);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      background:
+        repeating-linear-gradient(105deg, rgba(0, 0, 0, 0.018) 0 1px, transparent 1px 5px),
+        var(--paper);
+      color: var(--ink);
+      font-family: var(--sans);
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button,
+    a,
+    input,
+    textarea {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .site-head {
+      position: fixed;
+      z-index: 10;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px clamp(22px, 3vw, 52px);
+      pointer-events: none;
+    }
+
+    .wordmark,
+    .section-mark {
+      margin: 0;
+      color: var(--ink);
+      font-size: 0.78rem;
+      font-weight: 900;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .wordmark {
+      font-size: 1rem;
+    }
+
+    .cancel-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(460px, 0.7fr);
+      align-items: center;
+      gap: clamp(44px, 7vw, 132px);
+      width: min(1380px, calc(100% - 64px));
+      margin: 0 auto;
+      padding: 110px 0 72px;
+    }
+
+    .intro {
+      position: relative;
+      min-height: 560px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      isolation: isolate;
+    }
+
+    .intro-rock {
+      position: absolute;
+      z-index: -1;
+      right: -8%;
+      bottom: -2%;
+      width: min(55%, 430px);
+      height: auto;
+      opacity: 0.095;
+      filter: grayscale(1) contrast(1.12);
+      transform: rotate(-7deg);
+      pointer-events: none;
+    }
+
+    .kicker {
+      margin: 0 0 24px;
+      font-size: 0.7rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 710px;
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(4.8rem, 9.1vw, 9.6rem);
+      font-weight: 400;
+      line-height: 0.78;
+      letter-spacing: 0;
+    }
+
+    .intro-copy {
+      max-width: 530px;
+      margin: 44px 0 0;
+      font-size: 1rem;
+      font-weight: 650;
+      line-height: 1.55;
+    }
+
+    .cancel-surface {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: rgba(250, 250, 248, 0.88);
+      box-shadow: 12px 14px 0 rgba(8, 8, 8, 0.92), 0 30px 80px rgba(0, 0, 0, 0.08);
+      backdrop-filter: blur(18px);
+    }
+
+    .surface-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 28px 30px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .surface-head p {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 0.65rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .surface-head h2 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(2.1rem, 3.2vw, 3.2rem);
+      font-weight: 400;
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    .state-mark {
+      flex: 0 0 auto;
+      min-width: 84px;
+      padding: 10px 12px;
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      font-size: 0.62rem;
+      font-weight: 900;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .surface-body {
+      padding: 28px 30px 30px;
+    }
+
+    .loading {
+      min-height: 300px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    .loading-stone {
+      width: 54px;
+      height: 45px;
+      margin: 0 auto 22px;
+      border-radius: 52% 48% 45% 55%;
+      background: var(--ink);
+      animation: breathe 1.6s ease-in-out infinite;
+    }
+
+    .loading p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    @keyframes breathe {
+      0%, 100% { opacity: 0.18; transform: scale(0.88); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+
+    .status-message {
+      display: none;
+      margin: 0 0 22px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 0.85rem;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .status-message.is-visible {
+      display: block;
+    }
+
+    .status-message.is-soft {
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--ink);
+    }
+
+    .booking-summary {
+      margin: 0 0 28px;
+      border-top: 1px solid var(--line);
+    }
+
+    .summary-row {
+      display: grid;
+      grid-template-columns: minmax(105px, 0.72fr) minmax(0, 1.28fr);
+      gap: 18px;
+      padding: 13px 2px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .summary-row dt,
+    .summary-row dd {
+      margin: 0;
+    }
+
+    .summary-row dt {
+      color: var(--muted);
+      font-size: 0.64rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .summary-row dd {
+      font-size: 0.88rem;
+      font-weight: 750;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    .field label,
+    .field-title {
+      display: block;
+      margin: 0 0 8px;
+      font-size: 0.66rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      outline: 0;
+      background: rgba(255, 255, 255, 0.62);
+      color: var(--ink);
+      font-weight: 700;
+      transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .field input {
+      min-height: 52px;
+      padding: 0 16px;
+    }
+
+    .field textarea {
+      min-height: 106px;
+      resize: vertical;
+      padding: 15px 16px;
+      line-height: 1.45;
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      border-color: var(--ink);
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(8, 8, 8, 0.09);
+    }
+
+    .field-hint {
+      margin: 7px 2px 0;
+      color: var(--muted);
+      font-size: 0.72rem;
+      line-height: 1.4;
+    }
+
+    .confirmation {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 13px;
+      align-items: start;
+      margin: 2px 0 20px;
+      padding: 15px 16px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      cursor: pointer;
+    }
+
+    .confirmation input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .check-box {
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--ink);
+      border-radius: 7px;
+      background: transparent;
+      transition: background 180ms ease, transform 180ms ease;
+    }
+
+    .check-box::after {
+      content: "";
+      width: 8px;
+      height: 4px;
+      border-left: 2px solid var(--paper);
+      border-bottom: 2px solid var(--paper);
+      opacity: 0;
+      transform: translateY(-1px) rotate(-45deg);
+    }
+
+    .confirmation input:checked + .check-box {
+      background: var(--ink);
+      transform: scale(1.04);
+    }
+
+    .confirmation input:checked + .check-box::after {
+      opacity: 1;
+    }
+
+    .confirmation input:focus-visible + .check-box {
+      box-shadow: 0 0 0 4px rgba(8, 8, 8, 0.12);
+    }
+
+    .confirmation-copy {
+      padding-top: 2px;
+      font-size: 0.82rem;
+      font-weight: 750;
+      line-height: 1.4;
+    }
+
+    .policy-warning {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 650;
+      line-height: 1.5;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 12px;
+    }
+
+    .button {
+      min-height: 52px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--ink);
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 0.68rem;
+      font-weight: 900;
+      text-decoration: none;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 180ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    .button.is-secondary {
+      background: transparent;
+      color: var(--ink);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+    }
+
+    .button.is-secondary:hover {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .button:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 920px) {
+      .cancel-page {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        width: min(650px, calc(100% - 36px));
+        padding-top: 96px;
+      }
+
+      .intro {
+        min-height: auto;
+        padding: 42px 4px 36px;
+      }
+
+      .intro-rock {
+        right: 0;
+        width: 230px;
+      }
+
+      h1 {
+        font-size: clamp(4.4rem, 19vw, 7.4rem);
+      }
+
+      .intro-copy {
+        margin-top: 30px;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .site-head {
+        padding: 18px;
+      }
+
+      .cancel-page {
+        width: calc(100% - 24px);
+        padding-bottom: 38px;
+      }
+
+      .surface-head,
+      .surface-body {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .surface-head {
+        flex-direction: column;
+      }
+
+      .state-mark {
+        align-self: flex-start;
+      }
+
+      .button-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-head" aria-label="1820">
+    <p class="wordmark">1820</p>
+    <p class="section-mark">Reservation care</p>
+  </header>
+
+  <main class="cancel-page">
+    <section class="intro" aria-labelledby="pageTitle">
+      <img class="intro-rock" src="images/rock-03.png" width="1024" height="1024" alt="" />
+      <p class="kicker">Private reservations</p>
+      <h1 id="pageTitle">Release<br />the room.</h1>
+      <p class="intro-copy">Plans move. Confirm the reservation details, then release the evening with one final action.</p>
+    </section>
+
+    <section class="cancel-surface" aria-labelledby="surfaceTitle">
+      <div class="surface-head">
+        <div>
+          <p>Reservation cancellation</p>
+          <h2 id="surfaceTitle">Confirm the evening.</h2>
+        </div>
+        <span class="state-mark" id="stateMark">Checking</span>
+      </div>
+
+      <div class="surface-body">
+        <div class="loading" id="loadingState" role="status" aria-live="polite">
+          <div>
+            <div class="loading-stone" aria-hidden="true"></div>
+            <p>Retrieving reservation</p>
+          </div>
+        </div>
+
+        <div id="cancelContent" hidden>
+          <p class="status-message" id="statusMessage" role="status" aria-live="polite"></p>
+
+          <dl class="booking-summary" id="bookingSummary">
+            <div class="summary-row"><dt>Date</dt><dd id="summaryDate">-</dd></div>
+            <div class="summary-row"><dt>Arrival</dt><dd id="summaryTime">-</dd></div>
+            <div class="summary-row"><dt>Guests</dt><dd id="summaryGuests">-</dd></div>
+            <div class="summary-row"><dt>Seating</dt><dd id="summarySeating">-</dd></div>
+            <div class="summary-row"><dt>Status</dt><dd id="summaryStatus">-</dd></div>
+          </dl>
+
+          <form id="cancelForm" novalidate>
+            <div class="field">
+              <label for="contact">Reservation email or phone</label>
+              <input id="contact" name="contact" type="text" autocomplete="off" maxlength="320" required />
+              <p class="field-hint">Enter either contact detail used when the reservation was made.</p>
+            </div>
+
+            <div class="field">
+              <label for="cancelReason">Reason <span aria-hidden="true">(optional)</span></label>
+              <textarea id="cancelReason" name="cancel_reason" maxlength="500" placeholder="A short note for the restaurant."></textarea>
+              <p class="field-hint"><span id="reasonCount">0</span>/500</p>
+            </div>
+
+            <label class="confirmation" for="confirmed">
+              <input id="confirmed" name="confirmed" type="checkbox" required />
+              <span class="check-box" aria-hidden="true"></span>
+              <span class="confirmation-copy">I understand that this will cancel my reservation.</span>
+            </label>
+
+            <p class="policy-warning">Cancellation does not automatically guarantee a refund. Payment and refund handling follows the restaurant's cancellation policy.</p>
+
+            <div class="button-row">
+              <a class="button is-secondary" href="index.html">Keep reservation</a>
+              <button class="button" id="cancelButton" type="submit">Cancel reservation</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token") || "";
+      const loadingState = document.getElementById("loadingState");
+      const cancelContent = document.getElementById("cancelContent");
+      const cancelForm = document.getElementById("cancelForm");
+      const cancelButton = document.getElementById("cancelButton");
+      const statusMessage = document.getElementById("statusMessage");
+      const stateMark = document.getElementById("stateMark");
+      const contact = document.getElementById("contact");
+      const confirmed = document.getElementById("confirmed");
+      const cancelReason = document.getElementById("cancelReason");
+      const reasonCount = document.getElementById("reasonCount");
+      const blockedStatuses = new Set(["cancelled", "completed", "no_show"]);
+
+      const titleCase = (value) => String(value || "")
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+      const formatDate = (value) => {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ""))) {
+          return "-";
+        }
+        return new Intl.DateTimeFormat("en", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+          timeZone: "UTC"
+        }).format(new Date(`${value}T12:00:00Z`));
+      };
+
+      const showMessage = (message, soft = false) => {
+        statusMessage.textContent = message;
+        statusMessage.classList.add("is-visible");
+        statusMessage.classList.toggle("is-soft", soft);
+      };
+
+      const renderBooking = (booking) => {
+        document.getElementById("summaryDate").textContent = formatDate(booking.booking_date);
+        document.getElementById("summaryTime").textContent = booking.booking_time || "-";
+        document.getElementById("summaryGuests").textContent = String(booking.guests || "-");
+        document.getElementById("summarySeating").textContent = titleCase(booking.seating_type);
+        document.getElementById("summaryStatus").textContent = titleCase(booking.status);
+        stateMark.textContent = titleCase(booking.status);
+
+        if (blockedStatuses.has(String(booking.status || "").toLowerCase())) {
+          cancelForm.hidden = true;
+          const message = booking.status === "cancelled"
+            ? "This reservation has already been cancelled."
+            : "This reservation can no longer be cancelled online.";
+          showMessage(message, true);
+        }
+      };
+
+      const showLoadError = (message) => {
+        loadingState.hidden = true;
+        cancelContent.hidden = false;
+        document.getElementById("bookingSummary").hidden = true;
+        cancelForm.hidden = true;
+        stateMark.textContent = "Unavailable";
+        showMessage(message || "This cancellation link is invalid or has expired.");
+      };
+
+      const loadBooking = async () => {
+        if (!/^[A-Za-z0-9_-]{43}$/.test(token)) {
+          showLoadError("This cancellation link is invalid or has expired.");
+          return;
+        }
+
+        try {
+          const response = await fetch(`/api/cancel-booking?token=${encodeURIComponent(token)}`, {
+            headers: { accept: "application/json" }
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok || data.ok === false || !data.booking) {
+            throw new Error(data.error || "This cancellation link is invalid or has expired.");
+          }
+          renderBooking(data.booking);
+          loadingState.hidden = true;
+          cancelContent.hidden = false;
+        } catch (error) {
+          showLoadError(error.message);
+        }
+      };
+
+      cancelReason.addEventListener("input", () => {
+        reasonCount.textContent = String(cancelReason.value.length);
+      });
+
+      cancelForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        statusMessage.classList.remove("is-visible");
+
+        if (!contact.value.trim()) {
+          showMessage("Enter the reservation email or phone number.");
+          contact.focus();
+          return;
+        }
+        if (!confirmed.checked) {
+          showMessage("Confirm that you understand the reservation will be cancelled.");
+          confirmed.focus();
+          return;
+        }
+
+        cancelButton.disabled = true;
+        cancelButton.textContent = "Cancelling";
+        try {
+          const response = await fetch("/api/cancel-booking", {
+            method: "POST",
+            headers: {
+              accept: "application/json",
+              "content-type": "application/json"
+            },
+            body: JSON.stringify({
+              token,
+              contact: contact.value.trim(),
+              confirmed: confirmed.checked,
+              cancel_reason: cancelReason.value.trim()
+            })
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok || data.ok === false) {
+            throw new Error(data.error || "The reservation could not be cancelled.");
+          }
+          renderBooking(data.booking);
+          cancelForm.hidden = true;
+          showMessage(data.message || "Your reservation has been cancelled.", true);
+          stateMark.textContent = "Cancelled";
+        } catch (error) {
+          showMessage(error.message || "The reservation could not be cancelled.");
+        } finally {
+          cancelButton.disabled = false;
+          cancelButton.textContent = "Cancel reservation";
+        }
+      });
+
+      loadBooking();
+    })();
+  </script>
+</body>
+</html>

@@ -37,7 +37,10 @@ export function requireBinding(context, name) {
 }
 
 export function uid(prefix) {
-  const random = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
+  const random = Array.from(
+    crypto.getRandomValues(new Uint8Array(16)),
+    (byte) => byte.toString(16).padStart(2, "0")
+  ).join("");
   return `${prefix}-${random}`;
 }
 
@@ -531,7 +534,8 @@ export async function upsertClient(db, client) {
   return client;
 }
 
-export async function upsertBooking(db, booking) {
+export async function upsertBooking(db, booking, options = {}) {
+  const cancelTokenHash = options.cancelTokenHash || null;
   await db.prepare(`
     INSERT INTO bookings (
       id,
@@ -546,9 +550,10 @@ export async function upsertBooking(db, booking) {
       internal_note,
       resources,
       created_at,
-      updated_at
+      updated_at,
+      cancel_token_hash
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(id) DO UPDATE SET
       client_id = excluded.client_id,
       booking_date = excluded.booking_date,
@@ -574,9 +579,24 @@ export async function upsertBooking(db, booking) {
     booking.internalNote,
     JSON.stringify(booking.resources || { tables: [], barSeats: [] }),
     booking.createdAt,
-    booking.updatedAt
+    booking.updatedAt,
+    cancelTokenHash
   ).run();
   return booking;
+}
+
+export async function cancelBookingAsAdmin(db, id) {
+  const result = await db.prepare(`
+    UPDATE bookings
+    SET
+      status = 'cancelled',
+      cancelled_at = CURRENT_TIMESTAMP,
+      cancel_source = 'admin',
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+      AND lower(COALESCE(status, '')) <> 'cancelled'
+  `).bind(id).run();
+  return Number(result.meta?.changes ?? result.changes ?? 0);
 }
 
 export async function upsertNote(db, note) {

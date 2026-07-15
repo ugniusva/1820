@@ -3,6 +3,7 @@ import {
   capacityForDate,
   ensureBookingsSchema,
   error,
+  getBookingById,
   getWaitlistById,
   json,
   readBody,
@@ -15,6 +16,7 @@ import {
   validateBookingCapacity,
   waitlistFromPayload
 } from "../../_lib/d1.js";
+import { cancellationPath, createCancellationSecret } from "../../_lib/cancellation.js";
 
 export async function onRequestGet(context) {
   try {
@@ -109,10 +111,25 @@ export async function onRequestPut(context) {
         });
       }
 
-      await upsertBooking(db, booking);
+      if (await getBookingById(db, booking.id)) {
+        return error("A reservation with that id already exists.", 409);
+      }
+
+      const cancellation = await createCancellationSecret();
+      await upsertBooking(db, booking, {
+        cancelTokenHash: cancellation.tokenHash
+      });
       const waitlist = await updateWaitlistStatus(db, existing.id, "converted");
       const availability = await capacityForDate(db, booking.date);
-      return json({ ok: true, waitlist, reservation: booking, booking, availability });
+      return json({
+        ok: true,
+        waitlist,
+        reservation: booking,
+        booking,
+        cancellation_url: cancellationPath(cancellation.token),
+        cancellationUrl: cancellationPath(cancellation.token),
+        availability
+      });
     }
 
     const waitlist = waitlistFromPayload({ ...payload, id }, existing);
