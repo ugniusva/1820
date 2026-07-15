@@ -278,7 +278,6 @@
       height: 100%;
       display: block;
       pointer-events: none;
-      filter: grayscale(1) contrast(1.12);
       contain: strict;
     }
 
@@ -1053,11 +1052,11 @@
   <button class="skip" id="skipToEnd" type="button" aria-label="Jump to booking section">Booking</button>
   <div class="scroll-length" aria-hidden="true"></div>
 
+  <script src="scripts/boulder-renderer.js"></script>
   <script>
     (() => {
       const root = document.documentElement;
       const field = document.getElementById("boulderField");
-      const fieldContext = field.getContext("2d", { alpha: true, desynchronized: true });
       const panel = document.getElementById("restaurantPanel");
       const platePanel = document.getElementById("platePanel");
       const detailPanel = document.getElementById("detailPanel");
@@ -1097,16 +1096,7 @@
       let narrow = isNarrow();
       const columns = 12;
       const rows = 8;
-      const rockAssets = [
-        "images/rock-01.png",
-        "images/rock-02.png",
-        "images/rock-03.png",
-        "images/rock-04.png",
-        "images/rock-05.png",
-        "images/rock-06.png",
-        "images/rock-07.png",
-        "images/rock-08.png"
-      ];
+      const rockAssetCount = 8;
 
       const cells = Array.from({ length: columns * rows }, (_, index) => {
         const col = index % columns;
@@ -1154,7 +1144,7 @@
       const boulders = cells.concat(edgeCells).map((cell, index, all) => {
         const cellProgress = index / Math.max(1, all.length - 1);
         const cluster = clusterSeeds[index % clusterSeeds.length];
-        const assetIndex = Math.floor(random() * rockAssets.length);
+        const assetIndex = Math.floor(random() * rockAssetCount);
         const floorWeight = clamp((cell.y - 70) / 36);
         const gapWeight = gapHotspots.reduce((strongest, gap) => {
           const weight = clamp(1 - Math.hypot((cell.x - gap.x) / gap.rx, (cell.y - gap.y) / gap.ry)) * gap.force;
@@ -1203,46 +1193,26 @@
       });
 
       let latestProgress = -1;
-      let canvasWidth = 0;
-      let canvasHeight = 0;
-      let canvasScale = 1;
-      const rockImages = rockAssets.map((src, index) => {
-        const image = new Image();
-        image.decoding = "async";
-        image.fetchPriority = index < 4 ? "high" : "auto";
-        image.addEventListener("load", () => {
+      const boulderRenderer = new window.BoulderRenderer(field, {
+        atlasUrl: "images/rock-atlas.webp",
+        compactAtlasUrl: "images/rock-atlas-compact.webp",
+        atlasFallbackUrl: "images/rock-atlas.png",
+        compactAtlasFallbackUrl: "images/rock-atlas-compact.png",
+        atlasColumns: 3,
+        atlasRows: 3,
+        assetCount: rockAssetCount,
+        mobilePixelRatio: 2,
+        desktopPixelRatio: 1.5,
+        onReady: () => {
           latestProgress = -1;
-        });
-        image.src = src;
-        if (typeof image.decode === "function") {
-          image.decode().then(() => {
-            latestProgress = -1;
-          }).catch(() => {
-            // The load event remains the fallback when eager decoding is unavailable.
-          });
+        },
+        onContextLost: () => {
+          latestProgress = -1;
         }
-        return image;
       });
 
       function resizeBoulderField(force = false) {
-        const width = Math.max(1, window.innerWidth);
-        const height = Math.max(1, window.innerHeight);
-        const scale = Math.min(window.devicePixelRatio || 1, narrow ? 1.25 : 1.5);
-        const pixelWidth = Math.round(width * scale);
-        const pixelHeight = Math.round(height * scale);
-
-        if (!force && pixelWidth === canvasWidth && pixelHeight === canvasHeight) {
-          return;
-        }
-
-        canvasWidth = pixelWidth;
-        canvasHeight = pixelHeight;
-        canvasScale = scale;
-        field.width = pixelWidth;
-        field.height = pixelHeight;
-        fieldContext.setTransform(scale, 0, 0, scale, 0, 0);
-        fieldContext.imageSmoothingEnabled = true;
-        fieldContext.imageSmoothingQuality = narrow ? "medium" : "high";
+        boulderRenderer.resize(narrow, force);
       }
 
       let targetProgress = prefersReduced ? 1 : clamp(window.scrollY / getMaxScroll());
@@ -1344,8 +1314,7 @@
       function render(progress) {
         progress = prefersReduced ? 1 : clamp(progress);
         resizeBoulderField();
-        fieldContext.setTransform(canvasScale, 0, 0, canvasScale, 0, 0);
-        fieldContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        boulderRenderer.beginFrame();
         const pack = smooth(clamp((progress - 0.18) / 0.075));
         const fade = smooth(clamp((progress - 0.295) / 0.055));
         const storyIn = smooth(clamp((progress - 0.325) / 0.105));
@@ -1402,31 +1371,31 @@
             return;
           }
 
-          const image = rockImages[boulder.assetIndex];
-          if (!image.complete || !image.naturalWidth) {
-            return;
-          }
-
           const boxWidth = boulder.sizeBase;
           const boxHeight = boxWidth * boulder.hRatio;
-          const imageRatio = image.naturalWidth / image.naturalHeight;
           let drawWidth = boxWidth;
-          let drawHeight = drawWidth / imageRatio;
+          let drawHeight = drawWidth;
 
           if (drawHeight > boxHeight) {
             drawHeight = boxHeight;
-            drawWidth = drawHeight * imageRatio;
+            drawWidth = drawHeight;
           }
 
           const scale = scaleIn * closeScale * boulder.assetScale;
-          fieldContext.save();
-          fieldContext.globalAlpha = alpha * boulder.rockOpacity;
-          fieldContext.translate((x / 100) * window.innerWidth, (y / 100) * window.innerHeight);
-          fieldContext.rotate(boulder.rotation);
-          fieldContext.scale(scale, scale);
-          fieldContext.drawImage(image, drawWidth * -0.5, drawHeight * -0.5, drawWidth, drawHeight);
-          fieldContext.restore();
+          boulderRenderer.addSprite(
+            boulder.assetIndex,
+            (x / 100) * window.innerWidth,
+            (y / 100) * window.innerHeight,
+            drawWidth * scale,
+            drawHeight * scale,
+            boulder.rotation,
+            alpha * boulder.rockOpacity,
+            boulder.rockBrightness,
+            boulder.rockContrast
+          );
         });
+
+        boulderRenderer.flush();
       }
 
       function updateTargetProgress() {
