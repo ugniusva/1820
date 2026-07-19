@@ -18,7 +18,10 @@
       this.assetCount = options.assetCount || 8;
       this.mobilePixelRatio = options.mobilePixelRatio || 2;
       this.desktopPixelRatio = options.desktopPixelRatio || 1.5;
+      this.preferCompact = Boolean(options.preferCompact);
+      this.forceCanvas2D = Boolean(options.forceCanvas2D);
       this.onReady = typeof options.onReady === "function" ? options.onReady : () => {};
+      this.onError = typeof options.onError === "function" ? options.onError : () => {};
       this.onContextLost = typeof options.onContextLost === "function" ? options.onContextLost : () => {};
       this.vertexData = new Float32Array(DEFAULT_CAPACITY * VERTICES_PER_SPRITE * FLOATS_PER_VERTEX);
       this.vertexCount = 0;
@@ -37,6 +40,13 @@
       this.program = null;
       this.buffer = null;
       this.texture = null;
+      this.failed = false;
+
+      if (this.preferCompact) {
+        this.atlasUrl = this.compactAtlasUrl;
+        this.atlasFallbackUrl = this.compactAtlasFallbackUrl;
+        this.canvas.dataset.atlas = "compact";
+      }
 
       this.handleContextLost = (event) => {
         event.preventDefault();
@@ -48,11 +58,24 @@
 
       this.handleContextRestored = () => {
         this.contextLost = false;
-        this.setupWebGLResources();
-        this.loadAtlas();
+        try {
+          this.setupWebGLResources();
+          this.loadAtlas();
+        } catch (error) {
+          this.reportError();
+        }
       };
 
-      if (!this.initializeWebGL()) {
+      let webglReady = false;
+      if (!this.forceCanvas2D) {
+        try {
+          webglReady = this.initializeWebGL();
+        } catch (error) {
+          webglReady = false;
+        }
+      }
+
+      if (!webglReady) {
         this.initializeCanvas2D();
       }
 
@@ -75,7 +98,7 @@
         return false;
       }
 
-      if (gl.getParameter(gl.MAX_TEXTURE_SIZE) < 3072) {
+      if (this.preferCompact || gl.getParameter(gl.MAX_TEXTURE_SIZE) < 3072) {
         this.atlasUrl = this.compactAtlasUrl;
         this.atlasFallbackUrl = this.compactAtlasFallbackUrl;
         this.canvas.dataset.atlas = "compact";
@@ -93,9 +116,23 @@
     }
 
     initializeCanvas2D() {
-      this.context2d = this.canvas.getContext("2d", { alpha: true, desynchronized: true });
-      this.mode = "canvas2d";
-      this.canvas.dataset.renderer = "canvas2d";
+      try {
+        this.context2d = this.canvas.getContext("2d", { alpha: true, desynchronized: true });
+      } catch (error) {
+        this.context2d = null;
+      }
+      this.mode = this.context2d ? "canvas2d" : "none";
+      this.canvas.dataset.renderer = this.mode;
+    }
+
+    reportError() {
+      if (this.failed) {
+        return;
+      }
+      this.failed = true;
+      this.ready = false;
+      this.canvas.dataset.ready = "error";
+      this.onError();
     }
 
     createShader(type, source) {
@@ -217,7 +254,11 @@
           return;
         }
         uploaded = true;
-        this.uploadAtlas(image);
+        try {
+          this.uploadAtlas(image);
+        } catch (error) {
+          this.reportError();
+        }
       };
 
       image.decoding = "async";
@@ -229,7 +270,7 @@
           image.src = this.atlasFallbackUrl;
           return;
         }
-        this.canvas.dataset.ready = "error";
+        this.reportError();
       });
       image.src = this.atlasUrl;
 
@@ -260,7 +301,7 @@
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
         image.src = EMPTY_IMAGE;
-      } else {
+      } else if (this.mode === "canvas2d") {
         this.atlasImage = image;
       }
 
@@ -394,7 +435,7 @@
     }
 
     drawCanvasSprite(assetIndex, x, y, width, height, rotation, opacity) {
-      if (!this.atlasImage) {
+      if (!this.atlasImage || !this.context2d) {
         return;
       }
 

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>1820 | Reservation</title>
   <link rel="preload" as="image" href="images/rockguy.png" />
+  <link rel="preload" as="image" href="images/fih.png" />
   <script>
     (() => {
       const navigation = performance.getEntriesByType("navigation")[0];
@@ -1180,6 +1181,12 @@
       .topbar {
         min-height: 68px;
         padding: 18px 20px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        background: rgba(243, 243, 243, 0.82);
+        color: #080808;
+        mix-blend-mode: normal;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
       }
 
       .date {
@@ -1187,20 +1194,97 @@
       }
 
       .reservation-page {
-        padding: 82px 18px 28px;
-        gap: 26px;
+        width: min(100%, 440px);
+        padding: 78px 14px max(32px, env(safe-area-inset-bottom));
+        gap: 20px;
+      }
+
+      .reservation-hero {
+        padding: 8px 4px 6px;
+      }
+
+      .kicker {
+        margin-bottom: 14px;
+      }
+
+      h1 {
+        max-width: 8ch;
+        font-size: clamp(3.8rem, 17vw, 5.2rem);
+        line-height: 0.83;
+      }
+
+      .hero-copy {
+        margin-top: 20px;
+        font-size: 0.98rem;
+        line-height: 1.48;
       }
 
       .field-grid,
-      .phone-grid,
-      .choice-grid,
-      .service-facts,
-      .summary-row {
+      .phone-grid {
         grid-template-columns: 1fr;
+      }
+
+      .service-facts {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .choice-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .seating-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .summary-row {
+        grid-template-columns: minmax(82px, 0.32fr) minmax(0, 1fr);
+        gap: 12px;
+        padding: 12px 13px;
+      }
+
+      .surface-head {
+        padding: 12px 14px 10px;
+      }
+
+      .fish-journey {
+        height: 80px;
+      }
+
+      .fish-stop {
+        top: 57px;
+        min-width: 78px;
+        padding: 7px 8px 6px;
+        font-size: 0.57rem;
+      }
+
+      .fish-progress {
+        width: 88px;
+        height: 60px;
+      }
+
+      .service-fact {
+        min-height: 54px;
+        padding: 10px 12px;
+      }
+
+      [data-step-panel] {
+        padding: 18px 16px;
+      }
+
+      .field-grid {
+        gap: 14px;
+      }
+
+      input,
+      select,
+      .time-trigger {
+        min-height: 54px;
       }
 
       .form-actions {
         display: grid;
+        padding: 16px;
       }
 
       .time-panel {
@@ -1217,9 +1301,10 @@
       }
 
       .booking-surface {
+        border-radius: 24px;
         box-shadow:
-          8px 9px 0 #080808,
-          0 18px 48px rgba(0, 0, 0, 0.12);
+          6px 8px 0 #080808,
+          0 20px 52px rgba(0, 0, 0, 0.13);
       }
     }
 
@@ -1407,9 +1492,12 @@
       const root = document.documentElement;
       const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const arrivalHold = 880;
+      const maximumArrivalHold = 6000;
       const revealDuration = 1240;
       const departureDuration = 1740;
+      const loaderImage = pageTransition.querySelector(".rock-loader");
       let arrivalTimer = 0;
+      let forceArrivalTimer = 0;
       let revealTimer = 0;
       let departureTimer = 0;
       const apiBase = "";
@@ -2365,8 +2453,64 @@
         }
       };
 
+      const waitForImage = (image) => {
+        if (!image) {
+          return Promise.resolve();
+        }
+
+        const decode = () => {
+          if (typeof image.decode !== "function") {
+            return Promise.resolve();
+          }
+          return image.decode().catch(() => {});
+        };
+
+        if (image.complete) {
+          return decode();
+        }
+
+        return new Promise((resolve) => {
+          const finish = () => decode().then(resolve);
+          image.addEventListener("load", finish, { once: true });
+          image.addEventListener("error", resolve, { once: true });
+        });
+      };
+
+      const settleWithin = (promise, timeout) => new Promise((resolve) => {
+        const timer = window.setTimeout(() => resolve(false), timeout);
+        Promise.resolve(promise).then(() => {
+          window.clearTimeout(timer);
+          resolve(true);
+        }, () => {
+          window.clearTimeout(timer);
+          resolve(false);
+        });
+      });
+
+      const waitForPageAssets = () => {
+        const windowLoaded = document.readyState === "complete"
+          ? Promise.resolve()
+          : new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
+        const imagesDecoded = Promise.allSettled(Array.from(document.images, waitForImage));
+        const fontsReady = document.fonts?.ready || Promise.resolve();
+        const timeout = maximumArrivalHold;
+        return settleWithin(Promise.allSettled([windowLoaded, imagesDecoded, fontsReady]), timeout);
+      };
+
+      const waitForLoaderMinimum = () => {
+        const timeout = maximumArrivalHold;
+        return settleWithin(waitForImage(loaderImage), timeout).then(() => new Promise((resolve) => {
+          arrivalTimer = window.setTimeout(resolve, arrivalHold);
+        }));
+      };
+
+      const waitForPaint = () => new Promise((resolve) => {
+        window.requestAnimationFrame(() => window.requestAnimationFrame(resolve));
+      });
+
       const resetPageTransition = (clearStored = false) => {
         window.clearTimeout(arrivalTimer);
+        window.clearTimeout(forceArrivalTimer);
         window.clearTimeout(revealTimer);
         window.clearTimeout(departureTimer);
         root.classList.remove("is-arriving", "is-revealing");
@@ -2376,25 +2520,36 @@
         }
       };
 
-      const initArrival = () => {
+      const revealArrival = (assetsReady) => {
         if (!root.classList.contains("is-arriving")) {
           return;
         }
 
+        window.clearTimeout(forceArrivalTimer);
+        root.dataset.assetsReady = assetsReady ? "true" : "partial";
         if (prefersReduced) {
           resetPageTransition();
           clearStoredTransition("reservation");
           return;
         }
 
-        arrivalTimer = window.setTimeout(() => {
-          root.classList.add("is-revealing");
-          root.classList.remove("is-arriving");
-          clearStoredTransition("reservation");
-          revealTimer = window.setTimeout(() => {
-            root.classList.remove("is-revealing");
-          }, revealDuration);
-        }, arrivalHold);
+        root.classList.add("is-revealing");
+        root.classList.remove("is-arriving");
+        clearStoredTransition("reservation");
+        revealTimer = window.setTimeout(() => {
+          root.classList.remove("is-revealing");
+        }, revealDuration);
+      };
+
+      const initArrival = () => {
+        if (!root.classList.contains("is-arriving")) {
+          return;
+        }
+
+        forceArrivalTimer = window.setTimeout(() => revealArrival(false), maximumArrivalHold);
+        Promise.all([waitForPageAssets(), waitForLoaderMinimum()])
+          .then(waitForPaint)
+          .then(() => revealArrival(true));
       };
 
       document.querySelectorAll("[data-page-transition]").forEach((link) => {
@@ -2427,6 +2582,7 @@
           }
 
           window.clearTimeout(arrivalTimer);
+          window.clearTimeout(forceArrivalTimer);
           window.clearTimeout(revealTimer);
           root.classList.remove("is-arriving", "is-revealing");
           pageTransition.classList.add("is-active");

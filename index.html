@@ -8,6 +8,8 @@
   <link rel="preload" as="image" href="images/interior2.png" />
   <link rel="preload" as="image" href="images/plate.png" />
   <link rel="preload" as="image" href="images/rockguy.png" />
+  <link rel="preload" as="image" href="images/rock-atlas-compact.webp" type="image/webp" media="(max-width: 760px)" />
+  <link rel="preload" as="image" href="images/rock-atlas.webp" type="image/webp" media="(min-width: 761px)" />
   <script>
     (() => {
       const navigation = performance.getEntriesByType("navigation")[0];
@@ -57,6 +59,15 @@
       background:
         repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.025) 0 1px, transparent 1px 8px),
         linear-gradient(180deg, #f6f6f6 0%, #ececec 48%, #d8d8d8 100%);
+    }
+
+    html.is-mobile-story,
+    html.is-mobile-story body {
+      overscroll-behavior-y: none;
+    }
+
+    html.is-mobile-story body {
+      touch-action: pan-x pinch-zoom;
     }
 
     body::after {
@@ -839,7 +850,7 @@
 
     @media (max-width: 760px) {
       .scroll-length {
-        height: 760vh;
+        height: 500vh;
       }
 
       .topbar {
@@ -852,8 +863,8 @@
       }
 
       .hero-copy {
-        align-items: start;
-        padding-top: 24vh;
+        align-items: center;
+        padding: 15vh 52px 18vh 18px;
       }
 
       h1 {
@@ -869,21 +880,35 @@
       .detail-panel,
       .booking-panel {
         align-content: end;
-        padding: 68px 20px 18px;
-        gap: 14px;
+        padding: 76px 56px max(22px, env(safe-area-inset-bottom)) 18px;
+        gap: 16px;
       }
 
       .story-grid,
-      .plate-layout,
       .detail-layout,
       .booking-layout {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 18px;
+      }
+
+      .plate-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 14px;
+        width: 100%;
+        height: 100%;
+        align-items: stretch;
       }
 
       .story-title {
         max-width: 9ch;
-        font-size: clamp(2.9rem, 15vw, 4.9rem);
+        font-size: clamp(3rem, 14.5vw, 4.65rem);
+        line-height: 0.88;
+      }
+
+      .plate-title {
+        max-width: 8ch;
+        font-size: clamp(2.8rem, 13.5vw, 4.3rem);
         line-height: 0.88;
       }
 
@@ -900,34 +925,42 @@
       .booking-copy {
         gap: 12px;
         padding-bottom: 0;
-        padding-right: 46px;
+        padding-right: 0;
+      }
+
+      .plate-copy {
+        align-self: start;
       }
 
       .plate-showcase {
-        width: min(100%, 420px);
-        justify-self: start;
-        margin-top: 4px;
-        margin-right: 46px;
+        width: 100%;
+        height: min(43vh, 370px);
+        justify-self: stretch;
+        align-self: end;
+        margin: 0;
       }
 
       .plate-showcase img {
         min-height: 0;
-        height: clamp(270px, 40vh, 390px);
-        border-radius: 20px;
+        height: 100%;
+        aspect-ratio: auto;
+        object-position: center 70%;
+        border-radius: 22px;
       }
 
       .plate-panel::before {
         background:
           radial-gradient(circle at 54% 62%, rgba(255, 255, 255, 0.16), transparent 52vw),
-          linear-gradient(180deg, rgba(246, 246, 246, 0.96) 0 48%, rgba(32, 32, 32, 0.92) 48% 100%),
+          linear-gradient(180deg, rgba(246, 246, 246, 0.96) 0 54%, rgba(32, 32, 32, 0.92) 54% 100%),
           repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.035) 0 1px, transparent 1px 6px);
       }
 
       .story-copy p,
+      .plate-copy p,
       .detail-copy p,
       .booking-copy p {
-        font-size: 0.95rem;
-        line-height: 1.42;
+        font-size: 0.92rem;
+        line-height: 1.4;
       }
 
       .story-kicker {
@@ -940,15 +973,27 @@
       }
 
       .progress-rail {
-        right: 20px;
-        height: 22vh;
+        right: 14px;
+        width: 3px;
+        height: min(24vh, 184px);
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.14);
+        overflow: hidden;
+      }
+
+      .progress-rail::after {
+        width: 3px;
+        border-radius: 999px;
       }
 
       .skip {
-        right: 7px;
-        width: 34px;
-        min-height: 108px;
-        font-size: 0.62rem;
+        right: 8px;
+        top: auto;
+        bottom: max(18px, env(safe-area-inset-bottom));
+        width: 32px;
+        min-height: 102px;
+        border-radius: 14px;
+        font-size: 0.59rem;
       }
     }
 
@@ -1014,7 +1059,7 @@
           <p class="story-meta">A small pass, close to the table, serving fewer decisions with more intent.</p>
         </div>
         <figure class="plate-showcase">
-          <img src="images/plate.png" width="1086" height="1448" alt="A composed tasting plate from the chef at 1820" loading="lazy" decoding="async" />
+          <img src="images/plate.png" width="1086" height="1448" alt="A composed tasting plate from the chef at 1820" loading="eager" decoding="async" fetchpriority="high" />
           <figcaption>A first plate from the chef's hand.</figcaption>
         </figure>
       </div>
@@ -1027,8 +1072,8 @@
           <h2 class="detail-title">Glass, graphite, silence.</h2>
         </div>
         <div class="detail-copy">
-          <p>This section can hold menu notes, opening hours, a chef statement, private dining copy, or whatever comes next once the visual moment has cleared.</p>
-          <p class="story-meta">For now it is a polished placeholder with enough weight to feel like part of the page.</p>
+          <p>Twenty-four places share one unhurried service, with light kept low and enough distance for every table to remain its own room.</p>
+          <p class="story-meta">Graphite surfaces. Polished glass. An evening allowed to take its time.</p>
         </div>
       </div>
     </section>
@@ -1052,7 +1097,7 @@
   <button class="skip" id="skipToEnd" type="button" aria-label="Jump to booking section">Booking</button>
   <div class="scroll-length" aria-hidden="true"></div>
 
-  <script src="scripts/boulder-renderer.js"></script>
+  <script src="scripts/boulder-renderer.js?v=20260719-2"></script>
   <script>
     (() => {
       const root = document.documentElement;
@@ -1067,11 +1112,18 @@
       const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const transitionKey = "1820PageTransition";
       const arrivalHold = 880;
+      const maximumArrivalHold = 6000;
       const revealDuration = 1240;
       const departureDuration = 1740;
+      const loaderImage = pageTransition.querySelector(".rock-loader");
       let arrivalTimer = 0;
+      let forceArrivalTimer = 0;
       let revealTimer = 0;
       let departureTimer = 0;
+      let settleBoulderReady = () => {};
+      const boulderReady = new Promise((resolve) => {
+        settleBoulderReady = resolve;
+      });
 
       const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
       const smooth = (value) => value * value * (3 - 2 * value);
@@ -1094,6 +1146,14 @@
       const random = mulberry32(1820);
       const isNarrow = () => window.matchMedia("(max-width: 760px)").matches;
       let narrow = isNarrow();
+      const mobileScenes = [
+        { name: "hero", progress: 0 },
+        { name: "dinner", progress: 0.455 },
+        { name: "chef", progress: 0.635 },
+        { name: "room", progress: 0.798 },
+        { name: "booking", progress: 1 }
+      ];
+      root.classList.toggle("is-mobile-story", narrow);
       const columns = 12;
       const rows = 8;
       const rockAssetCount = 8;
@@ -1203,10 +1263,15 @@
         assetCount: rockAssetCount,
         mobilePixelRatio: 2,
         desktopPixelRatio: 1.5,
+        preferCompact: narrow,
+        forceCanvas2D: window.location.protocol === "file:",
         onReady: () => {
+          settleBoulderReady();
           latestProgress = -1;
         },
+        onError: settleBoulderReady,
         onContextLost: () => {
+          settleBoulderReady();
           latestProgress = -1;
         }
       });
@@ -1221,6 +1286,12 @@
       let scrollSync = false;
       let wheelRemainder = 0;
       let wheelFrame = 0;
+      let mobileWheelLocked = false;
+      let mobileWheelUnlockTimer = 0;
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchGestureCommitted = false;
+      let mobileSceneIndex = 0;
       let bookingCueTimer = 0;
       const liveState = {
         story: false,
@@ -1252,6 +1323,69 @@
         }, 1800);
       }
 
+      function waitForImage(image) {
+        if (!image) {
+          return Promise.resolve();
+        }
+
+        const decode = () => {
+          if (typeof image.decode !== "function") {
+            return Promise.resolve();
+          }
+          return image.decode().catch(() => {});
+        };
+
+        if (image.complete) {
+          return decode();
+        }
+
+        return new Promise((resolve) => {
+          const finish = () => decode().then(resolve);
+          image.addEventListener("load", finish, { once: true });
+          image.addEventListener("error", resolve, { once: true });
+        });
+      }
+
+      function settleWithin(promise, timeout) {
+        return new Promise((resolve) => {
+          const timer = window.setTimeout(() => resolve(false), timeout);
+          Promise.resolve(promise).then(() => {
+            window.clearTimeout(timer);
+            resolve(true);
+          }, () => {
+            window.clearTimeout(timer);
+            resolve(false);
+          });
+        });
+      }
+
+      function waitForPageAssets() {
+        const windowLoaded = document.readyState === "complete"
+          ? Promise.resolve()
+          : new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
+        const imagesDecoded = Promise.allSettled(Array.from(document.images, waitForImage));
+        const fontsReady = document.fonts?.ready || Promise.resolve();
+
+        const timeout = maximumArrivalHold;
+        return settleWithin(
+          Promise.allSettled([windowLoaded, imagesDecoded, fontsReady, boulderReady]),
+          timeout
+        );
+      }
+
+      function waitForLoaderMinimum() {
+        const timeout = maximumArrivalHold;
+        return settleWithin(waitForImage(loaderImage), timeout).then(() => new Promise((resolve) => {
+          arrivalTimer = window.setTimeout(resolve, arrivalHold);
+        }));
+      }
+
+      function waitForPaint() {
+        return new Promise((resolve) => {
+          window.requestAnimationFrame(() => window.requestAnimationFrame(resolve));
+        });
+      }
+
       function clearStoredTransition(expectedValue = "") {
         try {
           if (!expectedValue || sessionStorage.getItem(transitionKey) === expectedValue) {
@@ -1264,6 +1398,7 @@
 
       function resetPageTransition(clearStored = false) {
         window.clearTimeout(arrivalTimer);
+        window.clearTimeout(forceArrivalTimer);
         window.clearTimeout(revealTimer);
         window.clearTimeout(departureTimer);
         root.classList.remove("is-arriving", "is-revealing");
@@ -1273,25 +1408,36 @@
         }
       }
 
-      function initArrival() {
+      function revealArrival(assetsReady) {
         if (!root.classList.contains("is-arriving")) {
           return;
         }
 
+        window.clearTimeout(forceArrivalTimer);
+        root.dataset.assetsReady = assetsReady ? "true" : "partial";
         if (prefersReduced) {
           resetPageTransition();
           clearStoredTransition("index");
           return;
         }
 
-        arrivalTimer = window.setTimeout(() => {
-          root.classList.add("is-revealing");
-          root.classList.remove("is-arriving");
-          clearStoredTransition("index");
-          revealTimer = window.setTimeout(() => {
-            root.classList.remove("is-revealing");
-          }, revealDuration);
-        }, arrivalHold);
+        root.classList.add("is-revealing");
+        root.classList.remove("is-arriving");
+        clearStoredTransition("index");
+        revealTimer = window.setTimeout(() => {
+          root.classList.remove("is-revealing");
+        }, revealDuration);
+      }
+
+      function initArrival() {
+        if (!root.classList.contains("is-arriving")) {
+          return;
+        }
+
+        forceArrivalTimer = window.setTimeout(() => revealArrival(false), maximumArrivalHold);
+        Promise.all([waitForPageAssets(), waitForLoaderMinimum()])
+          .then(waitForPaint)
+          .then(() => revealArrival(true));
       }
 
       function beginDeparture(link, target) {
@@ -1303,6 +1449,7 @@
         }
 
         window.clearTimeout(arrivalTimer);
+        window.clearTimeout(forceArrivalTimer);
         window.clearTimeout(revealTimer);
         root.classList.remove("is-arriving", "is-revealing");
         pageTransition.classList.add("is-active");
@@ -1404,6 +1551,34 @@
         }
 
         targetProgress = prefersReduced ? 1 : clamp(window.scrollY / getMaxScroll());
+        if (narrow) {
+          mobileSceneIndex = getClosestMobileScene(targetProgress);
+          root.dataset.mobileScene = mobileScenes[mobileSceneIndex].name;
+        }
+      }
+
+      function getClosestMobileScene(progress) {
+        return mobileScenes.reduce((closest, scene, index) => (
+          Math.abs(scene.progress - progress) < Math.abs(mobileScenes[closest].progress - progress)
+            ? index
+            : closest
+        ), 0);
+      }
+
+      function changeMobileScene(direction) {
+        if (
+          !narrow ||
+          pageTransition.classList.contains("is-active") ||
+          root.classList.contains("is-arriving") ||
+          root.classList.contains("is-revealing")
+        ) {
+          return;
+        }
+
+        mobileSceneIndex = clamp(mobileSceneIndex + direction, 0, mobileScenes.length - 1);
+        const scene = mobileScenes[mobileSceneIndex];
+        root.dataset.mobileScene = scene.name;
+        setTargetProgress(scene.progress);
       }
 
       function setTargetProgress(progress) {
@@ -1448,6 +1623,20 @@
           return;
         }
 
+        if (narrow) {
+          if (mobileWheelLocked) {
+            return;
+          }
+
+          mobileWheelLocked = true;
+          changeMobileScene(Math.sign(delta));
+          window.clearTimeout(mobileWheelUnlockTimer);
+          mobileWheelUnlockTimer = window.setTimeout(() => {
+            mobileWheelLocked = false;
+          }, 760);
+          return;
+        }
+
         const abs = Math.abs(delta);
         const direction = Math.sign(delta);
         const intensity = abs < 80
@@ -1468,6 +1657,42 @@
         if (!wheelFrame) {
           wheelFrame = window.requestAnimationFrame(commitWheelStep);
         }
+      }
+
+      function handleTouchStart(event) {
+        if (!narrow || prefersReduced || event.touches.length !== 1) {
+          return;
+        }
+
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+        touchGestureCommitted = false;
+      }
+
+      function handleTouchMove(event) {
+        if (!narrow || prefersReduced || event.touches.length !== 1) {
+          return;
+        }
+
+        const deltaX = event.touches[0].clientX - touchStartX;
+        const deltaY = event.touches[0].clientY - touchStartY;
+        const isVertical = Math.abs(deltaY) > Math.abs(deltaX) * 1.12;
+
+        if (!isVertical || Math.abs(deltaY) < 10) {
+          return;
+        }
+
+        event.preventDefault();
+        if (touchGestureCommitted || Math.abs(deltaY) < 34) {
+          return;
+        }
+
+        touchGestureCommitted = true;
+        changeMobileScene(deltaY < 0 ? 1 : -1);
+      }
+
+      function handleTouchEnd() {
+        touchGestureCommitted = false;
       }
 
       function handleKeydown(event) {
@@ -1505,10 +1730,14 @@
         } else {
           const distance = targetProgress - visualProgress;
           const distanceAbs = Math.abs(distance);
-          const rate = 8.5 + Math.min(17, distanceAbs * 54);
+          const rate = narrow
+            ? 5.8 + Math.min(10, distanceAbs * 24)
+            : 8.5 + Math.min(17, distanceAbs * 54);
           const easedStep = 1 - Math.exp(-rate * elapsed);
           const rawStep = distance * easedStep;
-          const maxStep = (0.19 + Math.min(0.42, distanceAbs * 1.18)) * elapsed;
+          const maxStep = narrow
+            ? (0.13 + Math.min(0.3, distanceAbs * 0.85)) * elapsed
+            : (0.19 + Math.min(0.42, distanceAbs * 1.18)) * elapsed;
           visualProgress += Math.sign(distance) * Math.min(Math.abs(rawStep), maxStep);
 
           if (Math.abs(targetProgress - visualProgress) < 0.000015) {
@@ -1567,17 +1796,30 @@
       });
 
       window.addEventListener("wheel", handleWheel, { passive: false });
+      window.addEventListener("touchstart", handleTouchStart, { passive: true });
+      window.addEventListener("touchmove", handleTouchMove, { passive: false });
+      window.addEventListener("touchend", handleTouchEnd, { passive: true });
+      window.addEventListener("touchcancel", handleTouchEnd, { passive: true });
       window.addEventListener("keydown", handleKeydown);
       window.addEventListener("scroll", updateTargetProgress, { passive: true });
 
       window.addEventListener("resize", () => {
         narrow = isNarrow();
+        root.classList.toggle("is-mobile-story", narrow);
         resizeBoulderField(true);
-        updateTargetProgress();
+        if (narrow && !prefersReduced) {
+          mobileSceneIndex = getClosestMobileScene(targetProgress);
+          root.dataset.mobileScene = mobileScenes[mobileSceneIndex].name;
+          setTargetProgress(mobileScenes[mobileSceneIndex].progress);
+        } else {
+          updateTargetProgress();
+        }
         latestProgress = -1;
       });
 
       resizeBoulderField(true);
+      mobileSceneIndex = getClosestMobileScene(targetProgress);
+      root.dataset.mobileScene = mobileScenes[mobileSceneIndex].name;
       initArrival();
       frame();
     })();
