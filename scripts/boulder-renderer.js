@@ -41,6 +41,8 @@
       this.buffer = null;
       this.texture = null;
       this.failed = false;
+      this.pixelRatioScale = 1;
+      this.uvRects = [];
 
       if (this.preferCompact) {
         this.atlasUrl = this.compactAtlasUrl;
@@ -183,6 +185,9 @@
 
         void main() {
           vec4 sampleColor = texture2D(u_atlas, v_texCoord);
+          if (sampleColor.a <= 0.01 || v_opacity <= 0.003) {
+            discard;
+          }
           float alpha = sampleColor.a * v_opacity;
           float gray = dot(sampleColor.rgb, vec3(0.299, 0.587, 0.114));
           vec3 color = vec3(gray);
@@ -284,6 +289,18 @@
     uploadAtlas(image) {
       this.atlasWidth = image.naturalWidth;
       this.atlasHeight = image.naturalHeight;
+      const insetU = 0.5 / this.atlasWidth;
+      const insetV = 0.5 / this.atlasHeight;
+      this.uvRects = Array.from({ length: this.assetCount }, (_, index) => {
+        const column = index % this.atlasColumns;
+        const row = Math.floor(index / this.atlasColumns);
+        return {
+          u0: (column / this.atlasColumns) + insetU,
+          u1: ((column + 1) / this.atlasColumns) - insetU,
+          vTop: 1 - (row / this.atlasRows) - insetV,
+          vBottom: 1 - ((row + 1) / this.atlasRows) + insetV
+        };
+      });
 
       if (this.mode === "webgl") {
         if (this.contextLost) {
@@ -314,7 +331,8 @@
       this.narrow = Boolean(narrow);
       const width = Math.max(1, window.innerWidth);
       const height = Math.max(1, window.innerHeight);
-      const ratioLimit = this.narrow ? this.mobilePixelRatio : this.desktopPixelRatio;
+      const baseRatioLimit = this.narrow ? this.mobilePixelRatio : this.desktopPixelRatio;
+      const ratioLimit = Math.max(1, baseRatioLimit * this.pixelRatioScale);
       const pixelRatio = Math.min(window.devicePixelRatio || 1, ratioLimit);
       const pixelWidth = Math.round(width * pixelRatio);
       const pixelHeight = Math.round(height * pixelRatio);
@@ -338,11 +356,27 @@
       }
     }
 
+    setPixelRatioScale(scale) {
+      const nextScale = Math.max(0.7, Math.min(1, Number(scale) || 1));
+      if (Math.abs(nextScale - this.pixelRatioScale) < 0.01) {
+        return false;
+      }
+
+      this.pixelRatioScale = nextScale;
+      this.resize(this.narrow, true);
+      return true;
+    }
+
+    updateMetric(name, value) {
+      const nextValue = String(value);
+      if (this.canvas.dataset[name] !== nextValue) {
+        this.canvas.dataset[name] = nextValue;
+      }
+    }
+
     beginFrame() {
       this.vertexCount = 0;
       this.spriteCount = 0;
-      this.canvas.dataset.sprites = "0";
-      this.canvas.dataset.drawCalls = "0";
 
       if (this.mode === "webgl") {
         if (this.contextLost) {
@@ -386,23 +420,23 @@
       this.vertexCount += 1;
     }
 
-    addSprite(assetIndex, x, y, width, height, rotation, opacity, brightness, contrast) {
+    addSprite(assetIndex, x, y, width, height, rotation, opacity, brightness, contrast, rotationCos, rotationSin) {
       if (!this.ready || opacity <= 0.003) {
         return;
       }
 
       this.spriteCount += 1;
+      const cosine = Number.isFinite(rotationCos) ? rotationCos : Math.cos(rotation);
+      const sine = Number.isFinite(rotationSin) ? rotationSin : Math.sin(rotation);
 
       if (this.mode === "canvas2d") {
-        this.drawCanvasSprite(assetIndex, x, y, width, height, rotation, opacity);
+        this.drawCanvasSprite(assetIndex, x, y, width, height, opacity, cosine, sine);
         return;
       }
 
       this.ensureCapacity(VERTICES_PER_SPRITE);
       const halfWidth = width * 0.5;
       const halfHeight = height * 0.5;
-      const cosine = Math.cos(rotation);
-      const sine = Math.sin(rotation);
       const clipScaleX = 2 / this.width;
       const clipScaleY = 2 / this.height;
       const topLeftX = ((x - (halfWidth * cosine) + (halfHeight * sine)) * clipScaleX) - 1;
@@ -414,14 +448,11 @@
       const topRightX = ((x + (halfWidth * cosine) + (halfHeight * sine)) * clipScaleX) - 1;
       const topRightY = 1 - ((y + (halfWidth * sine) - (halfHeight * cosine)) * clipScaleY);
       const index = Math.max(0, Math.min(this.assetCount - 1, Math.floor(assetIndex)));
-      const column = index % this.atlasColumns;
-      const row = Math.floor(index / this.atlasColumns);
-      const insetU = 0.5 / this.atlasWidth;
-      const insetV = 0.5 / this.atlasHeight;
-      const u0 = (column / this.atlasColumns) + insetU;
-      const u1 = ((column + 1) / this.atlasColumns) - insetU;
-      const vTop = 1 - (row / this.atlasRows) - insetV;
-      const vBottom = 1 - ((row + 1) / this.atlasRows) + insetV;
+      const uv = this.uvRects[index];
+      const u0 = uv.u0;
+      const u1 = uv.u1;
+      const vTop = uv.vTop;
+      const vBottom = uv.vBottom;
       const clampedOpacity = Math.max(0, Math.min(1, opacity));
       const finalBrightness = brightness || 1;
       const finalContrast = contrast || 1;
@@ -434,7 +465,7 @@
       this.writeVertex(topRightX, topRightY, u1, vTop, clampedOpacity, finalBrightness, finalContrast);
     }
 
-    drawCanvasSprite(assetIndex, x, y, width, height, rotation, opacity) {
+    drawCanvasSprite(assetIndex, x, y, width, height, opacity, cosine, sine) {
       if (!this.atlasImage || !this.context2d) {
         return;
       }
@@ -446,10 +477,15 @@
       const sourceWidth = this.atlasImage.naturalWidth / this.atlasColumns;
       const sourceHeight = this.atlasImage.naturalHeight / this.atlasRows;
 
-      context.save();
+      context.setTransform(
+        cosine * this.pixelRatio,
+        sine * this.pixelRatio,
+        -sine * this.pixelRatio,
+        cosine * this.pixelRatio,
+        x * this.pixelRatio,
+        y * this.pixelRatio
+      );
       context.globalAlpha = Math.max(0, Math.min(1, opacity));
-      context.translate(x, y);
-      context.rotate(rotation);
       context.drawImage(
         this.atlasImage,
         column * sourceWidth,
@@ -461,16 +497,13 @@
         width,
         height
       );
-      context.restore();
     }
 
     flush() {
-      this.canvas.dataset.sprites = String(this.spriteCount);
+      this.updateMetric("sprites", this.spriteCount);
 
       if (this.mode !== "webgl" || this.contextLost || !this.ready || !this.vertexCount) {
-        if (this.mode === "canvas2d" && this.ready) {
-          this.canvas.dataset.drawCalls = "1";
-        }
+        this.updateMetric("drawCalls", this.mode === "canvas2d" && this.ready && this.spriteCount ? 1 : 0);
         return;
       }
 
@@ -482,7 +515,7 @@
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, this.texture);
       gl.drawArrays(gl.TRIANGLES, 0, this.vertexCount);
-      this.canvas.dataset.drawCalls = "1";
+      this.updateMetric("drawCalls", 1);
     }
   }
 

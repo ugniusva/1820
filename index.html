@@ -849,8 +849,32 @@
     }
 
     @media (max-width: 760px) {
+      body::after {
+        opacity: 0.16;
+        mix-blend-mode: normal;
+      }
+
       .scroll-length {
         height: 500vh;
+      }
+
+      .boulder-field {
+        transform: translate3d(0, 0, 0);
+      }
+
+      .hero-copy,
+      .brand-watermark,
+      .restaurant-panel,
+      .plate-panel,
+      .detail-panel,
+      .booking-panel {
+        backface-visibility: hidden;
+        will-change: opacity, transform;
+      }
+
+      .image-stage::after,
+      .progress-rail {
+        mix-blend-mode: normal;
       }
 
       .topbar {
@@ -1097,7 +1121,7 @@
   <button class="skip" id="skipToEnd" type="button" aria-label="Jump to booking section">Booking</button>
   <div class="scroll-length" aria-hidden="true"></div>
 
-  <script src="scripts/boulder-renderer.js?v=20260719-2"></script>
+  <script src="scripts/boulder-renderer.js?v=20260719-3"></script>
   <script>
     (() => {
       const root = document.documentElement;
@@ -1157,6 +1181,8 @@
       const columns = 12;
       const rows = 8;
       const rockAssetCount = 8;
+      let viewportWidth = Math.max(1, window.innerWidth);
+      let viewportHeight = Math.max(1, window.innerHeight);
 
       const cells = Array.from({ length: columns * rows }, (_, index) => {
         const col = index % columns;
@@ -1227,6 +1253,7 @@
         const rockBrightness = Number(lerp(0.86, 1.12, random()).toFixed(3));
         const rockContrast = Number(lerp(0.95, 1.18, random()).toFixed(3));
         const rockOpacity = Number(lerp(0.92, 1, random()).toFixed(3));
+        const phase = random() * Math.PI * 2;
 
         return {
           assetIndex,
@@ -1247,7 +1274,11 @@
           rockContrast,
           rockOpacity,
           rotation,
-          phase: random() * Math.PI * 2,
+          rotationCos: Math.cos(rotation),
+          rotationSin: Math.sin(rotation),
+          phaseSin: Math.sin(phase),
+          phaseCos: Math.cos(phase),
+          drawSize: sizeBase * Math.min(1, hRatio),
           sway: lerp(-1.8, 1.8, random())
         };
       });
@@ -1261,28 +1292,37 @@
         atlasColumns: 3,
         atlasRows: 3,
         assetCount: rockAssetCount,
-        mobilePixelRatio: 2,
+        mobilePixelRatio: 1.55,
         desktopPixelRatio: 1.5,
         preferCompact: narrow,
         forceCanvas2D: window.location.protocol === "file:",
         onReady: () => {
           settleBoulderReady();
           latestProgress = -1;
+          requestFrame();
         },
         onError: settleBoulderReady,
         onContextLost: () => {
           settleBoulderReady();
           latestProgress = -1;
+          requestFrame();
         }
       });
 
       function resizeBoulderField(force = false) {
+        viewportWidth = Math.max(1, window.innerWidth);
+        viewportHeight = Math.max(1, window.innerHeight);
         boulderRenderer.resize(narrow, force);
       }
 
       let targetProgress = prefersReduced ? 1 : clamp(window.scrollY / getMaxScroll());
       let visualProgress = targetProgress;
       let lastFrameTime = performance.now();
+      let animationFrame = 0;
+      let mobileTween = null;
+      let mobileFrameAverage = 16.7;
+      let mobileFrameSamples = 0;
+      let mobileQualityScale = 1;
       let scrollSync = false;
       let wheelRemainder = 0;
       let wheelFrame = 0;
@@ -1299,6 +1339,13 @@
         interlude: false,
         booking: false
       };
+
+      const deviceMemory = Number(navigator.deviceMemory) || 8;
+      const logicalCores = Number(navigator.hardwareConcurrency) || 8;
+      if (narrow && (deviceMemory <= 4 || logicalCores <= 4)) {
+        mobileQualityScale = 0.86;
+        boulderRenderer.setPixelRatioScale(mobileQualityScale);
+      }
 
       function setLive(element, key, active) {
         if (liveState[key] === active) {
@@ -1460,7 +1507,6 @@
 
       function render(progress) {
         progress = prefersReduced ? 1 : clamp(progress);
-        resizeBoulderField();
         boulderRenderer.beginFrame();
         const pack = smooth(clamp((progress - 0.18) / 0.075));
         const fade = smooth(clamp((progress - 0.295) / 0.055));
@@ -1482,30 +1528,26 @@
         const plateCard = plateSection;
         const roomImage = roomImageBase * (1 - plateSection);
         const imageScene = Math.min(1, roomImage + detailImage);
-        root.style.setProperty("--progress", progress.toFixed(5));
-        root.style.setProperty("--veil", veil.toFixed(5));
-        root.style.setProperty("--story", story.toFixed(5));
-        root.style.setProperty("--plate-section", plateSection.toFixed(5));
-        root.style.setProperty("--interlude", interlude.toFixed(5));
-        root.style.setProperty("--booking", booking.toFixed(5));
-        root.style.setProperty("--mark", mark.toFixed(5));
-        root.style.setProperty("--image-scene", imageScene.toFixed(5));
-        root.style.setProperty("--room-image", roomImage.toFixed(5));
-        root.style.setProperty("--detail-image", detailImage.toFixed(5));
-        root.style.setProperty("--plate-card", plateCard.toFixed(5));
-        root.style.setProperty("--plate-backdrop", plateSection.toFixed(5));
+        root.style.cssText = `--progress:${progress.toFixed(5)};--veil:${veil.toFixed(5)};--story:${story.toFixed(5)};--plate-section:${plateSection.toFixed(5)};--interlude:${interlude.toFixed(5)};--booking:${booking.toFixed(5)};--mark:${mark.toFixed(5)};--image-scene:${imageScene.toFixed(5)};--room-image:${roomImage.toFixed(5)};--detail-image:${detailImage.toFixed(5)};--plate-card:${plateCard.toFixed(5)};--plate-backdrop:${plateSection.toFixed(5)}`;
         setLive(panel, "story", story > 0.82);
         setLive(platePanel, "plate", plateSection > 0.82);
         setLive(detailPanel, "interlude", interlude > 0.82);
         setLive(bookingPanel, "booking", booking > 0.82);
 
+        const progress11Sin = Math.sin(progress * 11);
+        const progress11Cos = Math.cos(progress * 11);
+        const progress8Sin = Math.sin(progress * 8);
+        const progress8Cos = Math.cos(progress * 8);
+
         boulders.forEach((boulder) => {
           const inProgress = smooth(clamp((progress - boulder.appear) / 0.07));
           const travel = smooth(clamp((progress - boulder.release) / boulder.duration));
-          const micro = Math.sin((progress * 11) + boulder.phase) * boulder.sway * (1 - story * 0.7);
+          const swayWave = (progress11Sin * boulder.phaseCos) + (progress11Cos * boulder.phaseSin);
+          const floatWave = (progress8Cos * boulder.phaseCos) - (progress8Sin * boulder.phaseSin);
+          const micro = swayWave * boulder.sway * (1 - story * 0.7);
           const baseX = lerp(boulder.originX, boulder.finalX, travel) + micro;
           const floorLock = boulder.floorWeight * pack;
-          const baseY = lerp(boulder.originY, boulder.finalY, travel) - (curtain * (3 - (floorLock * 2.4))) + Math.cos((progress * 8) + boulder.phase) * (1.15 - (floorLock * 0.55));
+          const baseY = lerp(boulder.originY, boulder.finalY, travel) - (curtain * (3 - (floorLock * 2.4))) + floatWave * (1.15 - (floorLock * 0.55));
           const packCenterX = boulder.edge ? (boulder.finalX > 50 ? 58 : 42) : 50;
           const packRatioX = (boulder.edge ? 0.96 : 0.84) + (boulder.floorWeight * 0.11) + (boulder.gapWeight * 0.05);
           const x = lerp(baseX, packCenterX + ((baseX - packCenterX) * packRatioX), pack);
@@ -1518,31 +1560,75 @@
             return;
           }
 
-          const boxWidth = boulder.sizeBase;
-          const boxHeight = boxWidth * boulder.hRatio;
-          let drawWidth = boxWidth;
-          let drawHeight = drawWidth;
-
-          if (drawHeight > boxHeight) {
-            drawHeight = boxHeight;
-            drawWidth = drawHeight;
-          }
-
           const scale = scaleIn * closeScale * boulder.assetScale;
           boulderRenderer.addSprite(
             boulder.assetIndex,
-            (x / 100) * window.innerWidth,
-            (y / 100) * window.innerHeight,
-            drawWidth * scale,
-            drawHeight * scale,
+            (x / 100) * viewportWidth,
+            (y / 100) * viewportHeight,
+            boulder.drawSize * scale,
+            boulder.drawSize * scale,
             boulder.rotation,
             alpha * boulder.rockOpacity,
             boulder.rockBrightness,
-            boulder.rockContrast
+            boulder.rockContrast,
+            boulder.rotationCos,
+            boulder.rotationSin
           );
         });
 
         boulderRenderer.flush();
+      }
+
+      function requestFrame() {
+        if (!animationFrame && !document.hidden) {
+          animationFrame = window.requestAnimationFrame(frame);
+        }
+      }
+
+      function easeMobileScene(value) {
+        return value < 0.5
+          ? 4 * value * value * value
+          : 1 - Math.pow(-2 * value + 2, 3) / 2;
+      }
+
+      function startMobileTween(progress) {
+        const distance = Math.abs(progress - visualProgress);
+        if (!distance) {
+          mobileTween = null;
+          return;
+        }
+
+        const crossesBoulderSequence = Math.min(progress, visualProgress) < 0.1
+          && Math.max(progress, visualProgress) > 0.4;
+        const duration = crossesBoulderSequence
+          ? 1760
+          : clamp(760 + (distance * 1900), 900, 1320);
+        mobileTween = {
+          from: visualProgress,
+          to: progress,
+          startedAt: performance.now(),
+          duration
+        };
+      }
+
+      function tuneMobileQuality(frameMilliseconds, bouldersMoving) {
+        if (!narrow || !bouldersMoving || frameMilliseconds > 90) {
+          return;
+        }
+
+        mobileFrameAverage += (frameMilliseconds - mobileFrameAverage) * 0.14;
+        mobileFrameSamples += 1;
+        if (mobileFrameSamples < 14 || mobileFrameAverage < 20.5) {
+          return;
+        }
+
+        const nextScale = mobileFrameAverage > 28 ? 0.74 : 0.86;
+        if (nextScale < mobileQualityScale && boulderRenderer.setPixelRatioScale(nextScale)) {
+          mobileQualityScale = nextScale;
+          latestProgress = -1;
+        }
+        mobileFrameAverage = 16.7;
+        mobileFrameSamples = 0;
       }
 
       function updateTargetProgress() {
@@ -1550,11 +1636,18 @@
           return;
         }
 
-        targetProgress = prefersReduced ? 1 : clamp(window.scrollY / getMaxScroll());
+        const nextProgress = prefersReduced ? 1 : clamp(window.scrollY / getMaxScroll());
+        if (Math.abs(nextProgress - targetProgress) > 0.00001) {
+          targetProgress = nextProgress;
+          if (narrow && !prefersReduced) {
+            startMobileTween(targetProgress);
+          }
+        }
         if (narrow) {
           mobileSceneIndex = getClosestMobileScene(targetProgress);
           root.dataset.mobileScene = mobileScenes[mobileSceneIndex].name;
         }
+        requestFrame();
       }
 
       function getClosestMobileScene(progress) {
@@ -1582,7 +1675,18 @@
       }
 
       function setTargetProgress(progress) {
-        targetProgress = prefersReduced ? 1 : clamp(progress);
+        const nextProgress = prefersReduced ? 1 : clamp(progress);
+        if (narrow && !prefersReduced) {
+          mobileSceneIndex = getClosestMobileScene(nextProgress);
+          root.dataset.mobileScene = mobileScenes[mobileSceneIndex].name;
+        }
+        if (Math.abs(nextProgress - targetProgress) > 0.00001) {
+          targetProgress = nextProgress;
+          if (narrow && !prefersReduced) {
+            startMobileTween(targetProgress);
+          }
+        }
+        requestFrame();
 
         if (prefersReduced) {
           window.scrollTo({ top: getMaxScroll(), behavior: "auto" });
@@ -1720,13 +1824,24 @@
       }
 
       function frame(now) {
-        updateTargetProgress();
-
-        const elapsed = Math.min(0.08, Math.max(0.001, (now - lastFrameTime) / 1000 || 0.016));
+        animationFrame = 0;
+        const frameGap = now - lastFrameTime;
+        const elapsed = frameGap > 120
+          ? 0.0167
+          : Math.min(0.08, Math.max(0.001, frameGap / 1000 || 0.016));
         lastFrameTime = now;
+        let moving = false;
 
         if (prefersReduced) {
           visualProgress = 1;
+        } else if (narrow && mobileTween) {
+          const tweenProgress = clamp((now - mobileTween.startedAt) / mobileTween.duration);
+          visualProgress = lerp(mobileTween.from, mobileTween.to, easeMobileScene(tweenProgress));
+          moving = tweenProgress < 1;
+          if (!moving) {
+            visualProgress = mobileTween.to;
+            mobileTween = null;
+          }
         } else {
           const distance = targetProgress - visualProgress;
           const distanceAbs = Math.abs(distance);
@@ -1743,18 +1858,23 @@
           if (Math.abs(targetProgress - visualProgress) < 0.000015) {
             visualProgress = targetProgress;
           }
+          moving = Math.abs(targetProgress - visualProgress) > 0.00001;
         }
 
         if (Math.abs(visualProgress - latestProgress) > 0.00001 || Math.abs(targetProgress - visualProgress) > 0.00001) {
           latestProgress = visualProgress;
           render(visualProgress);
         }
-        window.requestAnimationFrame(frame);
+        tuneMobileQuality(frameGap, moving && visualProgress > 0.015 && visualProgress < 0.37);
+        if (moving || Math.abs(targetProgress - visualProgress) > 0.00001) {
+          requestFrame();
+        }
       }
 
       skip.addEventListener("click", () => {
         setTargetProgress(1);
         if (!prefersReduced) {
+          mobileTween = null;
           visualProgress = 1;
           latestProgress = -1;
           render(visualProgress);
@@ -1815,13 +1935,21 @@
           updateTargetProgress();
         }
         latestProgress = -1;
+        requestFrame();
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        lastFrameTime = performance.now();
+        if (!document.hidden) {
+          requestFrame();
+        }
       });
 
       resizeBoulderField(true);
       mobileSceneIndex = getClosestMobileScene(targetProgress);
       root.dataset.mobileScene = mobileScenes[mobileSceneIndex].name;
       initArrival();
-      frame();
+      requestFrame();
     })();
   </script>
 </body>
