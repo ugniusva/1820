@@ -1,0 +1,1956 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>1820 | Restaurant</title>
+  <link rel="preload" as="image" href="images/interior.png" />
+  <link rel="preload" as="image" href="images/interior2.png" />
+  <link rel="preload" as="image" href="images/plate.png" />
+  <link rel="preload" as="image" href="images/rockguy.png" />
+  <link rel="preload" as="image" href="images/rock-atlas-compact.webp" type="image/webp" media="(max-width: 760px)" />
+  <link rel="preload" as="image" href="images/rock-atlas.webp" type="image/webp" media="(min-width: 761px)" />
+  <script>
+    (() => {
+      const navigation = performance.getEntriesByType("navigation")[0];
+      const isHistoryNavigation = navigation?.type === "back_forward";
+
+      if (!isHistoryNavigation) {
+        document.documentElement.classList.add("is-arriving");
+      }
+    })();
+  </script>
+  <style>
+    :root {
+      --paper: #f3f3f3;
+      --ink: #070707;
+      --graphite: #2f2f2f;
+      --soft: #b9b9b9;
+      --progress: 0;
+      --veil: 0;
+      --story: 0;
+      --interlude: 0;
+      --booking: 0;
+      --mark: 0;
+      --image-scene: 0;
+      --room-image: 0;
+      --detail-image: 0;
+      --plate-section: 0;
+      --plate-card: 0;
+      --plate-backdrop: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: var(--paper);
+      color: var(--ink);
+      scroll-behavior: auto;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      background:
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.025) 0 1px, transparent 1px 8px),
+        linear-gradient(180deg, #f6f6f6 0%, #ececec 48%, #d8d8d8 100%);
+    }
+
+    html.is-mobile-story,
+    html.is-mobile-story body {
+      overscroll-behavior-y: none;
+    }
+
+    html.is-mobile-story body {
+      touch-action: pan-x pinch-zoom;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      pointer-events: none;
+      opacity: 0.24;
+      background:
+        repeating-radial-gradient(circle at 24% 34%, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 5px),
+        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.03) 0 1px, transparent 1px 7px);
+      mix-blend-mode: multiply;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .scroll-length {
+      height: 820vh;
+      pointer-events: none;
+    }
+
+    .stage {
+      position: fixed;
+      inset: 0;
+      isolation: isolate;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.94), transparent 18vw),
+        radial-gradient(circle at 22% 84%, rgba(0, 0, 0, 0.1), transparent 32vw),
+        #f3f3f3;
+    }
+
+    .stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: calc(var(--veil) * 0.92);
+      background: rgba(244, 244, 244, 0.86);
+    }
+
+    .stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.58;
+      background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.055) 1px, transparent 1px) 0 0 / clamp(42px, 7vw, 110px) clamp(42px, 7vw, 110px),
+        linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.08));
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 76px;
+      padding: 20px clamp(18px, 4vw, 58px);
+      color: #ffffff;
+      mix-blend-mode: difference;
+    }
+
+    .brand,
+    .date {
+      font-size: clamp(0.72rem, 0.68rem + 0.16vw, 0.86rem);
+      font-weight: 850;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .brand {
+      font-size: clamp(1rem, 0.86rem + 0.56vw, 1.42rem);
+      letter-spacing: 0.02em;
+    }
+
+    .hero-copy {
+      position: fixed;
+      inset: 0;
+      z-index: 8;
+      display: grid;
+      place-items: center;
+      padding: 8rem clamp(18px, 4vw, 58px) 9rem;
+      text-align: center;
+      pointer-events: none;
+      opacity: clamp(0, calc(1 - ((var(--progress) - 0.045) * 8.5)), 1);
+      transform: translateY(calc(var(--progress) * -7vh)) scale(calc(1 - (var(--progress) * 0.045)));
+    }
+
+    .brand-watermark {
+      position: fixed;
+      inset: 0;
+      z-index: 11;
+      display: grid;
+      place-items: center;
+      padding: 8rem clamp(18px, 4vw, 58px) 9rem;
+      pointer-events: none;
+      color: #080808;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(7.2rem, 20vw, 19rem);
+      font-weight: 400;
+      line-height: 0.76;
+      letter-spacing: 0;
+      opacity: var(--mark);
+      transform: translateY(-1vh);
+    }
+
+    .image-stage {
+      position: fixed;
+      inset: 0;
+      z-index: 9;
+      overflow: hidden;
+      pointer-events: none;
+      background: #f3f3f3;
+      opacity: var(--image-scene);
+    }
+
+    .image-stage::before,
+    .image-stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .image-stage::before {
+      opacity: calc(var(--image-scene) * 0.86);
+      background:
+        radial-gradient(circle at 50% 46%, transparent 0 34%, rgba(0, 0, 0, 0.38) 100%),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.3) 42%, rgba(0, 0, 0, 0.62));
+    }
+
+    .image-stage::after {
+      opacity: calc(var(--image-scene) * 0.3);
+      background:
+        repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 7px),
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 9px);
+      mix-blend-mode: overlay;
+    }
+
+    .image-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0;
+      filter: grayscale(1) contrast(1.16) brightness(0.72);
+      transform: scale(1.035);
+      will-change: opacity, transform;
+    }
+
+    .image-layer--room {
+      opacity: calc(var(--room-image) * 0.92);
+      transform: translateY(calc((1 - var(--room-image)) * 18px)) scale(calc(1.05 - (var(--room-image) * 0.018)));
+    }
+
+    .image-layer--detail {
+      z-index: 2;
+      object-position: center;
+      opacity: calc(var(--detail-image) * 0.9);
+      filter: grayscale(1) contrast(1.12) brightness(0.76);
+      transform: translateY(calc((1 - var(--detail-image)) * 22px)) scale(calc(1.055 - (var(--detail-image) * 0.02)));
+    }
+
+    .eyebrow {
+      margin: 0 0 clamp(18px, 3vw, 34px);
+      font-size: clamp(0.7rem, 0.65rem + 0.2vw, 0.86rem);
+      font-weight: 850;
+      letter-spacing: 0.18em;
+      line-height: 1.4;
+      text-transform: uppercase;
+      color: #505050;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(7.2rem, 20vw, 19rem);
+      font-weight: 400;
+      line-height: 0.76;
+      letter-spacing: 0;
+      color: #080808;
+    }
+
+    .subline {
+      max-width: 34rem;
+      margin: clamp(22px, 4vw, 46px) auto 0;
+      font-size: clamp(0.92rem, 0.82rem + 0.36vw, 1.18rem);
+      font-weight: 620;
+      line-height: 1.5;
+      color: #222222;
+    }
+
+    .boulder-field {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+      contain: strict;
+    }
+
+    .restaurant-panel,
+    .plate-panel,
+    .detail-panel,
+    .booking-panel {
+      position: fixed;
+      inset: 0;
+      z-index: 12;
+      display: grid;
+      align-content: center;
+      gap: clamp(26px, 5vh, 52px);
+      padding: clamp(92px, 12vh, 136px) clamp(18px, 5vw, 72px) clamp(28px, 6vh, 72px);
+      pointer-events: none;
+    }
+
+    .restaurant-panel {
+      opacity: var(--story);
+      transform: translateY(calc((1 - var(--story)) * 28px));
+      color: #f5f5f5;
+    }
+
+    .detail-panel {
+      z-index: 14;
+      opacity: var(--interlude);
+      transform: translateX(calc((1 - var(--interlude)) * -34px));
+      color: #f5f5f5;
+    }
+
+    .plate-panel {
+      z-index: 13;
+      color: #f5f5f5;
+      opacity: var(--plate-section);
+      transform: translateY(calc((1 - var(--plate-section)) * 36px));
+      isolation: isolate;
+    }
+
+    .plate-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: var(--plate-backdrop);
+      background:
+        radial-gradient(circle at 78% 44%, rgba(255, 255, 255, 0.18), transparent 30vw),
+        linear-gradient(90deg, rgba(246, 246, 246, 0.96) 0 43%, rgba(32, 32, 32, 0.92) 43% 100%),
+        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.035) 0 1px, transparent 1px 6px);
+    }
+
+    .booking-panel {
+      z-index: 15;
+      align-content: end;
+      color: #f5f5f5;
+      opacity: var(--booking);
+      transform: translateY(calc((1 - var(--booking)) * 46px));
+    }
+
+    .booking-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background:
+        repeating-linear-gradient(110deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 6px),
+        #080808;
+      transform: scaleY(var(--booking));
+      transform-origin: bottom;
+    }
+
+    .booking-panel::after {
+      content: "1820";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      display: grid;
+      place-items: center;
+      padding: 8rem clamp(18px, 4vw, 58px) 9rem;
+      color: #f5f5f5;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(7.2rem, 20vw, 19rem);
+      font-weight: 400;
+      line-height: 0.76;
+      letter-spacing: 0;
+      opacity: calc(var(--booking) * 0.055);
+      pointer-events: none;
+      transform: translateY(-1vh);
+    }
+
+    .page-transition {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      z-index: 80;
+      display: grid;
+      place-items: center;
+      background: #ffffff;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1240ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .page-transition.is-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    html.is-arriving,
+    html.is-revealing {
+      overflow: hidden;
+    }
+
+    html.is-arriving .page-transition {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    html.is-revealing .page-transition {
+      pointer-events: auto;
+    }
+
+    .rock-loader-stage {
+      position: relative;
+      display: grid;
+      place-items: center;
+      opacity: 1;
+      transform: scale(1);
+      will-change: opacity, transform;
+    }
+
+    .rock-loader {
+      position: relative;
+      width: clamp(84px, 8vw, 150px);
+      height: auto;
+      max-height: min(34vh, 230px);
+      opacity: 0;
+      display: block;
+      transform-origin: center;
+      object-fit: contain;
+      filter: grayscale(1) contrast(1.05);
+      will-change: opacity;
+    }
+
+    .page-transition.is-active .rock-loader,
+    html.is-arriving .rock-loader,
+    html.is-revealing .rock-loader {
+      animation: rockBlink 1760ms ease-in-out infinite;
+    }
+
+    html.is-arriving .rock-loader-stage {
+      animation: rockStageIn 600ms cubic-bezier(0.22, 1, 0.36, 1) 220ms both;
+    }
+
+    html.is-revealing .rock-loader-stage {
+      animation: rockStageOut 980ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes rockBlink {
+      0%,
+      100% {
+        opacity: 0.28;
+      }
+
+      48% {
+        opacity: 0.92;
+      }
+    }
+
+    @keyframes rockStageIn {
+      from {
+        opacity: 0;
+        transform: scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes rockStageOut {
+      from {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      to {
+        opacity: 0;
+        transform: scale(0.975);
+      }
+    }
+
+    .restaurant-panel.is-live,
+    .plate-panel.is-live,
+    .detail-panel.is-live,
+    .booking-panel.is-live {
+      pointer-events: auto;
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(250px, 0.58fr);
+      gap: clamp(30px, 8vw, 120px);
+      align-items: end;
+      width: min(100%, 1260px);
+      margin: 0 auto;
+    }
+
+    .story-kicker,
+    .story-meta,
+    .reserve-link {
+      font-size: clamp(0.68rem, 0.62rem + 0.18vw, 0.82rem);
+      font-weight: 900;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .story-kicker {
+      margin: 0 0 18px;
+      color: #3c3c3c;
+    }
+
+    .restaurant-panel .story-kicker,
+    .plate-panel .story-kicker,
+    .detail-panel .story-kicker {
+      color: rgba(245, 245, 245, 0.8);
+      text-shadow: 0 2px 18px rgba(0, 0, 0, 0.42);
+    }
+
+    .story-title {
+      max-width: 11ch;
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(4rem, 12vw, 12rem);
+      font-weight: 400;
+      line-height: 0.86;
+      letter-spacing: 0;
+    }
+
+    .restaurant-panel .story-title,
+    .plate-panel .plate-title,
+    .detail-panel .detail-title {
+      text-shadow: 0 18px 54px rgba(0, 0, 0, 0.48);
+    }
+
+    .story-copy {
+      display: grid;
+      gap: clamp(18px, 3vw, 30px);
+      padding-bottom: 0.9rem;
+    }
+
+    .story-copy p {
+      max-width: 33rem;
+      margin: 0;
+      color: #171717;
+      font-size: clamp(1rem, 0.88rem + 0.48vw, 1.38rem);
+      font-weight: 560;
+      line-height: 1.52;
+    }
+
+    .restaurant-panel .story-copy p,
+    .plate-panel .plate-copy p,
+    .detail-panel .detail-copy p {
+      color: rgba(247, 247, 247, 0.92);
+      text-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .detail-layout {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1fr);
+      gap: clamp(30px, 7vw, 94px);
+      align-items: end;
+      width: min(100%, 1260px);
+      margin: 0 auto;
+    }
+
+    .plate-layout {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(250px, 0.44fr) minmax(420px, 0.96fr);
+      gap: clamp(28px, 5vw, 76px);
+      align-items: center;
+      width: min(100%, 1380px);
+      margin: 0 auto;
+    }
+
+    .plate-copy {
+      display: grid;
+      gap: clamp(18px, 3vw, 30px);
+      align-self: end;
+      padding-bottom: clamp(6px, 2vh, 28px);
+    }
+
+    .plate-title {
+      max-width: 8ch;
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(4rem, 9.8vw, 9rem);
+      font-weight: 400;
+      line-height: 0.86;
+      letter-spacing: 0;
+    }
+
+    .detail-title,
+    .booking-title {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(4rem, 9.8vw, 9rem);
+      font-weight: 400;
+      line-height: 0.86;
+      letter-spacing: 0;
+    }
+
+    .detail-title {
+      max-width: 7.4ch;
+    }
+
+    .detail-copy {
+      display: grid;
+      gap: clamp(18px, 3vw, 30px);
+    }
+
+    .plate-showcase {
+      position: relative;
+      width: min(100%, 760px);
+      margin: 0;
+      justify-self: end;
+      opacity: var(--plate-card);
+      transform: translateY(calc((1 - var(--plate-card)) * 26px)) scale(calc(0.975 + (var(--plate-card) * 0.025)));
+      transition: none;
+    }
+
+    .plate-showcase img {
+      display: block;
+      width: 100%;
+      height: min(86vh, 790px);
+      min-height: 560px;
+      aspect-ratio: 7 / 8;
+      object-fit: cover;
+      object-position: center 66%;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      border-radius: 30px;
+      background: #111111;
+      box-shadow: 0 36px 100px rgba(0, 0, 0, 0.48);
+      filter: saturate(1.06) contrast(1.02) brightness(0.94);
+    }
+
+    .plate-showcase figcaption {
+      position: absolute;
+      left: clamp(18px, 2.6vw, 28px);
+      right: clamp(18px, 2.6vw, 28px);
+      bottom: clamp(16px, 2.4vw, 26px);
+      z-index: 1;
+      margin: 0;
+      color: rgba(245, 245, 245, 0.74);
+      font-size: clamp(0.66rem, 0.62rem + 0.14vw, 0.78rem);
+      font-weight: 900;
+      letter-spacing: 0.16em;
+      line-height: 1.4;
+      text-transform: uppercase;
+      text-shadow: 0 6px 22px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+    }
+
+    @media (min-width: 1440px) {
+      .plate-layout {
+        grid-template-columns: minmax(280px, 0.38fr) minmax(620px, 1.04fr);
+        gap: clamp(34px, 4vw, 82px);
+        width: min(100%, 1540px);
+      }
+
+      .plate-showcase {
+        width: min(100%, 880px);
+        transform: translateY(calc(((1 - var(--plate-card)) * 26px) - 58px)) scale(calc(0.975 + (var(--plate-card) * 0.025)));
+      }
+
+      .plate-showcase img {
+        height: min(90vh, 860px);
+        min-height: 620px;
+        border-radius: 32px;
+      }
+    }
+
+    .plate-copy p,
+    .detail-copy p,
+    .booking-copy p {
+      max-width: 39rem;
+      margin: 0;
+      font-size: clamp(1rem, 0.9rem + 0.44vw, 1.34rem);
+      font-weight: 580;
+      line-height: 1.5;
+    }
+
+    .story-meta {
+      color: #555555;
+    }
+
+    .restaurant-panel .story-meta,
+    .plate-panel .story-meta,
+    .detail-panel .story-meta {
+      color: rgba(245, 245, 245, 0.72);
+    }
+
+    .plate-panel .story-kicker {
+      color: #3b3b3b;
+      text-shadow: none;
+    }
+
+    .plate-panel .plate-title {
+      color: #070707;
+      text-shadow: none;
+    }
+
+    .plate-panel .plate-copy p {
+      color: #171717;
+      text-shadow: none;
+    }
+
+    .plate-panel .story-meta {
+      color: #555555;
+    }
+
+    .booking-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(250px, 0.46fr);
+      gap: clamp(30px, 8vw, 112px);
+      align-items: end;
+      width: min(100%, 1260px);
+      margin: 0 auto;
+    }
+
+    .booking-title {
+      max-width: 8ch;
+      color: #f5f5f5;
+    }
+
+    .booking-copy {
+      display: grid;
+      gap: clamp(18px, 3vw, 30px);
+      color: #e7e7e7;
+    }
+
+    .booking-copy .story-meta {
+      color: #bdbdbd;
+    }
+
+    .reserve-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: min(100%, 330px);
+      min-height: 62px;
+      padding: 20px 28px;
+      border: 2px solid #080808;
+      border-radius: 14px;
+      background:
+        repeating-linear-gradient(110deg, rgba(0, 0, 0, 0.05) 0 1px, transparent 1px 5px),
+        #f2f2f2;
+      color: #080808;
+      box-shadow: 7px 7px 0 #080808;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .booking-panel .reserve-link {
+      border-color: #f5f5f5;
+      border-radius: 14px;
+      background:
+        repeating-linear-gradient(110deg, rgba(0, 0, 0, 0.05) 0 1px, transparent 1px 5px),
+        #f5f5f5;
+      box-shadow: 7px 7px 0 #5e5e5e;
+    }
+
+    .booking-panel .reserve-link.is-cued {
+      animation: bookingCue 1700ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes bookingCue {
+      0%,
+      100% {
+        background:
+          repeating-linear-gradient(110deg, rgba(0, 0, 0, 0.05) 0 1px, transparent 1px 5px),
+          #f5f5f5;
+        box-shadow: 7px 7px 0 #5e5e5e;
+      }
+
+      38% {
+        background: #ffffff;
+        box-shadow:
+          0 0 0 9px rgba(255, 255, 255, 0.16),
+          7px 7px 0 #5e5e5e;
+      }
+    }
+
+    .reserve-link:hover,
+    .reserve-link:focus-visible {
+      transform: translate(4px, 4px);
+      box-shadow: 3px 3px 0 #080808;
+      background: #ffffff;
+      outline: none;
+    }
+
+    .progress-rail {
+      position: fixed;
+      right: clamp(18px, 3vw, 38px);
+      top: 50%;
+      z-index: 21;
+      width: 1px;
+      height: min(32vh, 260px);
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.22);
+      pointer-events: none;
+      mix-blend-mode: multiply;
+    }
+
+    .progress-rail::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 1px;
+      height: calc(var(--progress) * 100%);
+      background: #080808;
+    }
+
+    .skip {
+      position: fixed;
+      right: clamp(8px, 1.8vw, 22px);
+      top: calc(50% + min(20vh, 160px));
+      z-index: 22;
+      display: inline-grid;
+      place-items: center;
+      width: 40px;
+      min-height: 118px;
+      padding: 10px 0;
+      border: 2px solid #090909;
+      border-radius: 13px;
+      background: #090909;
+      color: #f7f7f7;
+      cursor: pointer;
+      font: 900 0.67rem/1 Inter, ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      writing-mode: vertical-rl;
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
+    }
+
+    .skip:hover,
+    .skip:focus-visible {
+      background: #f3f3f3;
+      color: #080808;
+      outline: none;
+    }
+
+    @media (max-width: 760px) {
+      body::after {
+        opacity: 0.16;
+        mix-blend-mode: normal;
+      }
+
+      .scroll-length {
+        height: 500vh;
+      }
+
+      .boulder-field {
+        transform: translate3d(0, 0, 0);
+      }
+
+      .hero-copy,
+      .brand-watermark,
+      .restaurant-panel,
+      .plate-panel,
+      .detail-panel,
+      .booking-panel {
+        backface-visibility: hidden;
+        will-change: opacity, transform;
+      }
+
+      .image-stage::after,
+      .progress-rail {
+        mix-blend-mode: normal;
+      }
+
+      .topbar {
+        min-height: 68px;
+        padding: 18px 20px;
+      }
+
+      .date {
+        display: none;
+      }
+
+      .hero-copy {
+        align-items: center;
+        padding: 15vh 52px 18vh 18px;
+      }
+
+      h1 {
+        font-size: clamp(6rem, 33vw, 10rem);
+      }
+
+      .subline {
+        max-width: 21rem;
+      }
+
+      .restaurant-panel,
+      .plate-panel,
+      .detail-panel,
+      .booking-panel {
+        align-content: end;
+        padding: 76px 56px max(22px, env(safe-area-inset-bottom)) 18px;
+        gap: 16px;
+      }
+
+      .story-grid,
+      .detail-layout,
+      .booking-layout {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      .plate-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: 14px;
+        width: 100%;
+        height: 100%;
+        align-items: stretch;
+      }
+
+      .story-title {
+        max-width: 9ch;
+        font-size: clamp(3rem, 14.5vw, 4.65rem);
+        line-height: 0.88;
+      }
+
+      .plate-title {
+        max-width: 8ch;
+        font-size: clamp(2.8rem, 13.5vw, 4.3rem);
+        line-height: 0.88;
+      }
+
+      .detail-title,
+      .booking-title {
+        max-width: 8ch;
+        font-size: clamp(2.9rem, 15vw, 4.9rem);
+        line-height: 0.88;
+      }
+
+      .story-copy,
+      .plate-copy,
+      .detail-copy,
+      .booking-copy {
+        gap: 12px;
+        padding-bottom: 0;
+        padding-right: 0;
+      }
+
+      .plate-copy {
+        align-self: start;
+      }
+
+      .plate-showcase {
+        width: 100%;
+        height: min(43vh, 370px);
+        justify-self: stretch;
+        align-self: end;
+        margin: 0;
+      }
+
+      .plate-showcase img {
+        min-height: 0;
+        height: 100%;
+        aspect-ratio: auto;
+        object-position: center 70%;
+        border-radius: 22px;
+      }
+
+      .plate-panel::before {
+        background:
+          radial-gradient(circle at 54% 62%, rgba(255, 255, 255, 0.16), transparent 52vw),
+          linear-gradient(180deg, rgba(246, 246, 246, 0.96) 0 54%, rgba(32, 32, 32, 0.92) 54% 100%),
+          repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.035) 0 1px, transparent 1px 6px);
+      }
+
+      .story-copy p,
+      .plate-copy p,
+      .detail-copy p,
+      .booking-copy p {
+        font-size: 0.92rem;
+        line-height: 1.4;
+      }
+
+      .story-kicker {
+        margin-bottom: 8px;
+      }
+
+      .reserve-link {
+        width: 100%;
+        min-height: 58px;
+      }
+
+      .progress-rail {
+        right: 14px;
+        width: 3px;
+        height: min(24vh, 184px);
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.14);
+        overflow: hidden;
+      }
+
+      .progress-rail::after {
+        width: 3px;
+        border-radius: 999px;
+      }
+
+      .skip {
+        right: 8px;
+        top: auto;
+        bottom: max(18px, env(safe-area-inset-bottom));
+        width: 32px;
+        min-height: 102px;
+        border-radius: 14px;
+        font-size: 0.59rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .reserve-link {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage" aria-hidden="true">
+    <canvas class="boulder-field" id="boulderField"></canvas>
+  </div>
+  <div class="image-stage" aria-hidden="true">
+    <img class="image-layer image-layer--room" src="images/interior.png" width="1402" height="1122" alt="" decoding="async" fetchpriority="high" />
+    <img class="image-layer image-layer--detail" src="images/interior2.png" width="1536" height="1024" alt="" decoding="async" />
+  </div>
+  <div class="brand-watermark" aria-hidden="true">1820</div>
+  <div class="page-transition" id="pageTransition" aria-hidden="true">
+    <span class="rock-loader-stage">
+      <img class="rock-loader" src="images/rockguy.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="high" />
+    </span>
+  </div>
+
+  <header class="topbar" aria-label="Site header">
+    <a class="brand" href="index.html" aria-label="1820 home">1820</a>
+    <div class="date">Monochrome Service</div>
+  </header>
+
+  <main>
+    <section class="hero-copy" aria-label="1820 landing">
+      <div>
+        <p class="eyebrow">Evenings lifted in silence</p>
+        <h1>1820</h1>
+        <p class="subline">A room of black, white, glass, air, and measured celebration.</p>
+      </div>
+    </section>
+
+    <section class="restaurant-panel" id="restaurantPanel" aria-label="Restaurant introduction">
+      <div class="story-grid">
+        <div>
+          <p class="story-kicker">After the room fills</p>
+          <h2 class="story-title">Dinner, held quietly.</h2>
+        </div>
+        <div class="story-copy">
+          <p>1820 is a restrained dining room built around slow service, polished glass, graphite shadows, and tables spaced for private conversation.</p>
+          <p class="story-meta">Monochrome evenings. Low light. Slow courses. Private conversation.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="plate-panel" id="platePanel" aria-label="Chef profile">
+      <div class="plate-layout">
+        <div class="plate-copy">
+          <p class="story-kicker">About the chef</p>
+          <h2 class="plate-title">The chef's hand.</h2>
+          <p>The kitchen is led with restraint: smoke, acid, shellfish, heat, and color used only when it earns the room's attention.</p>
+          <p class="story-meta">A small pass, close to the table, serving fewer decisions with more intent.</p>
+        </div>
+        <figure class="plate-showcase">
+          <img src="images/plate.png" width="1086" height="1448" alt="A composed tasting plate from the chef at 1820" loading="eager" decoding="async" fetchpriority="high" />
+          <figcaption>A first plate from the chef's hand.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="detail-panel" id="detailPanel" aria-label="Dining room notes">
+      <div class="detail-layout">
+        <div>
+          <p class="story-kicker">The room settles</p>
+          <h2 class="detail-title">Glass, graphite, silence.</h2>
+        </div>
+        <div class="detail-copy">
+          <p>Twenty-four places share one unhurried service, with light kept low and enough distance for every table to remain its own room.</p>
+          <p class="story-meta">Graphite surfaces. Polished glass. An evening allowed to take its time.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="booking-panel" id="bookingPanel" aria-label="Reservation call to action">
+      <div class="booking-layout">
+        <div>
+          <p class="story-kicker">Final sitting</p>
+          <h2 class="booking-title">Hold the evening.</h2>
+        </div>
+        <div class="booking-copy">
+          <p>Choose the table, the hour, and the tone of the night. The room is small by design.</p>
+          <p class="story-meta">Reservation only. Limited seats.</p>
+          <a class="reserve-link" href="reservation.html" data-page-transition="reservation">Booking</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="progress-rail" aria-hidden="true"></div>
+  <button class="skip" id="skipToEnd" type="button" aria-label="Jump to booking section">Booking</button>
+  <div class="scroll-length" aria-hidden="true"></div>
+
+  <script src="scripts/boulder-renderer.js?v=20260719-3"></script>
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const field = document.getElementById("boulderField");
+      const panel = document.getElementById("restaurantPanel");
+      const platePanel = document.getElementById("platePanel");
+      const detailPanel = document.getElementById("detailPanel");
+      const bookingPanel = document.getElementById("bookingPanel");
+      const skip = document.getElementById("skipToEnd");
+      const bookingLink = bookingPanel.querySelector(".reserve-link");
+      const pageTransition = document.getElementById("pageTransition");
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const transitionKey = "1820PageTransition";
+      const arrivalHold = 880;
+      const maximumArrivalHold = 6000;
+      const revealDuration = 1240;
+      const departureDuration = 1740;
+      const loaderImage = pageTransition.querySelector(".rock-loader");
+      let arrivalTimer = 0;
+      let forceArrivalTimer = 0;
+      let revealTimer = 0;
+      let departureTimer = 0;
+      let settleBoulderReady = () => {};
+      const boulderReady = new Promise((resolve) => {
+        settleBoulderReady = resolve;
+      });
+
+      const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+      const smooth = (value) => value * value * (3 - 2 * value);
+      const lerp = (from, to, amount) => from + (to - from) * amount;
+
+      const getMaxScroll = () => {
+        const pageHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+        return Math.max(1, pageHeight - window.innerHeight);
+      };
+
+      function mulberry32(seed) {
+        return function random() {
+          let t = seed += 0x6D2B79F5;
+          t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      const random = mulberry32(1820);
+      const isNarrow = () => window.matchMedia("(max-width: 760px)").matches;
+      let narrow = isNarrow();
+      const mobileScenes = [
+        { name: "hero", progress: 0 },
+        { name: "dinner", progress: 0.455 },
+        { name: "chef", progress: 0.635 },
+        { name: "room", progress: 0.798 },
+        { name: "booking", progress: 1 }
+      ];
+      root.classList.toggle("is-mobile-story", narrow);
+      const columns = 12;
+      const rows = 8;
+      const rockAssetCount = 8;
+      let viewportWidth = Math.max(1, window.innerWidth);
+      let viewportHeight = Math.max(1, window.innerHeight);
+
+      const cells = Array.from({ length: columns * rows }, (_, index) => {
+        const col = index % columns;
+        const row = Math.floor(index / columns);
+        const x = (((col + 0.5) / columns) * 108) - 4 + (random() - 0.5) * 7;
+        const y = (((row + 0.5) / rows) * 112) - 6 + (random() - 0.5) * 7;
+        const dx = x - 50;
+        const dy = y - 50;
+        return {
+          x,
+          y,
+          distance: Math.sqrt((dx * dx) + (dy * dy)),
+          order: random()
+        };
+      }).sort((a, b) => (a.distance * 0.72 + a.order * 32) - (b.distance * 0.72 + b.order * 32));
+
+      const edgeCells = [
+        { x: -3, y: 8 }, { x: 104, y: 10 }, { x: 5, y: 94 }, { x: 100, y: 92 },
+        { x: 20, y: -3 }, { x: 80, y: -2 }, { x: 34, y: 104 }, { x: 68, y: 103 },
+        { x: -4, y: 48 }, { x: 108, y: 30 }, { x: 106, y: 52 }, { x: 109, y: 74 },
+        { x: 50, y: -5 }, { x: 50, y: 106 }, { x: 114, y: 18 }, { x: 114, y: 87 },
+        { x: -7, y: 78 }, { x: 8, y: 109 }, { x: 24, y: 111 }, { x: 42, y: 109 },
+        { x: 60, y: 112 }, { x: 78, y: 109 }, { x: 94, y: 111 }, { x: 108, y: 106 }
+      ].map((cell) => ({
+        ...cell,
+        edge: true,
+        distance: Math.hypot(cell.x - 50, cell.y - 50),
+        order: random()
+      }));
+
+      const clusterSeeds = [
+        { x: 53, y: 32 }, { x: 57, y: 34 }, { x: 61, y: 38 }, { x: 55, y: 41 },
+        { x: 63, y: 44 }, { x: 50, y: 45 }, { x: 58, y: 48 }
+      ];
+
+      const gapHotspots = [
+        { x: 1, y: 30, rx: 14, ry: 18, force: 1.12 },
+        { x: 5, y: 51, rx: 11, ry: 13, force: 0.9 },
+        { x: 59, y: 36, rx: 13, ry: 13, force: 0.86 },
+        { x: 73, y: 31, rx: 18, ry: 17, force: 1.18 },
+        { x: 1, y: 72, rx: 16, ry: 18, force: 0.62 },
+        { x: 66, y: 66, rx: 18, ry: 16, force: 0.62 }
+      ];
+
+      const boulders = cells.concat(edgeCells).map((cell, index, all) => {
+        const cellProgress = index / Math.max(1, all.length - 1);
+        const cluster = clusterSeeds[index % clusterSeeds.length];
+        const assetIndex = Math.floor(random() * rockAssetCount);
+        const floorWeight = clamp((cell.y - 70) / 36);
+        const gapWeight = gapHotspots.reduce((strongest, gap) => {
+          const weight = clamp(1 - Math.hypot((cell.x - gap.x) / gap.rx, (cell.y - gap.y) / gap.ry)) * gap.force;
+          return Math.max(strongest, weight);
+        }, 0);
+        const edgeBoost = cell.edge ? (cell.x > 100 || cell.x < 0 || cell.y > 100 ? 1.38 : 1.22) : 1;
+        const floorBoost = 1 + (floorWeight * (cell.edge ? 0.42 : 0.3));
+        const gapBoost = 1 + (gapWeight * 0.34);
+        const sizeBase = lerp(104, 258, Math.pow(random(), 0.66)) * edgeBoost * floorBoost * gapBoost;
+        const originRadius = lerp(0.5, 6.5, random());
+        const originAngle = random() * Math.PI * 2;
+        const originX = cluster.x + Math.cos(originAngle) * originRadius;
+        const originY = cluster.y + Math.sin(originAngle) * originRadius * 0.72;
+        const appear = 0.035 + cellProgress * 0.085 + random() * 0.01;
+        const release = appear + lerp(0.006, 0.032, random());
+        const duration = lerp(0.085, 0.135, random());
+        const rotation = Number(lerp(-10, 10, random()).toFixed(2)) * (Math.PI / 180);
+        const hRatio = Number(lerp(0.82 + (floorWeight * 0.08) + (gapWeight * 0.04), 1.1 + (floorWeight * 0.1) + (gapWeight * 0.06), random()).toFixed(3));
+        const assetScale = Number(lerp(1.2 + (floorWeight * 0.04), 1.34 + (gapWeight * 0.08), random()).toFixed(3));
+        const rockBrightness = Number(lerp(0.86, 1.12, random()).toFixed(3));
+        const rockContrast = Number(lerp(0.95, 1.18, random()).toFixed(3));
+        const rockOpacity = Number(lerp(0.92, 1, random()).toFixed(3));
+        const phase = random() * Math.PI * 2;
+
+        return {
+          assetIndex,
+          originX,
+          originY,
+          finalX: cell.x,
+          finalY: cell.y,
+          appear,
+          release,
+          duration,
+          edge: Boolean(cell.edge),
+          floorWeight,
+          gapWeight,
+          sizeBase,
+          hRatio,
+          assetScale,
+          rockBrightness,
+          rockContrast,
+          rockOpacity,
+          rotation,
+          rotationCos: Math.cos(rotation),
+          rotationSin: Math.sin(rotation),
+          phaseSin: Math.sin(phase),
+          phaseCos: Math.cos(phase),
+          drawSize: sizeBase * Math.min(1, hRatio),
+          sway: lerp(-1.8, 1.8, random())
+        };
+      });
+
+      let latestProgress = -1;
+      const boulderRenderer = new window.BoulderRenderer(field, {
+        atlasUrl: "images/rock-atlas.webp",
+        compactAtlasUrl: "images/rock-atlas-compact.webp",
+        atlasFallbackUrl: "images/rock-atlas.png",
+        compactAtlasFallbackUrl: "images/rock-atlas-compact.png",
+        atlasColumns: 3,
+        atlasRows: 3,
+        assetCount: rockAssetCount,
+        mobilePixelRatio: 1.55,
+        desktopPixelRatio: 1.5,
+        preferCompact: narrow,
+        forceCanvas2D: window.location.protocol === "file:",
+        onReady: () => {
+          settleBoulderReady();
+          latestProgress = -1;
+          requestFrame();
+        },
+        onError: settleBoulderReady,
+        onContextLost: () => {
+          settleBoulderReady();
+          latestProgress = -1;
+          requestFrame();
+        }
+      });
+
+      function resizeBoulderField(force = false) {
+        viewportWidth = Math.max(1, window.innerWidth);
+        viewportHeight = Math.max(1, window.innerHeight);
+        boulderRenderer.resize(narrow, force);
+      }
+
+      let targetProgress = prefersReduced ? 1 : clamp(window.scrollY / getMaxScroll());
+      let visualProgress = targetProgress;
+      let lastFrameTime = performance.now();
+      let animationFrame = 0;
+      let mobileTween = null;
+      let mobileFrameAverage = 16.7;
+      let mobileFrameSamples = 0;
+      let mobileQualityScale = 1;
+      let scrollSync = false;
+      let wheelRemainder = 0;
+      let wheelFrame = 0;
+      let mobileWheelLocked = false;
+      let mobileWheelUnlockTimer = 0;
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchGestureCommitted = false;
+      let mobileSceneIndex = 0;
+      let bookingCueTimer = 0;
+      const liveState = {
+        story: false,
+        plate: false,
+        interlude: false,
+        booking: false
+      };
+
+      const deviceMemory = Number(navigator.deviceMemory) || 8;
+      const logicalCores = Number(navigator.hardwareConcurrency) || 8;
+      if (narrow && (deviceMemory <= 4 || logicalCores <= 4)) {
+        mobileQualityScale = 0.86;
+        boulderRenderer.setPixelRatioScale(mobileQualityScale);
+      }
+
+      function setLive(element, key, active) {
+        if (liveState[key] === active) {
+          return;
+        }
+
+        liveState[key] = active;
+        element.classList.toggle("is-live", active);
+      }
+
+      function cueBookingLink() {
+        if (!bookingLink) {
+          return;
+        }
+
+        window.clearTimeout(bookingCueTimer);
+        bookingLink.classList.remove("is-cued");
+        void bookingLink.offsetWidth;
+        bookingLink.classList.add("is-cued");
+        bookingCueTimer = window.setTimeout(() => {
+          bookingLink.classList.remove("is-cued");
+        }, 1800);
+      }
+
+      function waitForImage(image) {
+        if (!image) {
+          return Promise.resolve();
+        }
+
+        const decode = () => {
+          if (typeof image.decode !== "function") {
+            return Promise.resolve();
+          }
+          return image.decode().catch(() => {});
+        };
+
+        if (image.complete) {
+          return decode();
+        }
+
+        return new Promise((resolve) => {
+          const finish = () => decode().then(resolve);
+          image.addEventListener("load", finish, { once: true });
+          image.addEventListener("error", resolve, { once: true });
+        });
+      }
+
+      function settleWithin(promise, timeout) {
+        return new Promise((resolve) => {
+          const timer = window.setTimeout(() => resolve(false), timeout);
+          Promise.resolve(promise).then(() => {
+            window.clearTimeout(timer);
+            resolve(true);
+          }, () => {
+            window.clearTimeout(timer);
+            resolve(false);
+          });
+        });
+      }
+
+      function waitForPageAssets() {
+        const windowLoaded = document.readyState === "complete"
+          ? Promise.resolve()
+          : new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
+        const imagesDecoded = Promise.allSettled(Array.from(document.images, waitForImage));
+        const fontsReady = document.fonts?.ready || Promise.resolve();
+
+        const timeout = maximumArrivalHold;
+        return settleWithin(
+          Promise.allSettled([windowLoaded, imagesDecoded, fontsReady, boulderReady]),
+          timeout
+        );
+      }
+
+      function waitForLoaderMinimum() {
+        const timeout = maximumArrivalHold;
+        return settleWithin(waitForImage(loaderImage), timeout).then(() => new Promise((resolve) => {
+          arrivalTimer = window.setTimeout(resolve, arrivalHold);
+        }));
+      }
+
+      function waitForPaint() {
+        return new Promise((resolve) => {
+          window.requestAnimationFrame(() => window.requestAnimationFrame(resolve));
+        });
+      }
+
+      function clearStoredTransition(expectedValue = "") {
+        try {
+          if (!expectedValue || sessionStorage.getItem(transitionKey) === expectedValue) {
+            sessionStorage.removeItem(transitionKey);
+          }
+        } catch (error) {
+          // The visual transition still works when session storage is unavailable.
+        }
+      }
+
+      function resetPageTransition(clearStored = false) {
+        window.clearTimeout(arrivalTimer);
+        window.clearTimeout(forceArrivalTimer);
+        window.clearTimeout(revealTimer);
+        window.clearTimeout(departureTimer);
+        root.classList.remove("is-arriving", "is-revealing");
+        pageTransition.classList.remove("is-active");
+        if (clearStored) {
+          clearStoredTransition();
+        }
+      }
+
+      function revealArrival(assetsReady) {
+        if (!root.classList.contains("is-arriving")) {
+          return;
+        }
+
+        window.clearTimeout(forceArrivalTimer);
+        root.dataset.assetsReady = assetsReady ? "true" : "partial";
+        if (prefersReduced) {
+          resetPageTransition();
+          clearStoredTransition("index");
+          return;
+        }
+
+        root.classList.add("is-revealing");
+        root.classList.remove("is-arriving");
+        clearStoredTransition("index");
+        revealTimer = window.setTimeout(() => {
+          root.classList.remove("is-revealing");
+        }, revealDuration);
+      }
+
+      function initArrival() {
+        if (!root.classList.contains("is-arriving")) {
+          return;
+        }
+
+        forceArrivalTimer = window.setTimeout(() => revealArrival(false), maximumArrivalHold);
+        Promise.all([waitForPageAssets(), waitForLoaderMinimum()])
+          .then(waitForPaint)
+          .then(() => revealArrival(true));
+      }
+
+      function beginDeparture(link, target) {
+        const destination = link.dataset.pageTransition || "reservation";
+        try {
+          sessionStorage.setItem(transitionKey, destination);
+        } catch (error) {
+          // Navigation remains available without the incoming-page marker.
+        }
+
+        window.clearTimeout(arrivalTimer);
+        window.clearTimeout(forceArrivalTimer);
+        window.clearTimeout(revealTimer);
+        root.classList.remove("is-arriving", "is-revealing");
+        pageTransition.classList.add("is-active");
+        departureTimer = window.setTimeout(() => {
+          window.location.href = target;
+        }, prefersReduced ? 0 : departureDuration);
+      }
+
+      function render(progress) {
+        progress = prefersReduced ? 1 : clamp(progress);
+        boulderRenderer.beginFrame();
+        const pack = smooth(clamp((progress - 0.18) / 0.075));
+        const fade = smooth(clamp((progress - 0.295) / 0.055));
+        const storyIn = smooth(clamp((progress - 0.325) / 0.105));
+        const storyOut = smooth(clamp((progress - 0.505) / 0.075));
+        const story = storyIn * (1 - storyOut);
+        const plateIn = smooth(clamp((progress - 0.535) / 0.085));
+        const plateOut = smooth(clamp((progress - 0.665) / 0.075));
+        const plateSection = plateIn * (1 - plateOut);
+        const interludeIn = smooth(clamp((progress - 0.705) / 0.085));
+        const interludeOut = smooth(clamp((progress - 0.805) / 0.07));
+        const interlude = interludeIn * (1 - interludeOut);
+        const booking = smooth(clamp((progress - 0.865) / 0.105));
+        const veil = Math.max(story, plateSection, interlude, booking);
+        const curtain = smooth(clamp((progress - 0.255) / 0.08));
+        const mark = 0.055 * smooth(clamp((progress - 0.335) / 0.055)) * (1 - booking);
+        const roomImageBase = smooth(clamp((progress - 0.305) / 0.09)) * (1 - smooth(clamp((progress - 0.56) / 0.09)));
+        const detailImage = smooth(clamp((progress - 0.665) / 0.095)) * (1 - smooth(clamp((progress - 0.84) / 0.095)));
+        const plateCard = plateSection;
+        const roomImage = roomImageBase * (1 - plateSection);
+        const imageScene = Math.min(1, roomImage + detailImage);
+        root.style.cssText = `--progress:${progress.toFixed(5)};--veil:${veil.toFixed(5)};--story:${story.toFixed(5)};--plate-section:${plateSection.toFixed(5)};--interlude:${interlude.toFixed(5)};--booking:${booking.toFixed(5)};--mark:${mark.toFixed(5)};--image-scene:${imageScene.toFixed(5)};--room-image:${roomImage.toFixed(5)};--detail-image:${detailImage.toFixed(5)};--plate-card:${plateCard.toFixed(5)};--plate-backdrop:${plateSection.toFixed(5)}`;
+        setLive(panel, "story", story > 0.82);
+        setLive(platePanel, "plate", plateSection > 0.82);
+        setLive(detailPanel, "interlude", interlude > 0.82);
+        setLive(bookingPanel, "booking", booking > 0.82);
+
+        const progress11Sin = Math.sin(progress * 11);
+        const progress11Cos = Math.cos(progress * 11);
+        const progress8Sin = Math.sin(progress * 8);
+        const progress8Cos = Math.cos(progress * 8);
+
+        boulders.forEach((boulder) => {
+          const inProgress = smooth(clamp((progress - boulder.appear) / 0.07));
+          const travel = smooth(clamp((progress - boulder.release) / boulder.duration));
+          const swayWave = (progress11Sin * boulder.phaseCos) + (progress11Cos * boulder.phaseSin);
+          const floatWave = (progress8Cos * boulder.phaseCos) - (progress8Sin * boulder.phaseSin);
+          const micro = swayWave * boulder.sway * (1 - story * 0.7);
+          const baseX = lerp(boulder.originX, boulder.finalX, travel) + micro;
+          const floorLock = boulder.floorWeight * pack;
+          const baseY = lerp(boulder.originY, boulder.finalY, travel) - (curtain * (3 - (floorLock * 2.4))) + floatWave * (1.15 - (floorLock * 0.55));
+          const packCenterX = boulder.edge ? (boulder.finalX > 50 ? 58 : 42) : 50;
+          const packRatioX = (boulder.edge ? 0.96 : 0.84) + (boulder.floorWeight * 0.11) + (boulder.gapWeight * 0.05);
+          const x = lerp(baseX, packCenterX + ((baseX - packCenterX) * packRatioX), pack);
+          const y = lerp(baseY, 52 + ((baseY - 52) * (0.96 + (boulder.floorWeight * 0.1))), pack);
+          const scaleIn = lerp(0.18, 1, smooth(clamp((progress - boulder.appear) / 0.18)));
+          const closeScale = 1 + (pack * (narrow ? 0.78 : 0.68)) + (pack * boulder.floorWeight * 0.2) + (pack * boulder.gapWeight * 0.18) + (fade * 0.12);
+          const alpha = inProgress * (1 - fade);
+
+          if (alpha <= 0.003) {
+            return;
+          }
+
+          const scale = scaleIn * closeScale * boulder.assetScale;
+          boulderRenderer.addSprite(
+            boulder.assetIndex,
+            (x / 100) * viewportWidth,
+            (y / 100) * viewportHeight,
+            boulder.drawSize * scale,
+            boulder.drawSize * scale,
+            boulder.rotation,
+            alpha * boulder.rockOpacity,
+            boulder.rockBrightness,
+            boulder.rockContrast,
+            boulder.rotationCos,
+            boulder.rotationSin
+          );
+        });
+
+        boulderRenderer.flush();
+      }
+
+      function requestFrame() {
+        if (!animationFrame && !document.hidden) {
+          animationFrame = window.requestAnimationFrame(frame);
+        }
+      }
+
+      function easeMobileScene(value) {
+        return value < 0.5
+          ? 4 * value * value * value
+          : 1 - Math.pow(-2 * value + 2, 3) / 2;
+      }
+
+      function startMobileTween(progress) {
+        const distance = Math.abs(progress - visualProgress);
+        if (!distance) {
+          mobileTween = null;
+          return;
+        }
+
+        const crossesBoulderSequence = Math.min(progress, visualProgress) < 0.1
+          && Math.max(progress, visualProgress) > 0.4;
+        const duration = crossesBoulderSequence
+          ? 1760
+          : clamp(760 + (distance * 1900), 900, 1320);
+        mobileTween = {
+          from: visualProgress,
+          to: progress,
+          startedAt: performance.now(),
+          duration
+        };
+      }
+
+      function tuneMobileQuality(frameMilliseconds, bouldersMoving) {
+        if (!narrow || !bouldersMoving || frameMilliseconds > 90) {
+          return;
+        }
+
+        mobileFrameAverage += (frameMilliseconds - mobileFrameAverage) * 0.14;
+        mobileFrameSamples += 1;
+        if (mobileFrameSamples < 14 || mobileFrameAverage < 20.5) {
+          return;
+        }
+
+        const nextScale = mobileFrameAverage > 28 ? 0.74 : 0.86;
+        if (nextScale < mobileQualityScale && boulderRenderer.setPixelRatioScale(nextScale)) {
+          mobileQualityScale = nextScale;
+          latestProgress = -1;
+        }
+        mobileFrameAverage = 16.7;
+        mobileFrameSamples = 0;
+      }
+
+      function updateTargetProgress() {
+        if (scrollSync) {
+          return;
+        }
+
+        const nextProgress = prefersReduced ? 1 : clamp(window.scrollY / getMaxScroll());
+        if (Math.abs(nextProgress - targetProgress) > 0.00001) {
+          targetProgress = nextProgress;
+          if (narrow && !prefersReduced) {
+            startMobileTween(targetProgress);
+          }
+        }
+        if (narrow) {
+          mobileSceneIndex = getClosestMobileScene(targetProgress);
+          root.dataset.mobileScene = mobileScenes[mobileSceneIndex].name;
+        }
+        requestFrame();
+      }
+
+      function getClosestMobileScene(progress) {
+        return mobileScenes.reduce((closest, scene, index) => (
+          Math.abs(scene.progress - progress) < Math.abs(mobileScenes[closest].progress - progress)
+            ? index
+            : closest
+        ), 0);
+      }
+
+      function changeMobileScene(direction) {
+        if (
+          !narrow ||
+          pageTransition.classList.contains("is-active") ||
+          root.classList.contains("is-arriving") ||
+          root.classList.contains("is-revealing")
+        ) {
+          return;
+        }
+
+        mobileSceneIndex = clamp(mobileSceneIndex + direction, 0, mobileScenes.length - 1);
+        const scene = mobileScenes[mobileSceneIndex];
+        root.dataset.mobileScene = scene.name;
+        setTargetProgress(scene.progress);
+      }
+
+      function setTargetProgress(progress) {
+        const nextProgress = prefersReduced ? 1 : clamp(progress);
+        if (narrow && !prefersReduced) {
+          mobileSceneIndex = getClosestMobileScene(nextProgress);
+          root.dataset.mobileScene = mobileScenes[mobileSceneIndex].name;
+        }
+        if (Math.abs(nextProgress - targetProgress) > 0.00001) {
+          targetProgress = nextProgress;
+          if (narrow && !prefersReduced) {
+            startMobileTween(targetProgress);
+          }
+        }
+        requestFrame();
+
+        if (prefersReduced) {
+          window.scrollTo({ top: getMaxScroll(), behavior: "auto" });
+          return;
+        }
+
+        const scrollTop = Math.round(targetProgress * getMaxScroll());
+        if (Math.abs(window.scrollY - scrollTop) < 1) {
+          return;
+        }
+
+        scrollSync = true;
+        window.scrollTo({ top: scrollTop, behavior: "auto" });
+        window.requestAnimationFrame(() => {
+          scrollSync = false;
+        });
+      }
+
+      function normalizeWheel(event) {
+        if (event.deltaMode === 1) {
+          return event.deltaY * 32;
+        }
+
+        if (event.deltaMode === 2) {
+          return event.deltaY * window.innerHeight;
+        }
+
+        return event.deltaY;
+      }
+
+      function commitWheelStep() {
+        wheelFrame = 0;
+
+        const delta = wheelRemainder;
+        wheelRemainder = 0;
+
+        if (Math.abs(delta) < 2) {
+          return;
+        }
+
+        if (narrow) {
+          if (mobileWheelLocked) {
+            return;
+          }
+
+          mobileWheelLocked = true;
+          changeMobileScene(Math.sign(delta));
+          window.clearTimeout(mobileWheelUnlockTimer);
+          mobileWheelUnlockTimer = window.setTimeout(() => {
+            mobileWheelLocked = false;
+          }, 760);
+          return;
+        }
+
+        const abs = Math.abs(delta);
+        const direction = Math.sign(delta);
+        const intensity = abs < 80
+          ? clamp(abs / 140, 0.15, 0.58)
+          : clamp(abs / 340, 0.72, 1.85);
+        const step = (narrow ? 0.094 : 0.084) * intensity * direction;
+        setTargetProgress(targetProgress + step);
+      }
+
+      function handleWheel(event) {
+        if (prefersReduced || event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
+          return;
+        }
+
+        event.preventDefault();
+        wheelRemainder += normalizeWheel(event);
+
+        if (!wheelFrame) {
+          wheelFrame = window.requestAnimationFrame(commitWheelStep);
+        }
+      }
+
+      function handleTouchStart(event) {
+        if (!narrow || prefersReduced || event.touches.length !== 1) {
+          return;
+        }
+
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+        touchGestureCommitted = false;
+      }
+
+      function handleTouchMove(event) {
+        if (!narrow || prefersReduced || event.touches.length !== 1) {
+          return;
+        }
+
+        const deltaX = event.touches[0].clientX - touchStartX;
+        const deltaY = event.touches[0].clientY - touchStartY;
+        const isVertical = Math.abs(deltaY) > Math.abs(deltaX) * 1.12;
+
+        if (!isVertical || Math.abs(deltaY) < 10) {
+          return;
+        }
+
+        event.preventDefault();
+        if (touchGestureCommitted || Math.abs(deltaY) < 34) {
+          return;
+        }
+
+        touchGestureCommitted = true;
+        changeMobileScene(deltaY < 0 ? 1 : -1);
+      }
+
+      function handleTouchEnd() {
+        touchGestureCommitted = false;
+      }
+
+      function handleKeydown(event) {
+        if (prefersReduced || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) {
+          return;
+        }
+
+        const steps = {
+          ArrowDown: 0.045,
+          ArrowUp: -0.045,
+          PageDown: 0.13,
+          PageUp: -0.13,
+          " ": event.shiftKey ? -0.13 : 0.13,
+          Home: -Infinity,
+          End: Infinity
+        };
+        const step = steps[event.key];
+
+        if (step === undefined) {
+          return;
+        }
+
+        event.preventDefault();
+        setTargetProgress(step === Infinity ? 1 : step === -Infinity ? 0 : targetProgress + step);
+      }
+
+      function frame(now) {
+        animationFrame = 0;
+        const frameGap = now - lastFrameTime;
+        const elapsed = frameGap > 120
+          ? 0.0167
+          : Math.min(0.08, Math.max(0.001, frameGap / 1000 || 0.016));
+        lastFrameTime = now;
+        let moving = false;
+
+        if (prefersReduced) {
+          visualProgress = 1;
+        } else if (narrow && mobileTween) {
+          const tweenProgress = clamp((now - mobileTween.startedAt) / mobileTween.duration);
+          visualProgress = lerp(mobileTween.from, mobileTween.to, easeMobileScene(tweenProgress));
+          moving = tweenProgress < 1;
+          if (!moving) {
+            visualProgress = mobileTween.to;
+            mobileTween = null;
+          }
+        } else {
+          const distance = targetProgress - visualProgress;
+          const distanceAbs = Math.abs(distance);
+          const rate = narrow
+            ? 5.8 + Math.min(10, distanceAbs * 24)
+            : 8.5 + Math.min(17, distanceAbs * 54);
+          const easedStep = 1 - Math.exp(-rate * elapsed);
+          const rawStep = distance * easedStep;
+          const maxStep = narrow
+            ? (0.13 + Math.min(0.3, distanceAbs * 0.85)) * elapsed
+            : (0.19 + Math.min(0.42, distanceAbs * 1.18)) * elapsed;
+          visualProgress += Math.sign(distance) * Math.min(Math.abs(rawStep), maxStep);
+
+          if (Math.abs(targetProgress - visualProgress) < 0.000015) {
+            visualProgress = targetProgress;
+          }
+          moving = Math.abs(targetProgress - visualProgress) > 0.00001;
+        }
+
+        if (Math.abs(visualProgress - latestProgress) > 0.00001 || Math.abs(targetProgress - visualProgress) > 0.00001) {
+          latestProgress = visualProgress;
+          render(visualProgress);
+        }
+        tuneMobileQuality(frameGap, moving && visualProgress > 0.015 && visualProgress < 0.37);
+        if (moving || Math.abs(targetProgress - visualProgress) > 0.00001) {
+          requestFrame();
+        }
+      }
+
+      skip.addEventListener("click", () => {
+        setTargetProgress(1);
+        if (!prefersReduced) {
+          mobileTween = null;
+          visualProgress = 1;
+          latestProgress = -1;
+          render(visualProgress);
+        }
+        cueBookingLink();
+      });
+
+      document.querySelectorAll("[data-page-transition]").forEach((link) => {
+        link.addEventListener("click", (event) => {
+          if (
+            event.defaultPrevented ||
+            event.button !== 0 ||
+            event.metaKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            event.altKey
+          ) {
+            return;
+          }
+
+          const target = link.getAttribute("href");
+          if (!target || target.startsWith("#")) {
+            return;
+          }
+
+          event.preventDefault();
+          if (pageTransition.classList.contains("is-active")) {
+            return;
+          }
+          beginDeparture(link, target);
+        });
+      });
+
+      window.addEventListener("pageshow", (event) => {
+        const navigation = performance.getEntriesByType("navigation")[0];
+        if (event.persisted || navigation?.type === "back_forward") {
+          resetPageTransition(true);
+        }
+      });
+
+      window.addEventListener("wheel", handleWheel, { passive: false });
+      window.addEventListener("touchstart", handleTouchStart, { passive: true });
+      window.addEventListener("touchmove", handleTouchMove, { passive: false });
+      window.addEventListener("touchend", handleTouchEnd, { passive: true });
+      window.addEventListener("touchcancel", handleTouchEnd, { passive: true });
+      window.addEventListener("keydown", handleKeydown);
+      window.addEventListener("scroll", updateTargetProgress, { passive: true });
+
+      window.addEventListener("resize", () => {
+        narrow = isNarrow();
+        root.classList.toggle("is-mobile-story", narrow);
+        resizeBoulderField(true);
+        if (narrow && !prefersReduced) {
+          mobileSceneIndex = getClosestMobileScene(targetProgress);
+          root.dataset.mobileScene = mobileScenes[mobileSceneIndex].name;
+          setTargetProgress(mobileScenes[mobileSceneIndex].progress);
+        } else {
+          updateTargetProgress();
+        }
+        latestProgress = -1;
+        requestFrame();
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        lastFrameTime = performance.now();
+        if (!document.hidden) {
+          requestFrame();
+        }
+      });
+
+      resizeBoulderField(true);
+      mobileSceneIndex = getClosestMobileScene(targetProgress);
+      root.dataset.mobileScene = mobileScenes[mobileSceneIndex].name;
+      initArrival();
+      requestFrame();
+    })();
+  </script>
+</body>
+</html>

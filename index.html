@@ -4,12 +4,17 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>1820 | Restaurant</title>
-  <link rel="preload" as="image" href="images/interior.png" />
-  <link rel="preload" as="image" href="images/interior2.png" />
-  <link rel="preload" as="image" href="images/plate.png" />
+  <link rel="preload" as="font" href="fonts/lato-400-latin.woff2" type="font/woff2" crossorigin />
+  <link rel="preload" as="font" href="fonts/libre-baskerville-400-latin.woff2" type="font/woff2" crossorigin />
+  <link rel="preload" as="image" href="images/hero-figure-rope.webp" type="image/webp" />
+  <link rel="preload" as="image" href="images/hero-figure-lower.webp" type="image/webp" />
+  <link rel="preload" as="image" href="images/hero-pull-static.webp" type="image/webp" />
+  <link rel="preload" as="image" href="images/hero-pull-moving.webp" type="image/webp" />
+  <link rel="preload" as="image" href="images/meet-figure-top.webp" type="image/webp" />
+  <link rel="preload" as="image" href="images/meet-figure-bottom.webp" type="image/webp" />
   <link rel="preload" as="image" href="images/rockguy.png" />
-  <link rel="preload" as="image" href="images/rock-atlas-compact.webp" type="image/webp" media="(max-width: 760px)" />
-  <link rel="preload" as="image" href="images/rock-atlas.webp" type="image/webp" media="(min-width: 761px)" />
+  <link rel="preload" as="image" href="images/hero-rock-atlas-compact.webp" type="image/webp" media="(max-width: 760px)" />
+  <link rel="preload" as="image" href="images/hero-rock-atlas.webp" type="image/webp" media="(min-width: 761px)" />
   <script>
     (() => {
       const navigation = performance.getEntriesByType("navigation")[0];
@@ -21,23 +26,100 @@
     })();
   </script>
   <style>
+    @font-face {
+      font-family: "Lato";
+      src: url("fonts/lato-400-latin.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    @font-face {
+      font-family: "Lato";
+      src: url("fonts/lato-400-latin-ext.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    @font-face {
+      font-family: "Lato";
+      src: url("fonts/lato-700-latin.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    @font-face {
+      font-family: "Lato";
+      src: url("fonts/lato-700-latin-ext.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    @font-face {
+      font-family: "Lato";
+      src: url("fonts/lato-900-latin.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 900;
+      font-display: swap;
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    @font-face {
+      font-family: "Lato";
+      src: url("fonts/lato-900-latin-ext.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 900;
+      font-display: swap;
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    @font-face {
+      font-family: "Libre Baskerville";
+      src: url("fonts/libre-baskerville-400-latin.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    @font-face {
+      font-family: "Libre Baskerville";
+      src: url("fonts/libre-baskerville-400-latin-ext.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
     :root {
       --paper: #f3f3f3;
       --ink: #070707;
       --graphite: #2f2f2f;
       --soft: #b9b9b9;
       --progress: 0;
+      --hero: 1;
+      --site-header: 0;
       --veil: 0;
-      --story: 0;
-      --interlude: 0;
-      --booking: 0;
-      --mark: 0;
-      --image-scene: 0;
-      --room-image: 0;
-      --detail-image: 0;
-      --plate-section: 0;
-      --plate-card: 0;
-      --plate-backdrop: 0;
+      --meet-open: 0;
+      --meet-opacity: 0;
+      --meet-approach: 0;
+      --meet-figures: 0;
+      --meet-words: 0;
+      --meet-title: 0;
+      --meet-strike: 0;
+      --experience: 0;
+      --experience-copy: 0;
+      --ending: 0;
+      --ending-footer-height: clamp(337px, 43vh, 390px);
+      --skip-gutter: clamp(18px, 2.6vw, 42px);
+      --skip-size: 48px;
     }
 
     * {
@@ -54,7 +136,7 @@
       min-height: 100vh;
       margin: 0;
       overflow-x: hidden;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: "Lato", Arial, sans-serif;
       letter-spacing: 0;
       background:
         repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.025) 0 1px, transparent 1px 8px),
@@ -94,7 +176,7 @@
     }
 
     .scroll-length {
-      height: 820vh;
+      height: 760vh;
       pointer-events: none;
     }
 
@@ -103,10 +185,7 @@
       inset: 0;
       isolation: isolate;
       overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 48%, rgba(255, 255, 255, 0.94), transparent 18vw),
-        radial-gradient(circle at 22% 84%, rgba(0, 0, 0, 0.1), transparent 32vw),
-        #f3f3f3;
+      background: #f8f8f7;
     }
 
     .stage::before {
@@ -124,10 +203,10 @@
       position: absolute;
       inset: 0;
       z-index: 0;
-      opacity: 0.58;
+      opacity: 0.16;
       background:
-        linear-gradient(90deg, rgba(0, 0, 0, 0.055) 1px, transparent 1px) 0 0 / clamp(42px, 7vw, 110px) clamp(42px, 7vw, 110px),
-        linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.08));
+        repeating-linear-gradient(108deg, rgba(0, 0, 0, 0.025) 0 1px, transparent 1px 8px),
+        radial-gradient(circle at 50% 54%, rgba(255, 255, 255, 0.94), rgba(0, 0, 0, 0.03) 100%);
     }
 
     .topbar {
@@ -135,150 +214,220 @@
       top: 0;
       left: 0;
       right: 0;
-      z-index: 20;
+      z-index: 40;
       display: flex;
       align-items: center;
       justify-content: space-between;
       min-height: 76px;
       padding: 20px clamp(18px, 4vw, 58px);
       color: #ffffff;
-      mix-blend-mode: difference;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(5, 5, 5, 0.96);
+      opacity: var(--site-header);
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(calc((1 - var(--site-header)) * -12px));
+    }
+
+    .topbar.is-live {
+      visibility: visible;
+      pointer-events: auto;
     }
 
     .brand,
-    .date {
+    .topnav {
+      font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
       font-size: clamp(0.72rem, 0.68rem + 0.16vw, 0.86rem);
-      font-weight: 850;
-      letter-spacing: 0.08em;
+      font-weight: 400;
+      letter-spacing: 0;
       text-transform: uppercase;
       white-space: nowrap;
     }
 
     .brand {
       font-size: clamp(1rem, 0.86rem + 0.56vw, 1.42rem);
-      letter-spacing: 0.02em;
+      letter-spacing: 0;
+    }
+
+    .topnav {
+      display: flex;
+      align-items: center;
+      gap: clamp(16px, 2.6vw, 38px);
+      font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
+      letter-spacing: 0.24em;
+    }
+
+    .topnav a {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      color: rgba(255, 255, 255, 0.82);
+      transition: color 220ms ease, border-color 220ms ease, background 220ms ease;
+    }
+
+    .topnav a:hover,
+    .topnav a:focus-visible {
+      color: #ffffff;
+      outline: none;
+    }
+
+    .topnav-booking {
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .topnav-booking:hover,
+    .topnav-booking:focus-visible {
+      background: transparent;
+    }
+
+    .topnav-booking.is-cued {
+      animation: hudBookingCue 1500ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes hudBookingCue {
+      0%,
+      100% {
+        color: rgba(255, 255, 255, 0.82);
+        text-shadow: 0 0 0 rgba(255, 255, 255, 0);
+      }
+
+      42% {
+        color: #ffffff;
+        text-shadow: 0 0 16px rgba(255, 255, 255, 0.48);
+      }
     }
 
     .hero-copy {
-      position: fixed;
+      position: absolute;
       inset: 0;
-      z-index: 8;
-      display: grid;
-      place-items: center;
-      padding: 8rem clamp(18px, 4vw, 58px) 9rem;
-      text-align: center;
-      pointer-events: none;
-      opacity: clamp(0, calc(1 - ((var(--progress) - 0.045) * 8.5)), 1);
-      transform: translateY(calc(var(--progress) * -7vh)) scale(calc(1 - (var(--progress) * 0.045)));
-    }
-
-    .brand-watermark {
-      position: fixed;
-      inset: 0;
-      z-index: 11;
-      display: grid;
-      place-items: center;
-      padding: 8rem clamp(18px, 4vw, 58px) 9rem;
-      pointer-events: none;
-      color: #080808;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(7.2rem, 20vw, 19rem);
-      font-weight: 400;
-      line-height: 0.76;
-      letter-spacing: 0;
-      opacity: var(--mark);
-      transform: translateY(-1vh);
-    }
-
-    .image-stage {
-      position: fixed;
-      inset: 0;
-      z-index: 9;
+      z-index: 2;
       overflow: hidden;
       pointer-events: none;
-      background: #f3f3f3;
-      opacity: var(--image-scene);
+      opacity: var(--hero);
+      transform: scale(calc(1 - ((1 - var(--hero)) * 0.025)));
+      transform-origin: center;
+      will-change: opacity, transform;
     }
 
-    .image-stage::before,
-    .image-stage::after {
-      content: "";
+    .hero-number {
+      position: absolute;
+      left: 50%;
+      top: 51%;
+      z-index: 1;
+      width: max-content;
+      margin: 0;
+      color: rgba(7, 7, 7, 0.035);
+      font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
+      font-size: clamp(20rem, 62vh, 60rem);
+      font-weight: 400;
+      line-height: 0.74;
+      letter-spacing: 0;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+    }
+
+    .hero-tagline {
+      position: absolute;
+      left: 50%;
+      top: 43.5%;
+      z-index: 2;
+      width: max-content;
+      max-width: calc(100% - 48px);
+      margin: 0;
+      color: #565656;
+      font-family: "Lato", Arial, sans-serif;
+      font-size: clamp(1.6rem, 3.5vh, 3.5rem);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0.48em;
+      word-spacing: 0.14em;
+      text-align: center;
+      text-transform: uppercase;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+    }
+
+    .hero-figure {
       position: absolute;
       inset: 0;
       z-index: 3;
       pointer-events: none;
     }
 
-    .image-stage::before {
-      opacity: calc(var(--image-scene) * 0.86);
-      background:
-        radial-gradient(circle at 50% 46%, transparent 0 34%, rgba(0, 0, 0, 0.38) 100%),
-        linear-gradient(90deg, rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.3) 42%, rgba(0, 0, 0, 0.62));
-    }
-
-    .image-stage::after {
-      opacity: calc(var(--image-scene) * 0.3);
-      background:
-        repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 7px),
-        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 9px);
-      mix-blend-mode: overlay;
-    }
-
-    .image-layer {
+    .hero-figure img {
       position: absolute;
-      inset: 0;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
+      left: 50%;
       display: block;
-      object-fit: cover;
-      object-position: center;
-      opacity: 0;
-      filter: grayscale(1) contrast(1.16) brightness(0.72);
-      transform: scale(1.035);
-      will-change: opacity, transform;
+      height: auto;
+      object-fit: contain;
+      filter: grayscale(1) contrast(1.04);
+      transform: translateX(-50%);
     }
 
-    .image-layer--room {
-      opacity: calc(var(--room-image) * 0.92);
-      transform: translateY(calc((1 - var(--room-image)) * 18px)) scale(calc(1.05 - (var(--room-image) * 0.018)));
+    .hero-figure-rope {
+      top: 16.5vh;
+      width: clamp(185px, 23.15vh, 375px);
     }
 
-    .image-layer--detail {
-      z-index: 2;
-      object-position: center;
-      opacity: calc(var(--detail-image) * 0.9);
-      filter: grayscale(1) contrast(1.12) brightness(0.76);
-      transform: translateY(calc((1 - var(--detail-image)) * 22px)) scale(calc(1.055 - (var(--detail-image) * 0.02)));
+    .hero-figure-lower {
+      top: 54%;
+      width: clamp(270px, 33.333vh, 540px);
     }
 
-    .eyebrow {
-      margin: 0 0 clamp(18px, 3vw, 34px);
-      font-size: clamp(0.7rem, 0.65rem + 0.2vw, 0.86rem);
-      font-weight: 850;
-      letter-spacing: 0.18em;
-      line-height: 1.4;
-      text-transform: uppercase;
-      color: #505050;
+    /* Optional original-art arm pull. Remove this block and its matching markup/script to roll back. */
+    .hero-arm-pull {
+      --arm-pull-scale-y: 1;
+      --arm-pull-shift-y: 0px;
+      position: absolute;
+      top: 16.5vh;
+      left: 50%;
+      width: clamp(185px, 23.15vh, 375px);
+      aspect-ratio: 2 / 3;
+      visibility: hidden;
+      transform: translateX(-50%);
     }
 
-    h1 {
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(7.2rem, 20vw, 19rem);
-      font-weight: 400;
-      line-height: 0.76;
-      letter-spacing: 0;
-      color: #080808;
+    .hero-arm-pull picture {
+      display: contents;
     }
 
-    .subline {
-      max-width: 34rem;
-      margin: clamp(22px, 4vw, 46px) auto 0;
-      font-size: clamp(0.92rem, 0.82rem + 0.36vw, 1.18rem);
-      font-weight: 620;
-      line-height: 1.5;
-      color: #222222;
+    .hero-figure .hero-arm-pull img {
+      position: absolute;
+      display: block;
+      max-width: none;
+      height: auto;
+      object-fit: contain;
+      filter: grayscale(1) contrast(1.04);
+    }
+
+    .hero-figure .hero-arm-pull-static {
+      top: 7.8125%;
+      left: 27.34375%;
+      width: 50.78125%;
+      transform: none;
+    }
+
+    .hero-figure .hero-arm-pull-moving {
+      top: 35.8073%;
+      left: 41.0156%;
+      width: 26.3672%;
+      transform: translate3d(0, var(--arm-pull-shift-y), 0) scaleY(var(--arm-pull-scale-y));
+      transform-origin: 48.148% 0;
+      will-change: transform;
+    }
+
+    .hero-figure.is-arm-pull-ready > .hero-figure-original .hero-figure-rope {
+      visibility: hidden;
+    }
+
+    .hero-figure.is-arm-pull-ready .hero-arm-pull {
+      visibility: visible;
     }
 
     .boulder-field {
@@ -292,91 +441,593 @@
       contain: strict;
     }
 
-    .restaurant-panel,
-    .plate-panel,
-    .detail-panel,
-    .booking-panel {
+    .experience-panel,
+    .ending-panel {
       position: fixed;
       inset: 0;
-      z-index: 12;
-      display: grid;
-      align-content: center;
-      gap: clamp(26px, 5vh, 52px);
-      padding: clamp(92px, 12vh, 136px) clamp(18px, 5vw, 72px) clamp(28px, 6vh, 72px);
+      overflow: hidden;
+      visibility: hidden;
       pointer-events: none;
     }
 
-    .restaurant-panel {
-      opacity: var(--story);
-      transform: translateY(calc((1 - var(--story)) * 28px));
-      color: #f5f5f5;
-    }
-
-    .detail-panel {
-      z-index: 14;
-      opacity: var(--interlude);
-      transform: translateX(calc((1 - var(--interlude)) * -34px));
-      color: #f5f5f5;
-    }
-
-    .plate-panel {
-      z-index: 13;
-      color: #f5f5f5;
-      opacity: var(--plate-section);
-      transform: translateY(calc((1 - var(--plate-section)) * 36px));
-      isolation: isolate;
-    }
-
-    .plate-panel::before {
-      content: "";
-      position: absolute;
+    .meet-panel {
+      position: fixed;
       inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      opacity: var(--plate-backdrop);
-      background:
-        radial-gradient(circle at 78% 44%, rgba(255, 255, 255, 0.18), transparent 30vw),
-        linear-gradient(90deg, rgba(246, 246, 246, 0.96) 0 43%, rgba(32, 32, 32, 0.92) 43% 100%),
-        repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.035) 0 1px, transparent 1px 6px);
-    }
-
-    .booking-panel {
-      z-index: 15;
-      align-content: end;
-      color: #f5f5f5;
-      opacity: var(--booking);
-      transform: translateY(calc((1 - var(--booking)) * 46px));
-    }
-
-    .booking-panel::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: -2;
-      background:
-        repeating-linear-gradient(110deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 6px),
-        #080808;
-      transform: scaleY(var(--booking));
-      transform-origin: bottom;
-    }
-
-    .booking-panel::after {
-      content: "1820";
-      position: absolute;
-      inset: 0;
-      z-index: -1;
+      z-index: 16;
+      overflow: hidden;
       display: grid;
       place-items: center;
-      padding: 8rem clamp(18px, 4vw, 58px) 9rem;
-      color: #f5f5f5;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(7.2rem, 20vw, 19rem);
-      font-weight: 400;
-      line-height: 0.76;
-      letter-spacing: 0;
-      opacity: calc(var(--booking) * 0.055);
+      color: #f4f4f2;
+      background: #050505;
+      opacity: var(--meet-opacity);
+      visibility: hidden;
       pointer-events: none;
-      transform: translateY(-1vh);
+      clip-path: inset(0 calc((1 - var(--meet-open)) * 50%));
+      transform: translateZ(0);
+      will-change: opacity, clip-path;
+    }
+
+    .meet-panel.is-live {
+      visibility: visible;
+    }
+
+    .meet-panel::before,
+    .meet-panel::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .meet-panel::before {
+      inset: 0;
+      z-index: 0;
+      opacity: 0.32;
+      background:
+        repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.038) 0 1px, transparent 1px 8px),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 11px);
+    }
+
+    .meet-panel::after {
+      inset: clamp(16px, 2.2vw, 34px) clamp(14px, 2vw, 30px);
+      z-index: 6;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      opacity: calc(var(--meet-open) * 0.72);
+    }
+
+    .meet-frame,
+    .meet-resolve {
+      position: absolute;
+      inset: 0;
+    }
+
+    .meet-frame {
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .meet-frame::before {
+      content: "";
+      position: absolute;
+      top: 7vh;
+      bottom: 7vh;
+      left: 50%;
+      z-index: 1;
+      width: 1px;
+      background: rgba(255, 255, 255, 0.18);
+      opacity: calc(var(--meet-words) * 0.72);
+      transform: scaleY(var(--meet-approach));
+      transform-origin: center;
+    }
+
+    .meet-figure {
+      position: absolute;
+      top: 50%;
+      bottom: auto;
+      left: 50%;
+      z-index: 2;
+      width: clamp(310px, 52vh, 560px);
+      margin: 0;
+      opacity: var(--meet-figures);
+      will-change: opacity, transform;
+    }
+
+    .meet-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      filter: contrast(1.08) brightness(1.03);
+      transform: translateZ(0);
+    }
+
+    .meet-figure--top {
+      width: clamp(260px, 43vh, 470px);
+      transform:
+        translate3d(
+          calc(-63.5% - 10px),
+          calc(-90.5% + ((1 - var(--meet-approach)) * -18vh) - (var(--meet-title) * 10vh)),
+          0
+        )
+        rotate(calc((1 - var(--meet-approach)) * -1.4deg))
+        scale(calc(0.96 + (var(--meet-approach) * 0.04)));
+      transform-origin: 50% 90%;
+    }
+
+    .meet-figure--bottom {
+      transform:
+        translate3d(
+          calc(-36.5% + 10px),
+          calc(-9.5% + ((1 - var(--meet-approach)) * 18vh) + (var(--meet-title) * 10vh)),
+          0
+        )
+        rotate(calc((1 - var(--meet-approach)) * 1.4deg))
+        scale(calc(0.96 + (var(--meet-approach) * 0.04)));
+      transform-origin: 50% 10%;
+    }
+
+    .meet-phrase {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      margin: 0;
+      color: #f4f4f2;
+      font-size: clamp(1.25rem, 2.15vw, 2.15rem);
+      font-weight: 400;
+      letter-spacing: 0.48em;
+      line-height: 1;
+      text-transform: uppercase;
+      opacity: var(--meet-words);
+      transform: translateY(-50%);
+      white-space: nowrap;
+    }
+
+    .meet-word {
+      display: block;
+      will-change: transform;
+    }
+
+    .meet-word--where {
+      justify-self: start;
+      margin-left: clamp(24px, 4.8vw, 78px);
+      transform: translateX(calc((1 - var(--meet-approach)) * -4vw));
+    }
+
+    .meet-word--opposites {
+      justify-self: end;
+      margin-right: clamp(24px, 4.8vw, 78px);
+      transform: translateX(calc((1 - var(--meet-approach)) * 4vw));
+    }
+
+    .meet-strike {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 5;
+      width: 100vw;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.78);
+      opacity: var(--meet-strike);
+      transform: translate(-50%, -50%) scaleX(var(--meet-strike));
+      transform-origin: center;
+      box-shadow: 0 0 18px rgba(255, 255, 255, 0.28);
+    }
+
+    .meet-resolve {
+      z-index: 4;
+      display: grid;
+      place-content: center;
+      justify-items: center;
+      gap: clamp(15px, 2.4vh, 24px);
+      padding: 80px 24px;
+      text-align: center;
+      opacity: calc(var(--meet-title) * var(--meet-opacity));
+      transform:
+        translateY(calc((1 - var(--meet-title)) * 22px))
+        scale(calc(0.97 + (var(--meet-title) * 0.03)));
+      will-change: opacity, transform;
+    }
+
+    .meet-title {
+      margin: 0;
+      padding-left: 0.48em;
+      color: #f5f5f3;
+      font-family: "Lato", Arial, sans-serif;
+      font-size: clamp(3.8rem, 7.2vw, 7.2rem);
+      font-weight: 400;
+      letter-spacing: 0.48em;
+      line-height: 0.9;
+      text-transform: uppercase;
+    }
+
+    .meet-subtitle {
+      margin: 0;
+      color: rgba(245, 245, 243, 0.58);
+      font-size: clamp(0.66rem, 0.58rem + 0.2vw, 0.82rem);
+      font-weight: 700;
+      letter-spacing: 0.34em;
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    .experience-panel {
+      z-index: 14;
+      color: #f7f7f5;
+      background: #050505;
+      opacity: var(--experience);
+      clip-path: inset(calc((1 - var(--experience)) * 50%) 0);
+      transform: translateZ(0);
+      will-change: opacity, clip-path;
+    }
+
+    .experience-panel.is-live,
+    .ending-panel.is-live {
+      visibility: visible;
+    }
+
+    .experience-media {
+      position: absolute;
+      inset: 76px 0 0;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(4, 4, 4, 0.2), rgba(4, 4, 4, 0.04) 58%, rgba(4, 4, 4, 0.42)),
+        url("video/experience-1820-poster.webp") center / cover no-repeat;
+      transform:
+        translate3d(0, calc(var(--ending) * -5vh), 0)
+        scale(calc(1.035 + (var(--ending) * 0.025)));
+      transform-origin: center 68%;
+      will-change: transform;
+    }
+
+    .experience-media::before,
+    .experience-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .experience-media::before {
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.26), transparent 30%, transparent 66%, rgba(0, 0, 0, 0.36)),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.18), transparent 28%, transparent 72%, rgba(0, 0, 0, 0.18));
+    }
+
+    .experience-media::after {
+      opacity: 0.18;
+      background:
+        repeating-linear-gradient(112deg, rgba(255, 255, 255, 0.055) 0 1px, transparent 1px 8px),
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.04) 0 1px, transparent 1px 10px);
+      mix-blend-mode: overlay;
+    }
+
+    .experience-video {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: saturate(0.68) contrast(1.08) brightness(0.78);
+      transform: scale(1.01);
+    }
+
+    .experience-lockup {
+      position: absolute;
+      inset: 76px 0 0;
+      z-index: 4;
+      display: grid;
+      place-content: center;
+      justify-items: center;
+      gap: clamp(58px, 9.5vh, 70px);
+      padding: 48px clamp(24px, 7vw, 110px);
+      text-align: center;
+      opacity: var(--experience-copy);
+      transform:
+        translateY(calc((1 - var(--experience-copy)) * 28px))
+        scale(calc(0.98 + (var(--experience-copy) * 0.02)));
+      will-change: opacity, transform;
+    }
+
+    .experience-title {
+      margin: 0;
+      padding: 21px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.74);
+      color: #ffffff;
+      font-family: "Lato", Arial, sans-serif;
+      font-size: clamp(1.45rem, 2.35vw, 2rem);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0.72em;
+      text-transform: uppercase;
+      text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+      white-space: nowrap;
+    }
+
+    .experience-booking {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      color: #ffffff;
+      font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
+      font-size: clamp(0.74rem, 0.68rem + 0.14vw, 0.84rem);
+      font-weight: 400;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.62);
+    }
+
+    .experience-booking::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0.3em;
+      bottom: 0;
+      height: 1px;
+      background: currentColor;
+      transform: scaleX(1);
+      transform-origin: center;
+      transition: opacity 220ms ease;
+    }
+
+    .experience-booking:hover::after,
+    .experience-booking:focus-visible::after {
+      opacity: 0.58;
+    }
+
+    .experience-booking:focus-visible {
+      outline: none;
+    }
+
+    .ending-panel {
+      z-index: 15;
+      color: #f5f5f3;
+    }
+
+    .ending-footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      height: var(--ending-footer-height);
+      border-top: 1px solid rgba(255, 255, 255, 0.34);
+      border-right: 1px solid rgba(255, 255, 255, 0.58);
+      background: #030303;
+      opacity: 1;
+      transform: translateY(calc((1 - var(--ending)) * 102%));
+      box-shadow: 0 -30px 80px rgba(0, 0, 0, 0.3);
+      pointer-events: auto;
+      will-change: opacity, transform;
+    }
+
+    .newsletter {
+      display: grid;
+      grid-template-columns:
+        minmax(320px, 1fr)
+        minmax(150px, 0.358fr)
+        minmax(150px, 0.356fr)
+        minmax(146px, 0.308fr)
+        76px;
+      align-items: center;
+      gap: clamp(16px, 1.8vw, 24px);
+      height: 47px;
+      padding: 5px 24px 5px 17px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.34);
+    }
+
+    .newsletter-intro {
+      margin: 0;
+      font-size: clamp(0.8rem, 0.76rem + 0.11vw, 0.88rem);
+      font-weight: 600;
+      letter-spacing: 0;
+      line-height: 1.25;
+    }
+
+    .newsletter-field {
+      min-width: 0;
+    }
+
+    .newsletter-field input {
+      width: 100%;
+      min-height: 31px;
+      padding: 8px 1px 5px;
+      border: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.58);
+      border-radius: 0;
+      outline: none;
+      background: transparent;
+      color: #ffffff;
+      font: 700 0.805rem/1.2 "Lato", Arial, sans-serif;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+    }
+
+    .newsletter-field input::placeholder {
+      color: rgba(255, 255, 255, 0.76);
+      opacity: 1;
+    }
+
+    .newsletter-field input:focus {
+      border-bottom-color: #ffffff;
+    }
+
+    .newsletter-consent {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: max-content;
+      font-size: 0.805rem;
+      letter-spacing: 0;
+      cursor: pointer;
+    }
+
+    .newsletter-consent input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .newsletter-check {
+      position: relative;
+      width: 25px;
+      height: 25px;
+      flex: 0 0 25px;
+      border: 1px solid rgba(255, 255, 255, 0.82);
+      background: transparent;
+    }
+
+    .newsletter-consent input:checked + .newsletter-check::after {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 2px;
+      width: 7px;
+      height: 13px;
+      border-right: 2px solid #ffffff;
+      border-bottom: 2px solid #ffffff;
+      transform: rotate(42deg);
+    }
+
+    .newsletter-consent input:focus-visible + .newsletter-check {
+      outline: 2px solid #ffffff;
+      outline-offset: 3px;
+    }
+
+    .newsletter-submit {
+      width: 76px;
+      min-width: 76px;
+      min-height: 31px;
+      padding: 6px 10px;
+      border: 1px solid #ffffff;
+      border-radius: 0;
+      background: #f5f5f3;
+      color: #050505;
+      cursor: pointer;
+      font: 400 0.945rem/1 "Libre Baskerville", Georgia, "Times New Roman", serif;
+      letter-spacing: 0;
+      text-transform: none;
+      transition: background 180ms ease, color 180ms ease;
+    }
+
+    .newsletter-submit:hover,
+    .newsletter-submit:focus-visible {
+      background: #050505;
+      color: #ffffff;
+      outline: none;
+    }
+
+    .newsletter-submit:disabled {
+      cursor: wait;
+      opacity: 0.58;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 12.5% 13% 17% 13.5% 14.9% 10.1%;
+      justify-content: space-between;
+      gap: 0;
+      align-items: start;
+      min-height: 0;
+      padding: 20px 24px 18px;
+    }
+
+    .footer-rail {
+      display: grid;
+      align-content: end;
+      min-height: 100%;
+    }
+
+    .footer-mark {
+      display: inline-grid;
+      justify-items: center;
+      gap: 4px;
+      width: 100%;
+      max-width: 160px;
+    }
+
+    .footer-mark img {
+      display: block;
+      width: 56px;
+      height: auto;
+      filter: saturate(0.88) contrast(1.04);
+    }
+
+    .footer-mark strong {
+      font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
+      font-size: 1.225rem;
+      font-weight: 400;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .footer-mark span {
+      color: rgba(255, 255, 255, 0.62);
+      font-size: 0.705rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .footer-column {
+      display: grid;
+      align-content: start;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .footer-column h3 {
+      margin: 0 0 5px;
+      font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
+      font-size: clamp(1.125rem, 1.065rem + 0.18vw, 1.275rem);
+      font-weight: 400;
+      line-height: 1.2;
+    }
+
+    .footer-column p,
+    .footer-column a {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: clamp(0.795rem, 0.765rem + 0.09vw, 0.865rem);
+      font-weight: 600;
+      line-height: 1.38;
+    }
+
+    .footer-column a {
+      width: max-content;
+      max-width: 100%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.36);
+      transition: color 180ms ease, border-color 180ms ease;
+    }
+
+    .footer-column a:hover,
+    .footer-column a:focus-visible {
+      color: #ffffff;
+      border-color: #ffffff;
+      outline: none;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     .page-transition {
@@ -485,377 +1136,101 @@
       }
     }
 
-    .restaurant-panel.is-live,
-    .plate-panel.is-live,
-    .detail-panel.is-live,
-    .booking-panel.is-live {
+    .meet-panel.is-live,
+    .experience-panel.is-live {
       pointer-events: auto;
     }
 
-    .story-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(250px, 0.58fr);
-      gap: clamp(30px, 8vw, 120px);
-      align-items: end;
-      width: min(100%, 1260px);
-      margin: 0 auto;
-    }
-
-    .story-kicker,
-    .story-meta,
-    .reserve-link {
-      font-size: clamp(0.68rem, 0.62rem + 0.18vw, 0.82rem);
-      font-weight: 900;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-    }
-
-    .story-kicker {
-      margin: 0 0 18px;
-      color: #3c3c3c;
-    }
-
-    .restaurant-panel .story-kicker,
-    .plate-panel .story-kicker,
-    .detail-panel .story-kicker {
-      color: rgba(245, 245, 245, 0.8);
-      text-shadow: 0 2px 18px rgba(0, 0, 0, 0.42);
-    }
-
-    .story-title {
-      max-width: 11ch;
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(4rem, 12vw, 12rem);
-      font-weight: 400;
-      line-height: 0.86;
-      letter-spacing: 0;
-    }
-
-    .restaurant-panel .story-title,
-    .plate-panel .plate-title,
-    .detail-panel .detail-title {
-      text-shadow: 0 18px 54px rgba(0, 0, 0, 0.48);
-    }
-
-    .story-copy {
-      display: grid;
-      gap: clamp(18px, 3vw, 30px);
-      padding-bottom: 0.9rem;
-    }
-
-    .story-copy p {
-      max-width: 33rem;
-      margin: 0;
-      color: #171717;
-      font-size: clamp(1rem, 0.88rem + 0.48vw, 1.38rem);
-      font-weight: 560;
-      line-height: 1.52;
-    }
-
-    .restaurant-panel .story-copy p,
-    .plate-panel .plate-copy p,
-    .detail-panel .detail-copy p {
-      color: rgba(247, 247, 247, 0.92);
-      text-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-    }
-
-    .detail-layout {
-      display: grid;
-      grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1fr);
-      gap: clamp(30px, 7vw, 94px);
-      align-items: end;
-      width: min(100%, 1260px);
-      margin: 0 auto;
-    }
-
-    .plate-layout {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      grid-template-columns: minmax(250px, 0.44fr) minmax(420px, 0.96fr);
-      gap: clamp(28px, 5vw, 76px);
-      align-items: center;
-      width: min(100%, 1380px);
-      margin: 0 auto;
-    }
-
-    .plate-copy {
-      display: grid;
-      gap: clamp(18px, 3vw, 30px);
-      align-self: end;
-      padding-bottom: clamp(6px, 2vh, 28px);
-    }
-
-    .plate-title {
-      max-width: 8ch;
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(4rem, 9.8vw, 9rem);
-      font-weight: 400;
-      line-height: 0.86;
-      letter-spacing: 0;
-    }
-
-    .detail-title,
-    .booking-title {
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(4rem, 9.8vw, 9rem);
-      font-weight: 400;
-      line-height: 0.86;
-      letter-spacing: 0;
-    }
-
-    .detail-title {
-      max-width: 7.4ch;
-    }
-
-    .detail-copy {
-      display: grid;
-      gap: clamp(18px, 3vw, 30px);
-    }
-
-    .plate-showcase {
-      position: relative;
-      width: min(100%, 760px);
-      margin: 0;
-      justify-self: end;
-      opacity: var(--plate-card);
-      transform: translateY(calc((1 - var(--plate-card)) * 26px)) scale(calc(0.975 + (var(--plate-card) * 0.025)));
-      transition: none;
-    }
-
-    .plate-showcase img {
-      display: block;
-      width: 100%;
-      height: min(86vh, 790px);
-      min-height: 560px;
-      aspect-ratio: 7 / 8;
-      object-fit: cover;
-      object-position: center 66%;
-      border: 1px solid rgba(255, 255, 255, 0.42);
-      border-radius: 30px;
-      background: #111111;
-      box-shadow: 0 36px 100px rgba(0, 0, 0, 0.48);
-      filter: saturate(1.06) contrast(1.02) brightness(0.94);
-    }
-
-    .plate-showcase figcaption {
-      position: absolute;
-      left: clamp(18px, 2.6vw, 28px);
-      right: clamp(18px, 2.6vw, 28px);
-      bottom: clamp(16px, 2.4vw, 26px);
-      z-index: 1;
-      margin: 0;
-      color: rgba(245, 245, 245, 0.74);
-      font-size: clamp(0.66rem, 0.62rem + 0.14vw, 0.78rem);
-      font-weight: 900;
-      letter-spacing: 0.16em;
-      line-height: 1.4;
-      text-transform: uppercase;
-      text-shadow: 0 6px 22px rgba(0, 0, 0, 0.5);
-      pointer-events: none;
-    }
-
-    @media (min-width: 1440px) {
-      .plate-layout {
-        grid-template-columns: minmax(280px, 0.38fr) minmax(620px, 1.04fr);
-        gap: clamp(34px, 4vw, 82px);
-        width: min(100%, 1540px);
+    @media (max-height: 560px) and (min-width: 761px) {
+      .meet-figure {
+        width: clamp(220px, 52vh, 310px);
       }
 
-      .plate-showcase {
-        width: min(100%, 880px);
-        transform: translateY(calc(((1 - var(--plate-card)) * 26px) - 58px)) scale(calc(0.975 + (var(--plate-card) * 0.025)));
+      .meet-figure--top {
+        width: clamp(180px, 43vh, 250px);
       }
 
-      .plate-showcase img {
-        height: min(90vh, 860px);
-        min-height: 620px;
-        border-radius: 32px;
+      .meet-title {
+        font-size: clamp(3rem, 12vh, 4.2rem);
       }
     }
 
-    .plate-copy p,
-    .detail-copy p,
-    .booking-copy p {
-      max-width: 39rem;
-      margin: 0;
-      font-size: clamp(1rem, 0.9rem + 0.44vw, 1.34rem);
-      font-weight: 580;
-      line-height: 1.5;
-    }
-
-    .story-meta {
-      color: #555555;
-    }
-
-    .restaurant-panel .story-meta,
-    .plate-panel .story-meta,
-    .detail-panel .story-meta {
-      color: rgba(245, 245, 245, 0.72);
-    }
-
-    .plate-panel .story-kicker {
-      color: #3b3b3b;
-      text-shadow: none;
-    }
-
-    .plate-panel .plate-title {
-      color: #070707;
-      text-shadow: none;
-    }
-
-    .plate-panel .plate-copy p {
-      color: #171717;
-      text-shadow: none;
-    }
-
-    .plate-panel .story-meta {
-      color: #555555;
-    }
-
-    .booking-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(250px, 0.46fr);
-      gap: clamp(30px, 8vw, 112px);
-      align-items: end;
-      width: min(100%, 1260px);
-      margin: 0 auto;
-    }
-
-    .booking-title {
-      max-width: 8ch;
-      color: #f5f5f5;
-    }
-
-    .booking-copy {
-      display: grid;
-      gap: clamp(18px, 3vw, 30px);
-      color: #e7e7e7;
-    }
-
-    .booking-copy .story-meta {
-      color: #bdbdbd;
-    }
-
-    .reserve-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: min(100%, 330px);
-      min-height: 62px;
-      padding: 20px 28px;
-      border: 2px solid #080808;
-      border-radius: 14px;
-      background:
-        repeating-linear-gradient(110deg, rgba(0, 0, 0, 0.05) 0 1px, transparent 1px 5px),
-        #f2f2f2;
-      color: #080808;
-      box-shadow: 7px 7px 0 #080808;
-      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
-    }
-
-    .booking-panel .reserve-link {
-      border-color: #f5f5f5;
-      border-radius: 14px;
-      background:
-        repeating-linear-gradient(110deg, rgba(0, 0, 0, 0.05) 0 1px, transparent 1px 5px),
-        #f5f5f5;
-      box-shadow: 7px 7px 0 #5e5e5e;
-    }
-
-    .booking-panel .reserve-link.is-cued {
-      animation: bookingCue 1700ms cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    @keyframes bookingCue {
-      0%,
-      100% {
-        background:
-          repeating-linear-gradient(110deg, rgba(0, 0, 0, 0.05) 0 1px, transparent 1px 5px),
-          #f5f5f5;
-        box-shadow: 7px 7px 0 #5e5e5e;
-      }
-
-      38% {
-        background: #ffffff;
-        box-shadow:
-          0 0 0 9px rgba(255, 255, 255, 0.16),
-          7px 7px 0 #5e5e5e;
-      }
-    }
-
-    .reserve-link:hover,
-    .reserve-link:focus-visible {
-      transform: translate(4px, 4px);
-      box-shadow: 3px 3px 0 #080808;
-      background: #ffffff;
-      outline: none;
-    }
-
-    .progress-rail {
-      position: fixed;
-      right: clamp(18px, 3vw, 38px);
-      top: 50%;
-      z-index: 21;
-      width: 1px;
-      height: min(32vh, 260px);
-      transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.22);
-      pointer-events: none;
-      mix-blend-mode: multiply;
-    }
-
-    .progress-rail::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 1px;
-      height: calc(var(--progress) * 100%);
-      background: #080808;
-    }
 
     .skip {
       position: fixed;
-      right: clamp(8px, 1.8vw, 22px);
-      top: calc(50% + min(20vh, 160px));
-      z-index: 22;
+      left: var(--skip-gutter);
+      bottom: clamp(20px, 3.2vh, 34px);
+      z-index: 42;
       display: inline-grid;
       place-items: center;
-      width: 40px;
-      min-height: 118px;
-      padding: 10px 0;
-      border: 2px solid #090909;
-      border-radius: 13px;
-      background: #090909;
-      color: #f7f7f7;
+      width: var(--skip-size);
+      height: var(--skip-size);
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      border-radius: 50%;
+      background: rgba(5, 5, 5, 0.74);
+      color: #ffffff;
       cursor: pointer;
-      font: 900 0.67rem/1 Inter, ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      text-decoration: none;
-      writing-mode: vertical-rl;
-      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.22);
+      backdrop-filter: blur(10px);
+      transform: translateX(calc(100vw - var(--skip-gutter) - var(--skip-gutter) - var(--skip-size)));
+      transition:
+        transform 620ms cubic-bezier(0.16, 1, 0.3, 1),
+        bottom 620ms cubic-bezier(0.16, 1, 0.3, 1),
+        width 420ms ease,
+        height 420ms ease,
+        color 220ms ease,
+        background 220ms ease,
+        border-color 220ms ease;
+    }
+
+    .skip::before {
+      content: "";
+      width: 11px;
+      height: 11px;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: translateY(-3px) rotate(45deg);
+      transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .skip.is-at-end {
+      --skip-size: 36px;
+      --skip-gutter: 29px;
+      bottom: calc(var(--ending-footer-height) - 110px);
+      border-color: #ffffff;
+      background: #f5f5f3;
+      color: #050505;
+      box-shadow: none;
+      transform: translateX(0);
+    }
+
+    .skip.is-at-end::before {
+      transform: translateY(3px) rotate(225deg);
     }
 
     .skip:hover,
     .skip:focus-visible {
-      background: #f3f3f3;
-      color: #080808;
+      border-color: #ffffff;
+      background: #f5f5f3;
+      color: #050505;
       outline: none;
     }
 
     @media (max-width: 760px) {
+      :root {
+        --ending-footer-height: calc(100dvh - 68px - 5vh);
+        --skip-gutter: 12px;
+        --skip-size: 42px;
+      }
+
       body::after {
         opacity: 0.16;
         mix-blend-mode: normal;
       }
 
       .scroll-length {
-        height: 500vh;
+        height: 540vh;
       }
 
       .boulder-field {
@@ -863,161 +1238,264 @@
       }
 
       .hero-copy,
-      .brand-watermark,
-      .restaurant-panel,
-      .plate-panel,
-      .detail-panel,
-      .booking-panel {
+      .meet-panel,
+      .experience-panel,
+      .ending-panel {
         backface-visibility: hidden;
         will-change: opacity, transform;
       }
 
-      .image-stage::after,
-      .progress-rail {
-        mix-blend-mode: normal;
-      }
-
       .topbar {
         min-height: 68px;
-        padding: 18px 20px;
+        padding: 14px 16px;
       }
 
-      .date {
-        display: none;
+      .brand {
+        font-size: 1rem;
+      }
+
+      .topnav {
+        gap: 12px;
+        font-size: 0.56rem;
+        letter-spacing: 0.18em;
+      }
+
+      .topnav a {
+        min-height: 34px;
+      }
+
+      .topnav-booking {
+        min-width: 0;
+        padding: 0;
       }
 
       .hero-copy {
-        align-items: center;
-        padding: 15vh 52px 18vh 18px;
+        padding: 0;
       }
 
-      h1 {
-        font-size: clamp(6rem, 33vw, 10rem);
+      .hero-number {
+        top: 49%;
+        font-size: clamp(10.5rem, 50vw, 16rem);
       }
 
-      .subline {
-        max-width: 21rem;
+      .hero-tagline {
+        top: 45%;
+        max-width: calc(100% - 28px);
+        font-size: clamp(1rem, 5vw, 1.25rem);
+        letter-spacing: 0.3em;
+        word-spacing: 0.12em;
       }
 
-      .restaurant-panel,
-      .plate-panel,
-      .detail-panel,
-      .booking-panel {
-        align-content: end;
-        padding: 76px 56px max(22px, env(safe-area-inset-bottom)) 18px;
+      .hero-figure-rope {
+        top: 20vh;
+        width: clamp(150px, 44vw, 188px);
+      }
+
+      .hero-arm-pull {
+        top: 20vh;
+        width: clamp(150px, 44vw, 188px);
+      }
+
+      .hero-figure-lower {
+        top: 53%;
+        width: clamp(230px, 72vw, 330px);
+      }
+
+      .meet-panel::after {
+        inset: 14px 12px;
+      }
+
+      .meet-frame::before {
+        top: 9vh;
+        bottom: 9vh;
+      }
+
+      .meet-figure {
+        width: clamp(248px, 78vw, 330px);
+      }
+
+      .meet-figure--top {
+        width: clamp(205px, 63vw, 270px);
+        transform:
+          translate3d(
+            calc(-63.5% - 10px),
+            calc(-90.5% + ((1 - var(--meet-approach)) * -14vh) - (var(--meet-title) * 8vh)),
+            0
+          )
+          rotate(calc((1 - var(--meet-approach)) * -1.2deg))
+          scale(calc(0.96 + (var(--meet-approach) * 0.04)));
+      }
+
+      .meet-figure--bottom {
+        transform:
+          translate3d(
+            calc(-36.5% + 10px),
+            calc(-9.5% + ((1 - var(--meet-approach)) * 14vh) + (var(--meet-title) * 8vh)),
+            0
+          )
+          rotate(calc((1 - var(--meet-approach)) * 1.2deg))
+          scale(calc(0.96 + (var(--meet-approach) * 0.04)));
+      }
+
+      .meet-phrase {
+        font-size: clamp(0.78rem, 4vw, 0.95rem);
+        letter-spacing: 0.08em;
+      }
+
+      .meet-word--where {
+        margin-left: 8px;
+      }
+
+      .meet-word--opposites {
+        margin-right: 8px;
+      }
+
+      .meet-resolve {
         gap: 16px;
+        padding: 72px 18px;
       }
 
-      .story-grid,
-      .detail-layout,
-      .booking-layout {
-        grid-template-columns: 1fr;
-        gap: 18px;
+      .meet-title {
+        padding-left: 0.38em;
+        font-size: clamp(3rem, 15vw, 4.2rem);
+        letter-spacing: 0.38em;
       }
 
-      .plate-layout {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto minmax(0, 1fr);
-        gap: 14px;
-        width: 100%;
-        height: 100%;
-        align-items: stretch;
+      .meet-subtitle {
+        max-width: none;
+        font-size: 0.53rem;
+        letter-spacing: 0.2em;
+        white-space: nowrap;
       }
 
-      .story-title {
-        max-width: 9ch;
-        font-size: clamp(3rem, 14.5vw, 4.65rem);
-        line-height: 0.88;
+      .experience-media {
+        inset: 68px 0 0;
+        transform:
+          translate3d(0, calc(var(--ending) * -2vh), 0)
+          scale(calc(1.035 + (var(--ending) * 0.02)));
       }
 
-      .plate-title {
-        max-width: 8ch;
-        font-size: clamp(2.8rem, 13.5vw, 4.3rem);
-        line-height: 0.88;
+      .experience-video {
+        object-position: center;
       }
 
-      .detail-title,
-      .booking-title {
-        max-width: 8ch;
-        font-size: clamp(2.9rem, 15vw, 4.9rem);
-        line-height: 0.88;
+      .experience-lockup {
+        inset: 68px 0 0;
+        gap: 22px;
+        padding: 32px 16px;
       }
 
-      .story-copy,
-      .plate-copy,
-      .detail-copy,
-      .booking-copy {
-        gap: 12px;
-        padding-bottom: 0;
-        padding-right: 0;
+      .experience-title {
+        width: min(100%, 350px);
+        padding: 18px 14px;
+        font-size: clamp(0.92rem, 4.5vw, 1.15rem);
+        letter-spacing: 0.32em;
       }
 
-      .plate-copy {
-        align-self: start;
+      .experience-booking {
+        font-size: 0.66rem;
+        letter-spacing: 0.28em;
       }
 
-      .plate-showcase {
-        width: 100%;
-        height: min(43vh, 370px);
-        justify-self: stretch;
-        align-self: end;
-        margin: 0;
+      .ending-footer {
+        height: var(--ending-footer-height);
       }
 
-      .plate-showcase img {
+      .newsletter {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 8px 14px;
+        height: auto;
         min-height: 0;
-        height: 100%;
-        aspect-ratio: auto;
-        object-position: center 70%;
-        border-radius: 22px;
+        padding: 12px 16px 14px;
       }
 
-      .plate-panel::before {
-        background:
-          radial-gradient(circle at 54% 62%, rgba(255, 255, 255, 0.16), transparent 52vw),
-          linear-gradient(180deg, rgba(246, 246, 246, 0.96) 0 54%, rgba(32, 32, 32, 0.92) 54% 100%),
-          repeating-linear-gradient(112deg, rgba(0, 0, 0, 0.035) 0 1px, transparent 1px 6px);
+      .newsletter-intro {
+        grid-column: 1 / -1;
+        font-size: 0.795rem;
       }
 
-      .story-copy p,
-      .plate-copy p,
-      .detail-copy p,
-      .booking-copy p {
-        font-size: 0.92rem;
-        line-height: 1.4;
+      .newsletter-field input {
+        min-height: 34px;
+        padding-top: 7px;
+        font-size: 0.735rem;
+        letter-spacing: 0.18em;
       }
 
-      .story-kicker {
-        margin-bottom: 8px;
+      .newsletter-consent {
+        font-size: 0.745rem;
       }
 
-      .reserve-link {
+      .newsletter-check {
+        width: 24px;
+        height: 24px;
+        flex-basis: 24px;
+      }
+
+      .newsletter-consent input:checked + .newsletter-check::after {
+        left: 7px;
+        top: 2px;
+        width: 7px;
+        height: 13px;
+      }
+
+      .newsletter-submit {
         width: 100%;
-        min-height: 58px;
+        min-width: 0;
+        min-height: 38px;
+        padding: 8px 14px;
+        font-size: 0.765rem;
       }
 
-      .progress-rail {
-        right: 14px;
-        width: 3px;
-        height: min(24vh, 184px);
-        border-radius: 999px;
-        background: rgba(0, 0, 0, 0.14);
-        overflow: hidden;
+      .footer-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        justify-content: stretch;
+        gap: 11px 20px;
+        padding: 12px 16px max(12px, env(safe-area-inset-bottom));
       }
 
-      .progress-rail::after {
-        width: 3px;
-        border-radius: 999px;
+      .footer-rail {
+        min-height: 100%;
+      }
+
+      .footer-mark {
+        gap: 3px;
+      }
+
+      .footer-mark img {
+        width: 42px;
+      }
+
+      .footer-mark strong {
+        font-size: 0.885rem;
+      }
+
+      .footer-mark span {
+        font-size: 0.625rem;
+      }
+
+      .footer-column {
+        gap: 5px;
+      }
+
+      .footer-column h3 {
+        margin-bottom: 2px;
+        font-size: 0.945rem;
+      }
+
+      .footer-column p,
+      .footer-column a {
+        font-size: 0.685rem;
+        line-height: 1.28;
       }
 
       .skip {
-        right: 8px;
-        top: auto;
-        bottom: max(18px, env(safe-area-inset-bottom));
-        width: 32px;
-        min-height: 102px;
-        border-radius: 14px;
-        font-size: 0.59rem;
+        bottom: max(14px, env(safe-area-inset-bottom));
+      }
+
+      .skip.is-at-end {
+        --skip-size: 36px;
+        --skip-gutter: 12px;
+        bottom: calc(var(--ending-footer-height) - 182px);
       }
     }
 
@@ -1026,21 +1504,43 @@
         scroll-behavior: auto;
       }
 
-      .reserve-link {
+      .experience-booking,
+      .topnav a,
+      .newsletter-submit {
         transition: none;
       }
     }
   </style>
 </head>
 <body>
-  <div class="stage" aria-hidden="true">
-    <canvas class="boulder-field" id="boulderField"></canvas>
+  <div class="stage">
+    <section class="hero-copy" aria-labelledby="heroTitle">
+      <h1 class="hero-number" id="heroTitle">1820</h1>
+      <p class="hero-tagline">As nature intended.</p>
+      <div class="hero-figure" aria-hidden="true">
+        <picture class="hero-figure-original">
+          <source srcset="images/hero-figure-rope.webp" type="image/webp" />
+          <img class="hero-figure-rope" src="images/hero-figure-rope.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="high" />
+        </picture>
+        <!-- Optional pull layers: both are cut from the original illustration; no replacement rope. -->
+        <div class="hero-arm-pull" data-hero-arm-pull>
+          <picture>
+            <source srcset="images/hero-pull-static.webp" type="image/webp" />
+            <img class="hero-arm-pull-static" src="images/hero-pull-static.png" width="520" height="760" alt="" decoding="async" />
+          </picture>
+          <picture>
+            <source srcset="images/hero-pull-moving.webp" type="image/webp" />
+            <img class="hero-arm-pull-moving" src="images/hero-pull-moving.png" width="270" height="920" alt="" decoding="async" />
+          </picture>
+        </div>
+        <picture>
+          <source srcset="images/hero-figure-lower.webp" type="image/webp" />
+          <img class="hero-figure-lower" src="images/hero-figure-lower.png" width="1024" height="1024" alt="" decoding="async" fetchpriority="high" />
+        </picture>
+      </div>
+    </section>
+    <canvas class="boulder-field" id="boulderField" aria-hidden="true"></canvas>
   </div>
-  <div class="image-stage" aria-hidden="true">
-    <img class="image-layer image-layer--room" src="images/interior.png" width="1402" height="1122" alt="" decoding="async" fetchpriority="high" />
-    <img class="image-layer image-layer--detail" src="images/interior2.png" width="1536" height="1024" alt="" decoding="async" />
-  </div>
-  <div class="brand-watermark" aria-hidden="true">1820</div>
   <div class="page-transition" id="pageTransition" aria-hidden="true">
     <span class="rock-loader-stage">
       <img class="rock-loader" src="images/rockguy.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="high" />
@@ -1049,91 +1549,153 @@
 
   <header class="topbar" aria-label="Site header">
     <a class="brand" href="index.html" aria-label="1820 home">1820</a>
-    <div class="date">Monochrome Service</div>
+    <nav class="topnav" aria-label="Primary navigation">
+      <a href="" data-placeholder-link>About</a>
+      <a class="topnav-booking" href="reservation.html" data-page-transition="reservation">Booking</a>
+    </nav>
   </header>
 
   <main>
-    <section class="hero-copy" aria-label="1820 landing">
-      <div>
-        <p class="eyebrow">Evenings lifted in silence</p>
-        <h1>1820</h1>
-        <p class="subline">A room of black, white, glass, air, and measured celebration.</p>
+    <section class="meet-panel" id="meetPanel" aria-label="Where opposites meet">
+      <div class="meet-frame" aria-hidden="true">
+        <picture class="meet-figure meet-figure--top">
+          <source srcset="images/meet-figure-top.webp" type="image/webp" />
+          <img src="images/up.png" width="1024" height="1536" alt="" loading="eager" decoding="async" fetchpriority="low" />
+        </picture>
+        <picture class="meet-figure meet-figure--bottom">
+          <source srcset="images/meet-figure-bottom.webp" type="image/webp" />
+          <img src="images/down.png" width="1024" height="1536" alt="" loading="eager" decoding="async" fetchpriority="low" />
+        </picture>
+        <p class="meet-phrase">
+          <span class="meet-word meet-word--where">Where.</span>
+          <span class="meet-word meet-word--opposites">Opposites.</span>
+        </p>
+        <div class="meet-strike"></div>
+      </div>
+      <div class="meet-resolve">
+        <h2 class="meet-title">Meet.</h2>
+        <p class="meet-subtitle">At one table.</p>
       </div>
     </section>
 
-    <section class="restaurant-panel" id="restaurantPanel" aria-label="Restaurant introduction">
-      <div class="story-grid">
-        <div>
-          <p class="story-kicker">After the room fills</p>
-          <h2 class="story-title">Dinner, held quietly.</h2>
-        </div>
-        <div class="story-copy">
-          <p>1820 is a restrained dining room built around slow service, polished glass, graphite shadows, and tables spaced for private conversation.</p>
-          <p class="story-meta">Monochrome evenings. Low light. Slow courses. Private conversation.</p>
-        </div>
+    <section class="experience-panel" id="experiencePanel" aria-label="Experience 1820">
+      <div class="experience-media">
+        <video
+          class="experience-video"
+          id="experienceVideo"
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          poster="video/experience-1820-poster.webp"
+        >
+          <source src="video/experience-1820.webm" type="video/webm" />
+          <source src="video/experience-1820.mp4" type="video/mp4" />
+        </video>
+      </div>
+      <div class="experience-lockup">
+        <h2 class="experience-title">Experience 1820</h2>
+        <a class="experience-booking" href="reservation.html" data-page-transition="reservation">Book a table</a>
       </div>
     </section>
 
-    <section class="plate-panel" id="platePanel" aria-label="Chef profile">
-      <div class="plate-layout">
-        <div class="plate-copy">
-          <p class="story-kicker">About the chef</p>
-          <h2 class="plate-title">The chef's hand.</h2>
-          <p>The kitchen is led with restraint: smoke, acid, shellfish, heat, and color used only when it earns the room's attention.</p>
-          <p class="story-meta">A small pass, close to the table, serving fewer decisions with more intent.</p>
-        </div>
-        <figure class="plate-showcase">
-          <img src="images/plate.png" width="1086" height="1448" alt="A composed tasting plate from the chef at 1820" loading="eager" decoding="async" fetchpriority="high" />
-          <figcaption>A first plate from the chef's hand.</figcaption>
-        </figure>
-      </div>
-    </section>
+    <section class="ending-panel" id="endingPanel" aria-label="1820 information and newsletter">
+      <footer class="ending-footer">
+        <form class="newsletter" id="newsletterForm">
+          <p class="newsletter-intro">Sign up for reservation updates and news from 1820.</p>
+          <label class="newsletter-field">
+            <span class="sr-only">Email</span>
+            <input id="newsletterEmail" type="email" name="email" placeholder="Email" autocomplete="email" required />
+          </label>
+          <label class="newsletter-field">
+            <span class="sr-only">Name</span>
+            <input id="newsletterName" type="text" name="name" placeholder="Name" autocomplete="name" required />
+          </label>
+          <label class="newsletter-consent">
+            <input id="newsletterPermission" type="checkbox" name="marketing_permission" />
+            <span class="newsletter-check" aria-hidden="true"></span>
+            <span>Marketing Permission</span>
+          </label>
+          <button class="newsletter-submit" type="submit">Submit</button>
+          <p class="sr-only" id="newsletterStatus" aria-live="polite"></p>
+        </form>
 
-    <section class="detail-panel" id="detailPanel" aria-label="Dining room notes">
-      <div class="detail-layout">
-        <div>
-          <p class="story-kicker">The room settles</p>
-          <h2 class="detail-title">Glass, graphite, silence.</h2>
-        </div>
-        <div class="detail-copy">
-          <p>Twenty-four places share one unhurried service, with light kept low and enough distance for every table to remain its own room.</p>
-          <p class="story-meta">Graphite surfaces. Polished glass. An evening allowed to take its time.</p>
-        </div>
-      </div>
-    </section>
+        <div class="footer-grid">
+          <div class="footer-rail">
+            <div class="footer-mark">
+              <img src="images/zegaani.png" width="79" height="86" alt="Chateau Zegaani crest" loading="lazy" decoding="async" />
+              <strong>Chateau Zegaani</strong>
+              <span>1820</span>
+            </div>
+          </div>
 
-    <section class="booking-panel" id="bookingPanel" aria-label="Reservation call to action">
-      <div class="booking-layout">
-        <div>
-          <p class="story-kicker">Final sitting</p>
-          <h2 class="booking-title">Hold the evening.</h2>
+          <div class="footer-column">
+            <h3>Contact</h3>
+            <p>1820</p>
+            <p>1 Al.<br />Chavchavadze St,<br />Zegaani 1514<br /><a href="https://www.google.com/maps/place/1+Al.+Chavchavadze+St,+Zegaani+1514,+Sakartvelas/@41.7973198,45.7353734,17z/data=!4m6!3m5!1s0x40468080268f4c0d:0xff1fbd7f61a297a4!8m2!3d41.7970437!4d45.7377209!16s%2Fg%2F11yqc1y8g4?entry=ttu&amp;g_ep=EgoyMDI2MDcyNi4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer">See map</a></p>
+            <p>+995 551 599 844</p>
+            <p>Phone line<br />Monday to Friday<br />10:00 - 19:00</p>
+            <a href="" data-placeholder-link>Contact</a>
+          </div>
+
+          <div class="footer-column">
+            <h3>Booking + Hours</h3>
+            <a href="reservation.html" data-page-transition="reservation">Reservations</a>
+            <p>Saturday - Sunday<br />19:00 - 00:00</p>
+            <p>Monday to Friday<br />CLOSED</p>
+          </div>
+
+          <div class="footer-column">
+            <h3>Careers</h3>
+            <a href="" data-placeholder-link>Join our team</a>
+          </div>
+
+          <div class="footer-column">
+            <h3>About</h3>
+            <a href="" data-placeholder-link>Privacy Policy</a>
+            <a href="" data-placeholder-link>Terms of Use</a>
+            <a href="" data-placeholder-link>Health Inspection Report</a>
+            <a href="" data-placeholder-link>Workplace Transparency Review</a>
+          </div>
+
+          <div class="footer-column">
+            <h3>Follow</h3>
+            <a href="" data-placeholder-link>Announcements</a>
+            <a href="" data-placeholder-link>Newsletter</a>
+            <a href="" data-placeholder-link>Instagram</a>
+            <a href="" data-placeholder-link>Twitter</a>
+          </div>
         </div>
-        <div class="booking-copy">
-          <p>Choose the table, the hour, and the tone of the night. The room is small by design.</p>
-          <p class="story-meta">Reservation only. Limited seats.</p>
-          <a class="reserve-link" href="reservation.html" data-page-transition="reservation">Booking</a>
-        </div>
-      </div>
+      </footer>
     </section>
   </main>
 
-  <div class="progress-rail" aria-hidden="true"></div>
-  <button class="skip" id="skipToEnd" type="button" aria-label="Jump to booking section">Booking</button>
+  <button class="skip" id="skipToEnd" type="button" aria-label="Continue to the final section"></button>
   <div class="scroll-length" aria-hidden="true"></div>
 
   <script src="scripts/boulder-renderer.js?v=20260719-3"></script>
+  <script src="scripts/hero-arm-pull.js?v=20260731-1"></script>
   <script>
     (() => {
       const root = document.documentElement;
       const field = document.getElementById("boulderField");
-      const panel = document.getElementById("restaurantPanel");
-      const platePanel = document.getElementById("platePanel");
-      const detailPanel = document.getElementById("detailPanel");
-      const bookingPanel = document.getElementById("bookingPanel");
+      const meetPanel = document.getElementById("meetPanel");
+      const experiencePanel = document.getElementById("experiencePanel");
+      const endingPanel = document.getElementById("endingPanel");
+      const experienceVideo = document.getElementById("experienceVideo");
       const skip = document.getElementById("skipToEnd");
-      const bookingLink = bookingPanel.querySelector(".reserve-link");
+      const siteHeader = document.querySelector(".topbar");
+      const hudBookingLink = document.querySelector(".topnav-booking");
+      const newsletterForm = document.getElementById("newsletterForm");
+      const newsletterEmail = document.getElementById("newsletterEmail");
+      const newsletterName = document.getElementById("newsletterName");
+      const newsletterPermission = document.getElementById("newsletterPermission");
+      const newsletterStatus = document.getElementById("newsletterStatus");
       const pageTransition = document.getElementById("pageTransition");
       const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const heroArmPull = window.HeroArmPull?.mount(document.querySelector(".hero-figure"), {
+        reducedMotion: prefersReduced
+      }) || { update: () => ({ rockLift: 0, rockShift: 0 }) };
       const transitionKey = "1820PageTransition";
       const arrivalHold = 880;
       const maximumArrivalHold = 6000;
@@ -1172,15 +1734,17 @@
       let narrow = isNarrow();
       const mobileScenes = [
         { name: "hero", progress: 0 },
-        { name: "dinner", progress: 0.455 },
-        { name: "chef", progress: 0.635 },
-        { name: "room", progress: 0.798 },
-        { name: "booking", progress: 1 }
+        { name: "opposites", progress: 0.405 },
+        { name: "meet", progress: 0.51 },
+        { name: "experience", progress: 0.72 },
+        { name: "ending", progress: 1 }
       ];
       root.classList.toggle("is-mobile-story", narrow);
       const columns = 12;
       const rows = 8;
-      const rockAssetCount = 8;
+      const rockAssetCount = 10;
+      const heroOrigin = { x: 50, y: 61 };
+      const seedFormationOffset = { x: 2, y: -12 };
       let viewportWidth = Math.max(1, window.innerWidth);
       let viewportHeight = Math.max(1, window.innerHeight);
 
@@ -1213,9 +1777,79 @@
         order: random()
       }));
 
-      const clusterSeeds = [
-        { x: 53, y: 32 }, { x: 57, y: 34 }, { x: 61, y: 38 }, { x: 55, y: 41 },
-        { x: 63, y: 44 }, { x: 50, y: 45 }, { x: 58, y: 48 }
+      const seedSlots = [
+        { x: -2.8, y: -10.6, size: 32 },
+        { x: -0.6, y: -11.3, size: 27 },
+        { x: 1.3, y: -10.7, size: 29 },
+        { x: 3.5, y: -9.7, size: 30 },
+        { x: -6, y: -8.1, size: 32 },
+        { x: -4, y: -8.9, size: 27 },
+        { x: -2.1, y: -8, size: 38 },
+        { x: 0, y: -8.5, size: 28 },
+        { x: 2, y: -8, size: 44 },
+        { x: 4.2, y: -7.5, size: 26 },
+        { x: 6.2, y: -6.8, size: 34 },
+        { x: -7.8, y: -5.3, size: 40 },
+        { x: -6, y: -5.8, size: 24 },
+        { x: -4.1, y: -5, size: 48 },
+        { x: -2, y: -5.4, size: 30 },
+        { x: 0, y: -5, size: 58 },
+        { x: 2.2, y: -4.8, size: 34 },
+        { x: 4.4, y: -4.3, size: 52 },
+        { x: 6.4, y: -3.8, size: 28 },
+        { x: 8.3, y: -3.1, size: 42 },
+        { x: -8.35, y: -2.15, size: 44 },
+        { x: -7.1, y: -2.1, size: 22 },
+        { x: -5.3, y: -1.6, size: 54 },
+        { x: -3.1, y: -2.1, size: 32 },
+        { x: -1.2, y: -1.4, size: 42 },
+        { x: 1, y: -1.3, size: 62 },
+        { x: 3.2, y: -0.8, size: 30 },
+        { x: 5.2, y: -0.2, size: 48 },
+        { x: 7.2, y: 0.2, size: 26 },
+        { x: 9.1, y: 1, size: 54 },
+        { x: -6.6, y: -0.35, size: 32 },
+        { x: -4.7, y: 0.2, size: 20 },
+        { x: -2.5, y: 0.85, size: 42 },
+        { x: -0.8, y: 2, size: 28 },
+        { x: 1.4, y: 2.4, size: 56 },
+        { x: 3.6, y: 3, size: 32 },
+        { x: 5.8, y: 3.6, size: 44 },
+        { x: 8, y: 4.5, size: 58 },
+        { x: -2.55, y: 2.75, size: 25 },
+        { x: -0.45, y: 3.55, size: 38 },
+        { x: 1, y: 5.1, size: 24 },
+        { x: 3.2, y: 5.8, size: 50 },
+        { x: 5.4, y: 6.4, size: 30 },
+        { x: 7.4, y: 7.2, size: 46 },
+        { x: 1.8, y: 7, size: 32 },
+        { x: 4, y: 8, size: 40 },
+        { x: 6.5, y: 9, size: 34 },
+        { x: -3.4, y: -9.8, size: 21 },
+        { x: 0.5, y: -9.5, size: 19 },
+        { x: -5.1, y: -7.1, size: 14 },
+        { x: 1.2, y: -6.8, size: 13 },
+        { x: 5.2, y: -5.7, size: 16 },
+        { x: -6.8, y: -3.5, size: 11 },
+        { x: -1.7, y: -3.2, size: 12 },
+        { x: 3.7, y: -2.6, size: 13 },
+        { x: -4.1, y: 0.1, size: 12 },
+        { x: 4.8, y: 1.4, size: 10 },
+        { x: -5.2, y: -10.1, size: 22 },
+        { x: -3.9, y: -10.9, size: 17 },
+        { x: -2, y: -9.1, size: 20 },
+        { x: -0.1, y: -10.1, size: 18 },
+        { x: 1.8, y: -9.2, size: 20 },
+        { x: -6.25, y: -6.75, size: 34 },
+        { x: -4.85, y: -6.15, size: 31 },
+        { x: -3.65, y: -5.55, size: 28 },
+        { x: -5.6, y: -4.45, size: 30 },
+        { x: -7.25, y: -8.25, size: 38 },
+        { x: -5.85, y: -8.8, size: 34 },
+        { x: 7.3, y: 6.4, size: 34 },
+        { x: 7.8, y: 7.35, size: 22 },
+        { x: 8.75, y: 7.25, size: 32 },
+        { x: 9.15, y: 8.35, size: 21 }
       ];
 
       const gapHotspots = [
@@ -1229,7 +1863,15 @@
 
       const boulders = cells.concat(edgeCells).map((cell, index, all) => {
         const cellProgress = index / Math.max(1, all.length - 1);
-        const cluster = clusterSeeds[index % clusterSeeds.length];
+        const seedSlot = seedSlots[index] || null;
+        const seeded = Boolean(seedSlot);
+        const seedJitterX = Math.sin((index + 1) * 12.9898) * 0.44;
+        const seedJitterY = Math.cos((index + 1) * 8.233) * 0.34;
+        const seedOffsetX = seeded ? (seedSlot.x * 0.83) + seedJitterX : 0;
+        const seedOffsetY = seeded ? (seedSlot.y * 0.78) + seedJitterY - 0.45 : 0;
+        const seedSize = seeded
+          ? clamp((seedSlot.size * 1.08) + 2, 12, 76)
+          : 0;
         const assetIndex = Math.floor(random() * rockAssetCount);
         const floorWeight = clamp((cell.y - 70) / 36);
         const gapWeight = gapHotspots.reduce((strongest, gap) => {
@@ -1240,23 +1882,33 @@
         const floorBoost = 1 + (floorWeight * (cell.edge ? 0.42 : 0.3));
         const gapBoost = 1 + (gapWeight * 0.34);
         const sizeBase = lerp(104, 258, Math.pow(random(), 0.66)) * edgeBoost * floorBoost * gapBoost;
-        const originRadius = lerp(0.5, 6.5, random());
+        const originRadius = lerp(0.4, 6.2, random());
         const originAngle = random() * Math.PI * 2;
-        const originX = cluster.x + Math.cos(originAngle) * originRadius;
-        const originY = cluster.y + Math.sin(originAngle) * originRadius * 0.72;
-        const appear = 0.035 + cellProgress * 0.085 + random() * 0.01;
-        const release = appear + lerp(0.006, 0.032, random());
-        const duration = lerp(0.085, 0.135, random());
+        const originX = seeded
+          ? heroOrigin.x + seedOffsetX
+          : heroOrigin.x + Math.cos(originAngle) * originRadius;
+        const originY = seeded
+          ? heroOrigin.y + seedOffsetY
+          : heroOrigin.y + Math.sin(originAngle) * originRadius * 0.72;
+        const appear = seeded ? -0.2 : 0.026 + cellProgress * 0.086 + random() * 0.012;
+        const release = seeded
+          ? 0.045 + index * 0.0015 + random() * 0.012
+          : appear + lerp(0.008, 0.032, random());
+        const duration = seeded ? lerp(0.124, 0.164, random()) : lerp(0.084, 0.134, random());
         const rotation = Number(lerp(-10, 10, random()).toFixed(2)) * (Math.PI / 180);
         const hRatio = Number(lerp(0.82 + (floorWeight * 0.08) + (gapWeight * 0.04), 1.1 + (floorWeight * 0.1) + (gapWeight * 0.06), random()).toFixed(3));
         const assetScale = Number(lerp(1.2 + (floorWeight * 0.04), 1.34 + (gapWeight * 0.08), random()).toFixed(3));
-        const rockBrightness = Number(lerp(0.86, 1.12, random()).toFixed(3));
-        const rockContrast = Number(lerp(0.95, 1.18, random()).toFixed(3));
+        const rockBrightness = Number(lerp(0.86, 1.04, random()).toFixed(3));
+        const rockContrast = Number(lerp(1.02, 1.2, random()).toFixed(3));
         const rockOpacity = Number(lerp(0.92, 1, random()).toFixed(3));
         const phase = random() * Math.PI * 2;
 
         return {
           assetIndex,
+          seeded,
+          seedSize,
+          seedOffsetX,
+          seedOffsetY,
           originX,
           originY,
           finalX: cell.x,
@@ -1285,11 +1937,11 @@
 
       let latestProgress = -1;
       const boulderRenderer = new window.BoulderRenderer(field, {
-        atlasUrl: "images/rock-atlas.webp",
-        compactAtlasUrl: "images/rock-atlas-compact.webp",
-        atlasFallbackUrl: "images/rock-atlas.png",
-        compactAtlasFallbackUrl: "images/rock-atlas-compact.png",
-        atlasColumns: 3,
+        atlasUrl: "images/hero-rock-atlas.webp",
+        compactAtlasUrl: "images/hero-rock-atlas-compact.webp",
+        atlasFallbackUrl: "images/hero-rock-atlas.png",
+        compactAtlasFallbackUrl: "images/hero-rock-atlas-compact.png",
+        atlasColumns: 4,
         atlasRows: 3,
         assetCount: rockAssetCount,
         mobilePixelRatio: 1.55,
@@ -1332,12 +1984,13 @@
       let touchStartY = 0;
       let touchGestureCommitted = false;
       let mobileSceneIndex = 0;
-      let bookingCueTimer = 0;
+      let hudBookingCueTimer = 0;
+      let experienceVideoActive = false;
       const liveState = {
-        story: false,
-        plate: false,
-        interlude: false,
-        booking: false
+        header: false,
+        meet: false,
+        experience: false,
+        ending: false
       };
 
       const deviceMemory = Number(navigator.deviceMemory) || 8;
@@ -1356,18 +2009,32 @@
         element.classList.toggle("is-live", active);
       }
 
-      function cueBookingLink() {
-        if (!bookingLink) {
+      function cueHudBookingLink() {
+        if (!hudBookingLink) {
           return;
         }
 
-        window.clearTimeout(bookingCueTimer);
-        bookingLink.classList.remove("is-cued");
-        void bookingLink.offsetWidth;
-        bookingLink.classList.add("is-cued");
-        bookingCueTimer = window.setTimeout(() => {
-          bookingLink.classList.remove("is-cued");
+        window.clearTimeout(hudBookingCueTimer);
+        hudBookingLink.classList.remove("is-cued");
+        void hudBookingLink.offsetWidth;
+        hudBookingLink.classList.add("is-cued");
+        hudBookingCueTimer = window.setTimeout(() => {
+          hudBookingLink.classList.remove("is-cued");
         }, 1800);
+      }
+
+      function syncExperienceVideo(active) {
+        if (!experienceVideo || prefersReduced || experienceVideoActive === active) {
+          return;
+        }
+
+        experienceVideoActive = active;
+        if (active) {
+          experienceVideo.play().catch(() => {});
+          return;
+        }
+
+        experienceVideo.pause();
       }
 
       function waitForImage(image) {
@@ -1508,51 +2175,77 @@
       function render(progress) {
         progress = prefersReduced ? 1 : clamp(progress);
         boulderRenderer.beginFrame();
-        const pack = smooth(clamp((progress - 0.18) / 0.075));
-        const fade = smooth(clamp((progress - 0.295) / 0.055));
-        const storyIn = smooth(clamp((progress - 0.325) / 0.105));
-        const storyOut = smooth(clamp((progress - 0.505) / 0.075));
-        const story = storyIn * (1 - storyOut);
-        const plateIn = smooth(clamp((progress - 0.535) / 0.085));
-        const plateOut = smooth(clamp((progress - 0.665) / 0.075));
-        const plateSection = plateIn * (1 - plateOut);
-        const interludeIn = smooth(clamp((progress - 0.705) / 0.085));
-        const interludeOut = smooth(clamp((progress - 0.805) / 0.07));
-        const interlude = interludeIn * (1 - interludeOut);
-        const booking = smooth(clamp((progress - 0.865) / 0.105));
-        const veil = Math.max(story, plateSection, interlude, booking);
-        const curtain = smooth(clamp((progress - 0.255) / 0.08));
-        const mark = 0.055 * smooth(clamp((progress - 0.335) / 0.055)) * (1 - booking);
-        const roomImageBase = smooth(clamp((progress - 0.305) / 0.09)) * (1 - smooth(clamp((progress - 0.56) / 0.09)));
-        const detailImage = smooth(clamp((progress - 0.665) / 0.095)) * (1 - smooth(clamp((progress - 0.84) / 0.095)));
-        const plateCard = plateSection;
-        const roomImage = roomImageBase * (1 - plateSection);
-        const imageScene = Math.min(1, roomImage + detailImage);
-        root.style.cssText = `--progress:${progress.toFixed(5)};--veil:${veil.toFixed(5)};--story:${story.toFixed(5)};--plate-section:${plateSection.toFixed(5)};--interlude:${interlude.toFixed(5)};--booking:${booking.toFixed(5)};--mark:${mark.toFixed(5)};--image-scene:${imageScene.toFixed(5)};--room-image:${roomImage.toFixed(5)};--detail-image:${detailImage.toFixed(5)};--plate-card:${plateCard.toFixed(5)};--plate-backdrop:${plateSection.toFixed(5)}`;
-        setLive(panel, "story", story > 0.82);
-        setLive(platePanel, "plate", plateSection > 0.82);
-        setLive(detailPanel, "interlude", interlude > 0.82);
-        setLive(bookingPanel, "booking", booking > 0.82);
+        const armPull = heroArmPull.update(progress, { narrow });
+        const hero = 1 - smooth(clamp((progress - 0.045) / 0.115));
+        const pack = smooth(clamp((progress - 0.148) / 0.062));
+        const fade = smooth(clamp((progress - 0.242) / 0.045));
+        const meetIn = smooth(clamp((progress - 0.242) / 0.05));
+        const meetOut = smooth(clamp((progress - 0.615) / 0.09));
+        const meetOpen = meetIn * (1 - meetOut);
+        const meetOpacity = clamp(meetOpen * 4);
+        const meetApproach = smooth(clamp((progress - 0.27) / 0.12));
+        const meetTitle = smooth(clamp((progress - 0.44) / 0.06));
+        const meetFigures = meetOpen * (1 - meetTitle);
+        const meetWords = meetOpen * meetApproach * (1 - meetTitle);
+        const meetContactPhase = clamp((progress - 0.42) / 0.08);
+        const meetStrike = Math.sin(Math.PI * meetContactPhase) * meetOpen;
+        const experience = smooth(clamp((progress - 0.585) / 0.09));
+        const ending = smooth(clamp((progress - 0.82) / 0.16));
+        const experienceCopyOut = smooth(clamp((progress - 0.79) / 0.12));
+        const experienceCopy = experience * (1 - experienceCopyOut);
+        const veil = Math.max(meetOpen, experience, ending);
+        const curtain = smooth(clamp((progress - 0.209) / 0.066));
+        const siteHeaderIn = smooth(clamp((progress - 0.295) / 0.055));
+        root.style.cssText = `--progress:${progress.toFixed(5)};--hero:${hero.toFixed(5)};--site-header:${siteHeaderIn.toFixed(5)};--veil:${veil.toFixed(5)};--meet-open:${meetOpen.toFixed(5)};--meet-opacity:${meetOpacity.toFixed(5)};--meet-approach:${meetApproach.toFixed(5)};--meet-figures:${meetFigures.toFixed(5)};--meet-words:${meetWords.toFixed(5)};--meet-title:${meetTitle.toFixed(5)};--meet-strike:${meetStrike.toFixed(5)};--experience:${experience.toFixed(5)};--experience-copy:${experienceCopy.toFixed(5)};--ending:${ending.toFixed(5)}`;
+        setLive(siteHeader, "header", siteHeaderIn > 0.01);
+        setLive(meetPanel, "meet", meetOpen > 0.005);
+        setLive(experiencePanel, "experience", experience > 0.005);
+        setLive(endingPanel, "ending", ending > 0.005);
+        syncExperienceVideo(experience > 0.08 && !document.hidden);
+
+        const atEnd = progress > 0.94;
+        skip.classList.toggle("is-at-end", atEnd);
+        skip.setAttribute(
+          "aria-label",
+          atEnd ? "Return to the beginning" : "Continue to the final section"
+        );
 
         const progress11Sin = Math.sin(progress * 11);
         const progress11Cos = Math.cos(progress * 11);
         const progress8Sin = Math.sin(progress * 8);
         const progress8Cos = Math.cos(progress * 8);
+        const viewportRockScale = narrow
+          ? clamp(viewportWidth / 390, 0.86, 1.08)
+          : clamp(Math.min(viewportWidth / 1440, viewportHeight / 900), 0.82, 1.65);
+        const lowerFigureWidth = narrow
+          ? clamp(viewportWidth * 0.72, 230, 330)
+          : clamp(viewportHeight / 3, 270, 540);
+        const heroFigureScale = lowerFigureWidth / 360;
+        const seedUnitX = (19.2 * heroFigureScale * 100) / viewportWidth;
+        const seedUnitY = (10.8 * heroFigureScale * 100) / viewportHeight;
 
         boulders.forEach((boulder) => {
-          const inProgress = smooth(clamp((progress - boulder.appear) / 0.07));
+          const inProgress = boulder.seeded ? 1 : smooth(clamp((progress - boulder.appear) / 0.07));
           const travel = smooth(clamp((progress - boulder.release) / boulder.duration));
           const swayWave = (progress11Sin * boulder.phaseCos) + (progress11Cos * boulder.phaseSin);
           const floatWave = (progress8Cos * boulder.phaseCos) - (progress8Sin * boulder.phaseSin);
-          const micro = swayWave * boulder.sway * (1 - story * 0.7);
-          const baseX = lerp(boulder.originX, boulder.finalX, travel) + micro;
+          const motionWeight = boulder.seeded ? lerp(0.12, 1, travel) : 1;
+          const micro = swayWave * boulder.sway * motionWeight * (1 - meetOpen * 0.7);
+          const seedOriginX = boulder.seeded
+            ? heroOrigin.x + (boulder.seedOffsetX * seedUnitX) + ((seedFormationOffset.x / viewportWidth) * 100)
+            : boulder.originX;
+          const seedOriginY = boulder.seeded
+            ? heroOrigin.y + (boulder.seedOffsetY * seedUnitY) + ((seedFormationOffset.y / viewportHeight) * 100)
+            : boulder.originY;
+          const pullTravelWeight = boulder.seeded ? 1 - (travel * 0.28) : 0;
+          const baseX = lerp(seedOriginX, boulder.finalX, travel) + micro + ((armPull.rockShift * pullTravelWeight / viewportWidth) * 100);
           const floorLock = boulder.floorWeight * pack;
-          const baseY = lerp(boulder.originY, boulder.finalY, travel) - (curtain * (3 - (floorLock * 2.4))) + floatWave * (1.15 - (floorLock * 0.55));
+          const baseY = lerp(seedOriginY, boulder.finalY, travel) - ((armPull.rockLift * pullTravelWeight / viewportHeight) * 100) - (curtain * (3 - (floorLock * 2.4))) + floatWave * motionWeight * (1.15 - (floorLock * 0.55));
           const packCenterX = boulder.edge ? (boulder.finalX > 50 ? 58 : 42) : 50;
           const packRatioX = (boulder.edge ? 0.96 : 0.84) + (boulder.floorWeight * 0.11) + (boulder.gapWeight * 0.05);
           const x = lerp(baseX, packCenterX + ((baseX - packCenterX) * packRatioX), pack);
           const y = lerp(baseY, 52 + ((baseY - 52) * (0.96 + (boulder.floorWeight * 0.1))), pack);
-          const scaleIn = lerp(0.18, 1, smooth(clamp((progress - boulder.appear) / 0.18)));
+          const scaleIn = lerp(0.15, 1, smooth(clamp((progress - boulder.appear) / 0.18)));
           const closeScale = 1 + (pack * (narrow ? 0.78 : 0.68)) + (pack * boulder.floorWeight * 0.2) + (pack * boulder.gapWeight * 0.18) + (fade * 0.12);
           const alpha = inProgress * (1 - fade);
 
@@ -1560,13 +2253,16 @@
             return;
           }
 
-          const scale = scaleIn * closeScale * boulder.assetScale;
+          const expandedSize = boulder.drawSize * closeScale * boulder.assetScale * viewportRockScale;
+          const drawSize = boulder.seeded
+            ? lerp(boulder.seedSize * viewportRockScale, expandedSize, travel)
+            : expandedSize * scaleIn;
           boulderRenderer.addSprite(
             boulder.assetIndex,
             (x / 100) * viewportWidth,
             (y / 100) * viewportHeight,
-            boulder.drawSize * scale,
-            boulder.drawSize * scale,
+            drawSize,
+            drawSize,
             boulder.rotation,
             alpha * boulder.rockOpacity,
             boulder.rockBrightness,
@@ -1586,9 +2282,7 @@
       }
 
       function easeMobileScene(value) {
-        return value < 0.5
-          ? 4 * value * value * value
-          : 1 - Math.pow(-2 * value + 2, 3) / 2;
+        return value * value * value * ((value * ((value * 6) - 15)) + 10);
       }
 
       function startMobileTween(progress) {
@@ -1601,8 +2295,8 @@
         const crossesBoulderSequence = Math.min(progress, visualProgress) < 0.1
           && Math.max(progress, visualProgress) > 0.4;
         const duration = crossesBoulderSequence
-          ? 1760
-          : clamp(760 + (distance * 1900), 900, 1320);
+          ? 2200
+          : clamp(1050 + (distance * 2800), 1400, 1800);
         mobileTween = {
           from: visualProgress,
           to: progress,
@@ -1746,7 +2440,7 @@
         const intensity = abs < 80
           ? clamp(abs / 140, 0.15, 0.58)
           : clamp(abs / 340, 0.72, 1.85);
-        const step = (narrow ? 0.094 : 0.084) * intensity * direction;
+        const step = (narrow ? 0.076 : 0.062) * intensity * direction;
         setTargetProgress(targetProgress + step);
       }
 
@@ -1846,13 +2540,13 @@
           const distance = targetProgress - visualProgress;
           const distanceAbs = Math.abs(distance);
           const rate = narrow
-            ? 5.8 + Math.min(10, distanceAbs * 24)
-            : 8.5 + Math.min(17, distanceAbs * 54);
+            ? 4.9 + Math.min(8, distanceAbs * 20)
+            : 6.4 + Math.min(12, distanceAbs * 38);
           const easedStep = 1 - Math.exp(-rate * elapsed);
           const rawStep = distance * easedStep;
           const maxStep = narrow
-            ? (0.13 + Math.min(0.3, distanceAbs * 0.85)) * elapsed
-            : (0.19 + Math.min(0.42, distanceAbs * 1.18)) * elapsed;
+            ? (0.1 + Math.min(0.24, distanceAbs * 0.68)) * elapsed
+            : (0.14 + Math.min(0.32, distanceAbs * 0.9)) * elapsed;
           visualProgress += Math.sign(distance) * Math.min(Math.abs(rawStep), maxStep);
 
           if (Math.abs(targetProgress - visualProgress) < 0.000015) {
@@ -1872,15 +2566,65 @@
       }
 
       skip.addEventListener("click", () => {
-        setTargetProgress(1);
-        if (!prefersReduced) {
-          mobileTween = null;
-          visualProgress = 1;
-          latestProgress = -1;
-          render(visualProgress);
+        const returnToStart = targetProgress > 0.94;
+        setTargetProgress(returnToStart ? 0 : 1);
+        if (!returnToStart) {
+          window.setTimeout(cueHudBookingLink, narrow ? 1500 : 1100);
         }
-        cueBookingLink();
       });
+
+      document.querySelectorAll("[data-placeholder-link]").forEach((link) => {
+        link.addEventListener("click", (event) => {
+          event.preventDefault();
+        });
+      });
+
+      if (newsletterForm) {
+        newsletterForm.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          if (!newsletterForm.reportValidity()) {
+            return;
+          }
+
+          const submit = newsletterForm.querySelector(".newsletter-submit");
+          const defaultLabel = "Submit";
+          submit.disabled = true;
+          submit.textContent = "Saving";
+          newsletterStatus.textContent = "Saving your profile.";
+
+          try {
+            const response = await fetch("/api/newsletter", {
+              method: "POST",
+              headers: {
+                "content-type": "application/json"
+              },
+              body: JSON.stringify({
+                full_name: newsletterName.value.trim(),
+                email: newsletterEmail.value.trim(),
+                newsletter: newsletterPermission.checked ? 1 : 0
+              })
+            });
+            const result = await response.json().catch(() => ({}));
+
+            if (!response.ok || !result.ok) {
+              throw new Error(result.error || "Unable to save your details.");
+            }
+
+            newsletterStatus.textContent = result.profile?.newsletter === 1
+              ? "Profile saved and newsletter permission recorded."
+              : "Profile saved. Newsletter permission remains off.";
+            submit.textContent = "Saved";
+          } catch (error) {
+            newsletterStatus.textContent = error.message || "Unable to save your details.";
+            submit.textContent = "Try again";
+          } finally {
+            window.setTimeout(() => {
+              submit.disabled = false;
+              submit.textContent = defaultLabel;
+            }, 1800);
+          }
+        });
+      }
 
       document.querySelectorAll("[data-page-transition]").forEach((link) => {
         link.addEventListener("click", (event) => {
@@ -1941,8 +2685,11 @@
       document.addEventListener("visibilitychange", () => {
         lastFrameTime = performance.now();
         if (!document.hidden) {
+          syncExperienceVideo(visualProgress > 0.665);
           requestFrame();
+          return;
         }
+        syncExperienceVideo(false);
       });
 
       resizeBoulderField(true);
