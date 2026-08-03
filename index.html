@@ -6,15 +6,11 @@
   <title>1820 | Restaurant</title>
   <link rel="preload" as="font" href="fonts/lato-400-latin.woff2" type="font/woff2" crossorigin />
   <link rel="preload" as="font" href="fonts/libre-baskerville-400-latin.woff2" type="font/woff2" crossorigin />
-  <link rel="preload" as="image" href="images/hero-figure-rope.webp" type="image/webp" />
-  <link rel="preload" as="image" href="images/hero-figure-lower.webp" type="image/webp" />
-  <link rel="preload" as="image" href="images/hero-pull-static.webp" type="image/webp" />
-  <link rel="preload" as="image" href="images/hero-pull-moving.webp" type="image/webp" />
-  <link rel="preload" as="image" href="images/meet-figure-top.webp" type="image/webp" />
-  <link rel="preload" as="image" href="images/meet-figure-bottom.webp" type="image/webp" />
-  <link rel="preload" as="image" href="images/rockguy.png" />
-  <link rel="preload" as="image" href="images/hero-rock-atlas-compact.webp" type="image/webp" media="(max-width: 760px)" />
-  <link rel="preload" as="image" href="images/hero-rock-atlas.webp" type="image/webp" media="(min-width: 761px)" />
+  <link rel="preload" as="image" href="images/rockguy-loader.webp" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/hero-pull-static.webp" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/hero-pull-moving.webp" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/hero-figure-lower.webp" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/hero-rock-atlas-preview.webp?v=20260803-1" type="image/webp" fetchpriority="high" />
   <script>
     (() => {
       const navigation = performance.getEntriesByType("navigation")[0];
@@ -117,7 +113,7 @@
       --experience: 0;
       --experience-copy: 0;
       --ending: 0;
-      --ending-footer-height: clamp(337px, 43vh, 390px);
+      --ending-footer-height: clamp(430px, 52vh, 510px);
       --skip-gutter: clamp(18px, 2.6vw, 42px);
       --skip-size: 48px;
     }
@@ -245,15 +241,17 @@
     }
 
     .brand {
-      font-size: clamp(1rem, 0.86rem + 0.56vw, 1.42rem);
-      letter-spacing: 0;
+      font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
+      font-size: clamp(1.25rem, 1.08rem + 0.64vw, 1.78rem);
+      letter-spacing: 0.12em;
     }
 
     .topnav {
       display: flex;
       align-items: center;
       gap: clamp(16px, 2.6vw, 38px);
-      font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
+      font-family: "Lato", Arial, sans-serif;
+      font-weight: 700;
       letter-spacing: 0.24em;
     }
 
@@ -263,7 +261,7 @@
       align-items: center;
       justify-content: center;
       min-height: 38px;
-      color: rgba(255, 255, 255, 0.82);
+      color: rgba(255, 255, 255, 0.95);
       transition: color 220ms ease, border-color 220ms ease, background 220ms ease;
     }
 
@@ -293,7 +291,7 @@
     @keyframes hudBookingCue {
       0%,
       100% {
-        color: rgba(255, 255, 255, 0.82);
+        color: rgba(255, 255, 255, 0.95);
         text-shadow: 0 0 0 rgba(255, 255, 255, 0);
       }
 
@@ -324,7 +322,7 @@
       margin: 0;
       color: rgba(7, 7, 7, 0.035);
       font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
-      font-size: clamp(20rem, 62vh, 60rem);
+      font-size: clamp(28rem, 82vh, 82rem);
       font-weight: 400;
       line-height: 0.74;
       letter-spacing: 0;
@@ -357,7 +355,9 @@
       position: absolute;
       inset: 0;
       z-index: 3;
+      opacity: 0;
       pointer-events: none;
+      transition: opacity 560ms cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .hero-figure img {
@@ -437,8 +437,15 @@
       width: 100%;
       height: 100%;
       display: block;
+      opacity: 0;
       pointer-events: none;
       contain: strict;
+      transition: opacity 560ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html.is-hero-media-ready .hero-figure,
+    html.is-hero-media-ready .boulder-field {
+      opacity: 1;
     }
 
     .experience-panel,
@@ -506,20 +513,6 @@
       overflow: hidden;
     }
 
-    .meet-frame::before {
-      content: "";
-      position: absolute;
-      top: 7vh;
-      bottom: 7vh;
-      left: 50%;
-      z-index: 1;
-      width: 1px;
-      background: rgba(255, 255, 255, 0.18);
-      opacity: calc(var(--meet-words) * 0.72);
-      transform: scaleY(var(--meet-approach));
-      transform-origin: center;
-    }
-
     .meet-figure {
       position: absolute;
       top: 50%;
@@ -530,6 +523,10 @@
       margin: 0;
       opacity: var(--meet-figures);
       will-change: opacity, transform;
+    }
+
+    html:not(.is-meet-media-ready) .meet-figure {
+      opacity: 0;
     }
 
     .meet-figure img {
@@ -738,14 +735,14 @@
 
     .experience-title {
       margin: 0;
-      padding: 21px 18px;
+      padding: 24px 26px;
       border: 1px solid rgba(255, 255, 255, 0.74);
       color: #ffffff;
       font-family: "Lato", Arial, sans-serif;
-      font-size: clamp(1.45rem, 2.35vw, 2rem);
+      font-size: clamp(1.72rem, 2.75vw, 2.5rem);
       font-weight: 400;
       line-height: 1;
-      letter-spacing: 0.72em;
+      letter-spacing: 0.68em;
       text-transform: uppercase;
       text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
       white-space: nowrap;
@@ -755,10 +752,12 @@
       position: relative;
       display: inline-flex;
       align-items: center;
-      min-height: 30px;
+      justify-content: center;
+      min-height: 44px;
+      padding: 12px 18px 11px;
       color: #ffffff;
       font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
-      font-size: clamp(0.74rem, 0.68rem + 0.14vw, 0.84rem);
+      font-size: clamp(0.9rem, 0.82rem + 0.2vw, 1.04rem);
       font-weight: 400;
       letter-spacing: 0.3em;
       text-transform: uppercase;
@@ -768,19 +767,15 @@
     .experience-booking::after {
       content: "";
       position: absolute;
-      left: 0;
-      right: 0.3em;
-      bottom: 0;
-      height: 1px;
-      background: currentColor;
-      transform: scaleX(1);
-      transform-origin: center;
-      transition: opacity 220ms ease;
+      inset: 0 0.3em 0 0;
+      border: 1px solid currentColor;
+      clip-path: inset(calc(100% - 1px) 0 0 0);
+      transition: clip-path 460ms cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .experience-booking:hover::after,
     .experience-booking:focus-visible::after {
-      opacity: 0.58;
+      clip-path: inset(0);
     }
 
     .experience-booking:focus-visible {
@@ -807,6 +802,7 @@
       opacity: 1;
       transform: translateY(calc((1 - var(--ending)) * 102%));
       box-shadow: 0 -30px 80px rgba(0, 0, 0, 0.3);
+      font-family: "Lato", Arial, sans-serif;
       pointer-events: auto;
       will-change: opacity, transform;
     }
@@ -814,22 +810,23 @@
     .newsletter {
       display: grid;
       grid-template-columns:
-        minmax(320px, 1fr)
-        minmax(150px, 0.358fr)
-        minmax(150px, 0.356fr)
-        minmax(146px, 0.308fr)
-        76px;
+        minmax(360px, 1.15fr)
+        minmax(150px, 0.42fr)
+        minmax(150px, 0.42fr)
+        minmax(190px, 0.48fr)
+        92px;
       align-items: center;
       gap: clamp(16px, 1.8vw, 24px);
-      height: 47px;
-      padding: 5px 24px 5px 17px;
+      height: 64px;
+      padding: 8px 30px 8px 22px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.34);
     }
 
     .newsletter-intro {
       margin: 0;
-      font-size: clamp(0.8rem, 0.76rem + 0.11vw, 0.88rem);
-      font-weight: 600;
+      font-family: "Lato", Arial, sans-serif;
+      font-size: clamp(1.02rem, 0.96rem + 0.16vw, 1.14rem);
+      font-weight: 700;
       letter-spacing: 0;
       line-height: 1.25;
     }
@@ -840,16 +837,16 @@
 
     .newsletter-field input {
       width: 100%;
-      min-height: 31px;
-      padding: 8px 1px 5px;
+      min-height: 40px;
+      padding: 10px 1px 6px;
       border: 0;
       border-bottom: 1px solid rgba(255, 255, 255, 0.58);
       border-radius: 0;
       outline: none;
       background: transparent;
       color: #ffffff;
-      font: 700 0.805rem/1.2 "Lato", Arial, sans-serif;
-      letter-spacing: 0.28em;
+      font: 700 0.94rem/1.2 "Lato", Arial, sans-serif;
+      letter-spacing: 0.24em;
       text-transform: uppercase;
     }
 
@@ -867,7 +864,8 @@
       align-items: center;
       gap: 10px;
       min-width: max-content;
-      font-size: 0.805rem;
+      font-family: "Lato", Arial, sans-serif;
+      font-size: 0.94rem;
       letter-spacing: 0;
       cursor: pointer;
     }
@@ -882,9 +880,9 @@
 
     .newsletter-check {
       position: relative;
-      width: 25px;
-      height: 25px;
-      flex: 0 0 25px;
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
       border: 1px solid rgba(255, 255, 255, 0.82);
       background: transparent;
     }
@@ -892,10 +890,10 @@
     .newsletter-consent input:checked + .newsletter-check::after {
       content: "";
       position: absolute;
-      left: 7px;
-      top: 2px;
-      width: 7px;
-      height: 13px;
+      left: 9px;
+      top: 3px;
+      width: 8px;
+      height: 16px;
       border-right: 2px solid #ffffff;
       border-bottom: 2px solid #ffffff;
       transform: rotate(42deg);
@@ -907,16 +905,16 @@
     }
 
     .newsletter-submit {
-      width: 76px;
-      min-width: 76px;
-      min-height: 31px;
-      padding: 6px 10px;
+      width: 92px;
+      min-width: 92px;
+      min-height: 40px;
+      padding: 8px 12px;
       border: 1px solid #ffffff;
       border-radius: 0;
       background: #f5f5f3;
       color: #050505;
       cursor: pointer;
-      font: 400 0.945rem/1 "Libre Baskerville", Georgia, "Times New Roman", serif;
+      font: 700 0.92rem/1 "Lato", Arial, sans-serif;
       letter-spacing: 0;
       text-transform: none;
       transition: background 180ms ease, color 180ms ease;
@@ -936,12 +934,12 @@
 
     .footer-grid {
       display: grid;
-      grid-template-columns: 12.5% 13% 17% 13.5% 14.9% 10.1%;
+      grid-template-columns: 13% 15.5% 18% 11% 19.5% 11.5%;
       justify-content: space-between;
       gap: 0;
       align-items: start;
       min-height: 0;
-      padding: 20px 24px 18px;
+      padding: 26px 30px 24px;
     }
 
     .footer-rail {
@@ -953,21 +951,29 @@
     .footer-mark {
       display: inline-grid;
       justify-items: center;
-      gap: 4px;
+      gap: 6px;
       width: 100%;
-      max-width: 160px;
+      max-width: 240px;
+      color: #ffffff;
+      transition: opacity 180ms ease;
     }
 
     .footer-mark img {
       display: block;
-      width: 56px;
+      width: 158px;
       height: auto;
       filter: saturate(0.88) contrast(1.04);
     }
 
+    .footer-mark:hover,
+    .footer-mark:focus-visible {
+      opacity: 0.78;
+      outline: none;
+    }
+
     .footer-mark strong {
       font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
-      font-size: 1.225rem;
+      font-size: 1.42rem;
       font-weight: 400;
       letter-spacing: 0;
       white-space: nowrap;
@@ -975,7 +981,7 @@
 
     .footer-mark span {
       color: rgba(255, 255, 255, 0.62);
-      font-size: 0.705rem;
+      font-size: 0.78rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
     }
@@ -983,14 +989,14 @@
     .footer-column {
       display: grid;
       align-content: start;
-      gap: 9px;
+      gap: 12px;
       min-width: 0;
     }
 
     .footer-column h3 {
-      margin: 0 0 5px;
+      margin: 0 0 6px;
       font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
-      font-size: clamp(1.125rem, 1.065rem + 0.18vw, 1.275rem);
+      font-size: clamp(1.3rem, 1.2rem + 0.34vw, 1.6rem);
       font-weight: 400;
       line-height: 1.2;
     }
@@ -999,14 +1005,16 @@
     .footer-column a {
       margin: 0;
       color: rgba(255, 255, 255, 0.78);
-      font-size: clamp(0.795rem, 0.765rem + 0.09vw, 0.865rem);
+      font-family: "Lato", Arial, sans-serif;
+      font-size: clamp(0.95rem, 0.9rem + 0.15vw, 1.08rem);
       font-weight: 600;
-      line-height: 1.38;
+      line-height: 1.42;
     }
 
     .footer-column a {
-      width: max-content;
+      width: fit-content;
       max-width: 100%;
+      overflow-wrap: anywhere;
       border-bottom: 1px solid rgba(255, 255, 255, 0.36);
       transition: color 180ms ease, border-color 180ms ease;
     }
@@ -1072,6 +1080,10 @@
       opacity: 1;
       transform: scale(1);
       will-change: opacity, transform;
+    }
+
+    .rock-loader-stage picture {
+      display: contents;
     }
 
     .rock-loader {
@@ -1251,7 +1263,8 @@
       }
 
       .brand {
-        font-size: 1rem;
+        font-size: 1.18rem;
+        letter-spacing: 0.1em;
       }
 
       .topnav {
@@ -1275,7 +1288,7 @@
 
       .hero-number {
         top: 49%;
-        font-size: clamp(10.5rem, 50vw, 16rem);
+        font-size: clamp(16rem, 77vw, 24rem);
       }
 
       .hero-tagline {
@@ -1387,14 +1400,16 @@
 
       .experience-title {
         width: min(100%, 350px);
-        padding: 18px 14px;
-        font-size: clamp(0.92rem, 4.5vw, 1.15rem);
-        letter-spacing: 0.32em;
+        padding: 20px 16px;
+        font-size: clamp(1.15rem, 5.2vw, 1.42rem);
+        letter-spacing: 0.3em;
       }
 
       .experience-booking {
-        font-size: 0.66rem;
-        letter-spacing: 0.28em;
+        min-height: 40px;
+        padding: 11px 15px 10px;
+        font-size: 0.8rem;
+        letter-spacing: 0.26em;
       }
 
       .ending-footer {
@@ -1411,18 +1426,18 @@
 
       .newsletter-intro {
         grid-column: 1 / -1;
-        font-size: 0.795rem;
+        font-size: 0.92rem;
       }
 
       .newsletter-field input {
         min-height: 34px;
         padding-top: 7px;
-        font-size: 0.735rem;
+        font-size: 0.82rem;
         letter-spacing: 0.18em;
       }
 
       .newsletter-consent {
-        font-size: 0.745rem;
+        font-size: 0.82rem;
       }
 
       .newsletter-check {
@@ -1443,7 +1458,7 @@
         min-width: 0;
         min-height: 38px;
         padding: 8px 14px;
-        font-size: 0.765rem;
+        font-size: 0.86rem;
       }
 
       .footer-grid {
@@ -1458,34 +1473,34 @@
       }
 
       .footer-mark {
-        gap: 3px;
+        gap: 4px;
       }
 
       .footer-mark img {
-        width: 42px;
+        width: 112px;
       }
 
       .footer-mark strong {
-        font-size: 0.885rem;
+        font-size: 1.05rem;
       }
 
       .footer-mark span {
-        font-size: 0.625rem;
+        font-size: 0.68rem;
       }
 
       .footer-column {
-        gap: 5px;
+        gap: 7px;
       }
 
       .footer-column h3 {
-        margin-bottom: 2px;
-        font-size: 0.945rem;
+        margin-bottom: 3px;
+        font-size: 1.12rem;
       }
 
       .footer-column p,
       .footer-column a {
-        font-size: 0.685rem;
-        line-height: 1.28;
+        font-size: 0.84rem;
+        line-height: 1.34;
       }
 
       .skip {
@@ -1506,7 +1521,9 @@
 
       .experience-booking,
       .topnav a,
-      .newsletter-submit {
+      .newsletter-submit,
+      .hero-figure,
+      .boulder-field {
         transition: none;
       }
     }
@@ -1519,23 +1536,23 @@
       <p class="hero-tagline">As nature intended.</p>
       <div class="hero-figure" aria-hidden="true">
         <picture class="hero-figure-original">
-          <source srcset="images/hero-figure-rope.webp" type="image/webp" />
-          <img class="hero-figure-rope" src="images/hero-figure-rope.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="high" />
+          <source data-srcset="images/hero-figure-rope.webp" type="image/webp" />
+          <img class="hero-figure-rope" data-src="images/hero-figure-rope.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="low" />
         </picture>
         <!-- Optional pull layers: both are cut from the original illustration; no replacement rope. -->
         <div class="hero-arm-pull" data-hero-arm-pull>
           <picture>
             <source srcset="images/hero-pull-static.webp" type="image/webp" />
-            <img class="hero-arm-pull-static" src="images/hero-pull-static.png" width="520" height="760" alt="" decoding="async" />
+            <img class="hero-arm-pull-static" src="images/hero-pull-static.png" width="520" height="760" alt="" decoding="async" fetchpriority="high" data-hero-critical />
           </picture>
           <picture>
             <source srcset="images/hero-pull-moving.webp" type="image/webp" />
-            <img class="hero-arm-pull-moving" src="images/hero-pull-moving.png" width="270" height="920" alt="" decoding="async" />
+            <img class="hero-arm-pull-moving" src="images/hero-pull-moving.png" width="270" height="920" alt="" decoding="async" fetchpriority="high" data-hero-critical />
           </picture>
         </div>
         <picture>
           <source srcset="images/hero-figure-lower.webp" type="image/webp" />
-          <img class="hero-figure-lower" src="images/hero-figure-lower.png" width="1024" height="1024" alt="" decoding="async" fetchpriority="high" />
+          <img class="hero-figure-lower" src="images/hero-figure-lower.png" width="1024" height="1024" alt="" decoding="async" fetchpriority="high" data-hero-critical />
         </picture>
       </div>
     </section>
@@ -1543,7 +1560,10 @@
   </div>
   <div class="page-transition" id="pageTransition" aria-hidden="true">
     <span class="rock-loader-stage">
-      <img class="rock-loader" src="images/rockguy.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="high" />
+      <picture>
+        <source srcset="images/rockguy-loader.webp" type="image/webp" />
+        <img class="rock-loader" src="images/rockguy.png" width="512" height="768" alt="" decoding="async" fetchpriority="high" />
+      </picture>
     </span>
   </div>
 
@@ -1559,12 +1579,12 @@
     <section class="meet-panel" id="meetPanel" aria-label="Where opposites meet">
       <div class="meet-frame" aria-hidden="true">
         <picture class="meet-figure meet-figure--top">
-          <source srcset="images/meet-figure-top.webp" type="image/webp" />
-          <img src="images/up.png" width="1024" height="1536" alt="" loading="eager" decoding="async" fetchpriority="low" />
+          <source data-srcset="images/meet-figure-top.webp" type="image/webp" />
+          <img data-src="images/up.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="low" />
         </picture>
         <picture class="meet-figure meet-figure--bottom">
-          <source srcset="images/meet-figure-bottom.webp" type="image/webp" />
-          <img src="images/down.png" width="1024" height="1536" alt="" loading="eager" decoding="async" fetchpriority="low" />
+          <source data-srcset="images/meet-figure-bottom.webp" type="image/webp" />
+          <img data-src="images/down.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="low" />
         </picture>
         <p class="meet-phrase">
           <span class="meet-word meet-word--where">Where.</span>
@@ -1574,7 +1594,7 @@
       </div>
       <div class="meet-resolve">
         <h2 class="meet-title">Meet.</h2>
-        <p class="meet-subtitle">At one table.</p>
+        <p class="meet-subtitle"></p>
       </div>
     </section>
 
@@ -1586,11 +1606,11 @@
           muted
           loop
           playsinline
-          preload="metadata"
-          poster="video/experience-1820-poster.webp"
+          preload="none"
+          data-poster="video/experience-1820-poster.webp"
         >
-          <source src="video/experience-1820.webm" type="video/webm" />
-          <source src="video/experience-1820.mp4" type="video/mp4" />
+          <source data-src="video/experience-1820.webm" type="video/webm" />
+          <source data-src="video/experience-1820.mp4" type="video/mp4" />
         </video>
       </div>
       <div class="experience-lockup">
@@ -1622,11 +1642,11 @@
 
         <div class="footer-grid">
           <div class="footer-rail">
-            <div class="footer-mark">
+            <a class="footer-mark" href="https://chateau-zegaani.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit Chateau Zegaani">
               <img src="images/zegaani.png" width="79" height="86" alt="Chateau Zegaani crest" loading="lazy" decoding="async" />
               <strong>Chateau Zegaani</strong>
               <span>1820</span>
-            </div>
+            </a>
           </div>
 
           <div class="footer-column">
@@ -1670,11 +1690,11 @@
     </section>
   </main>
 
-  <button class="skip" id="skipToEnd" type="button" aria-label="Continue to the final section"></button>
+  <button class="skip" id="skipToEnd" type="button" aria-label="Continue to the next section"></button>
   <div class="scroll-length" aria-hidden="true"></div>
 
-  <script src="scripts/boulder-renderer.js?v=20260719-3"></script>
-  <script src="scripts/hero-arm-pull.js?v=20260731-1"></script>
+  <script src="scripts/boulder-renderer.js?v=20260803-1"></script>
+  <script src="scripts/hero-arm-pull.js?v=20260803-1"></script>
   <script>
     (() => {
       const root = document.documentElement;
@@ -1695,17 +1715,22 @@
       const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const heroArmPull = window.HeroArmPull?.mount(document.querySelector(".hero-figure"), {
         reducedMotion: prefersReduced
-      }) || { update: () => ({ rockLift: 0, rockShift: 0 }) };
+      }) || { ready: Promise.resolve(), update: () => ({ rockLift: 0, rockShift: 0 }) };
       const transitionKey = "1820PageTransition";
       const arrivalHold = 880;
       const maximumArrivalHold = 6000;
       const revealDuration = 1240;
       const departureDuration = 1740;
       const loaderImage = pageTransition.querySelector(".rock-loader");
+      const heroCriticalImages = Array.from(document.querySelectorAll("[data-hero-critical]"));
+      const deferredMeetPictures = Array.from(document.querySelectorAll(".meet-figure"));
       let arrivalTimer = 0;
       let forceArrivalTimer = 0;
       let revealTimer = 0;
       let departureTimer = 0;
+      let heroMediaPromise = null;
+      let meetMediaPromise = null;
+      let laterScenesPrimed = false;
       let settleBoulderReady = () => {};
       const boulderReady = new Promise((resolve) => {
         settleBoulderReady = resolve;
@@ -1937,8 +1962,9 @@
 
       let latestProgress = -1;
       const boulderRenderer = new window.BoulderRenderer(field, {
-        atlasUrl: "images/hero-rock-atlas.webp",
-        compactAtlasUrl: "images/hero-rock-atlas-compact.webp",
+        atlasUrl: "images/hero-rock-atlas.webp?v=20260803-1",
+        compactAtlasUrl: "images/hero-rock-atlas-compact.webp?v=20260803-1",
+        previewAtlasUrl: "images/hero-rock-atlas-preview.webp?v=20260803-1",
         atlasFallbackUrl: "images/hero-rock-atlas.png",
         compactAtlasFallbackUrl: "images/hero-rock-atlas-compact.png",
         atlasColumns: 4,
@@ -1986,6 +2012,7 @@
       let mobileSceneIndex = 0;
       let hudBookingCueTimer = 0;
       let experienceVideoActive = false;
+      let experienceVideoHydrated = false;
       const liveState = {
         header: false,
         meet: false,
@@ -2023,6 +2050,21 @@
         }, 1800);
       }
 
+      function hydrateExperienceVideo() {
+        if (!experienceVideo || experienceVideoHydrated) {
+          return;
+        }
+
+        experienceVideoHydrated = true;
+        if (experienceVideo.dataset.poster) {
+          experienceVideo.poster = experienceVideo.dataset.poster;
+        }
+        experienceVideo.querySelectorAll("source[data-src]").forEach((source) => {
+          source.src = source.dataset.src;
+        });
+        experienceVideo.load();
+      }
+
       function syncExperienceVideo(active) {
         if (!experienceVideo || prefersReduced || experienceVideoActive === active) {
           return;
@@ -2030,6 +2072,7 @@
 
         experienceVideoActive = active;
         if (active) {
+          hydrateExperienceVideo();
           experienceVideo.play().catch(() => {});
           return;
         }
@@ -2060,6 +2103,61 @@
         });
       }
 
+      function hydratePicture(picture) {
+        const image = picture?.querySelector("img");
+        if (!image) {
+          return Promise.resolve();
+        }
+
+        if (picture.dataset.hydrated !== "true") {
+          picture.querySelectorAll("source[data-srcset]").forEach((source) => {
+            source.srcset = source.dataset.srcset;
+          });
+          if (image.dataset.src) {
+            image.src = image.dataset.src;
+          }
+          picture.dataset.hydrated = "true";
+        }
+
+        return waitForImage(image);
+      }
+
+      function primeLaterScenes() {
+        if (laterScenesPrimed) {
+          return meetMediaPromise || Promise.resolve();
+        }
+
+        laterScenesPrimed = true;
+        if (experienceVideo?.dataset.poster) {
+          experienceVideo.poster = experienceVideo.dataset.poster;
+        }
+        meetMediaPromise = Promise.allSettled(deferredMeetPictures.map(hydratePicture))
+          .then(waitForPaint)
+          .then(() => {
+            root.classList.add("is-meet-media-ready");
+          });
+        return meetMediaPromise;
+      }
+
+      function waitForHeroMedia() {
+        if (heroMediaPromise) {
+          return heroMediaPromise;
+        }
+
+        heroMediaPromise = Promise.allSettled([
+          ...heroCriticalImages.map(waitForImage),
+          heroArmPull.ready,
+          boulderReady
+        ])
+          .then(waitForPaint)
+          .then(() => {
+            root.classList.add("is-hero-media-ready");
+            primeLaterScenes();
+            return true;
+          });
+        return heroMediaPromise;
+      }
+
       function settleWithin(promise, timeout) {
         return new Promise((resolve) => {
           const timer = window.setTimeout(() => resolve(false), timeout);
@@ -2074,15 +2172,11 @@
       }
 
       function waitForPageAssets() {
-        const windowLoaded = document.readyState === "complete"
-          ? Promise.resolve()
-          : new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
-        const imagesDecoded = Promise.allSettled(Array.from(document.images, waitForImage));
         const fontsReady = document.fonts?.ready || Promise.resolve();
 
         const timeout = maximumArrivalHold;
         return settleWithin(
-          Promise.allSettled([windowLoaded, imagesDecoded, fontsReady, boulderReady]),
+          Promise.allSettled([fontsReady, waitForHeroMedia()]),
           timeout
         );
       }
@@ -2144,14 +2238,14 @@
       }
 
       function initArrival() {
+        waitForHeroMedia();
         if (!root.classList.contains("is-arriving")) {
           return;
         }
 
         forceArrivalTimer = window.setTimeout(() => revealArrival(false), maximumArrivalHold);
         Promise.all([waitForPageAssets(), waitForLoaderMinimum()])
-          .then(waitForPaint)
-          .then(() => revealArrival(true));
+          .then(([assetsReady]) => waitForPaint().then(() => revealArrival(assetsReady)));
       }
 
       function beginDeparture(link, target) {
@@ -2207,7 +2301,7 @@
         skip.classList.toggle("is-at-end", atEnd);
         skip.setAttribute(
           "aria-label",
-          atEnd ? "Return to the beginning" : "Continue to the final section"
+          atEnd ? "Return to the beginning" : "Continue to the next section"
         );
 
         const progress11Sin = Math.sin(progress * 11);
@@ -2567,8 +2661,10 @@
 
       skip.addEventListener("click", () => {
         const returnToStart = targetProgress > 0.94;
-        setTargetProgress(returnToStart ? 0 : 1);
-        if (!returnToStart) {
+        const nextScene = mobileScenes.find((scene) => scene.progress > targetProgress + 0.025);
+        const nextProgress = returnToStart ? 0 : (nextScene?.progress ?? 1);
+        setTargetProgress(nextProgress);
+        if (nextProgress > 0.94) {
           window.setTimeout(cueHudBookingLink, narrow ? 1500 : 1100);
         }
       });

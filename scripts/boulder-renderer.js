@@ -11,6 +11,7 @@
       this.canvas = canvas;
       this.atlasUrl = options.atlasUrl;
       this.compactAtlasUrl = options.compactAtlasUrl || options.atlasUrl;
+      this.previewAtlasUrl = options.previewAtlasUrl || "";
       this.atlasFallbackUrl = options.atlasFallbackUrl || "";
       this.compactAtlasFallbackUrl = options.compactAtlasFallbackUrl || this.atlasFallbackUrl;
       this.atlasColumns = options.atlasColumns || 3;
@@ -41,6 +42,7 @@
       this.buffer = null;
       this.texture = null;
       this.failed = false;
+      this.loadGeneration = 0;
       this.pixelRatioScale = 1;
       this.uvRects = [];
 
@@ -250,43 +252,84 @@
     loadAtlas() {
       this.ready = false;
       this.canvas.dataset.ready = "false";
-      const image = new Image();
-      let uploaded = false;
-      let usingFallback = false;
+      const generation = ++this.loadGeneration;
+      const initialUrls = this.previewAtlasUrl
+        ? [this.previewAtlasUrl, this.atlasUrl, this.atlasFallbackUrl]
+        : [this.atlasUrl, this.atlasFallbackUrl];
 
-      const finish = () => {
-        if (uploaded || !image.naturalWidth) {
-          return;
-        }
-        uploaded = true;
-        try {
-          this.uploadAtlas(image);
-        } catch (error) {
-          this.reportError();
-        }
-      };
+      this.loadAtlasImage(initialUrls, "high")
+        .then(({ image, url }) => {
+          if (generation !== this.loadGeneration) {
+            return;
+          }
 
-      image.decoding = "async";
-      image.fetchPriority = "high";
-      image.addEventListener("load", finish, { once: true });
-      image.addEventListener("error", () => {
-        if (!usingFallback && this.atlasFallbackUrl) {
-          usingFallback = true;
-          image.src = this.atlasFallbackUrl;
-          return;
-        }
-        this.reportError();
-      });
-      image.src = this.atlasUrl;
-
-      if (typeof image.decode === "function") {
-        image.decode().then(finish).catch(() => {
-          // The load event remains the decoding fallback.
-        });
-      }
+          const isPreview = Boolean(this.previewAtlasUrl && url === this.previewAtlasUrl);
+          this.uploadAtlas(image, isPreview ? "preview" : "full");
+          if (isPreview) {
+            this.loadAtlasUpgrade(generation);
+          }
+        })
+        .catch(() => this.reportError());
     }
 
-    uploadAtlas(image) {
+    loadAtlasImage(urls, priority) {
+      const queue = urls.filter((url, index) => url && urls.indexOf(url) === index);
+
+      return new Promise((resolve, reject) => {
+        const attempt = (index) => {
+          if (index >= queue.length) {
+            reject(new Error("Boulder atlas failed to load."));
+            return;
+          }
+
+          const image = new Image();
+          const url = queue[index];
+          let settled = false;
+          const finish = () => {
+            if (settled || !image.naturalWidth) {
+              return;
+            }
+            settled = true;
+            resolve({ image, url });
+          };
+
+          image.decoding = "async";
+          image.fetchPriority = priority;
+          image.addEventListener("load", finish, { once: true });
+          image.addEventListener("error", () => {
+            if (settled) {
+              return;
+            }
+            settled = true;
+            attempt(index + 1);
+          }, { once: true });
+          image.src = url;
+
+          if (typeof image.decode === "function") {
+            image.decode().then(finish).catch(() => {
+              // The load event remains the decoding fallback.
+            });
+          }
+        };
+
+        attempt(0);
+      });
+    }
+
+    loadAtlasUpgrade(generation) {
+      this.loadAtlasImage([this.atlasUrl, this.atlasFallbackUrl], "low")
+        .then(({ image }) => {
+          if (generation !== this.loadGeneration || this.contextLost) {
+            return;
+          }
+          this.uploadAtlas(image, "full");
+        })
+        .catch(() => {
+          // The preview remains usable when the optional quality upgrade fails.
+        });
+    }
+
+    uploadAtlas(image, quality = "full") {
       this.atlasWidth = image.naturalWidth;
       this.atlasHeight = image.naturalHeight;
       const insetU = 0.5 / this.atlasWidth;
@@ -324,6 +367,7 @@
 
       this.ready = true;
       this.canvas.dataset.ready = "true";
+      this.canvas.dataset.atlasQuality = quality;
       this.onReady();
     }
 

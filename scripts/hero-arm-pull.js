@@ -22,6 +22,22 @@
     });
   }
 
+  function readyFallback(host) {
+    const picture = host?.querySelector(".hero-figure-original");
+    const image = picture?.querySelector("img");
+    if (!image) {
+      return Promise.resolve();
+    }
+
+    picture.querySelectorAll("source[data-srcset]").forEach((source) => {
+      source.srcset = source.dataset.srcset;
+    });
+    if (image.dataset.src) {
+      image.src = image.dataset.src;
+    }
+    return readyImage(image).catch(() => {});
+  }
+
   window.HeroArmPull = {
     mount(host, { reducedMotion = false } = {}) {
       const stage = host?.querySelector("[data-hero-arm-pull]");
@@ -48,8 +64,9 @@
         return motion;
       }
 
-      if (!stage || images.length !== 2 || reducedMotion) {
+      if (!stage || images.length !== 2) {
         return {
+          ready: readyFallback(host),
           update() {
             return { rockLift: 0, rockShift: 0 };
           },
@@ -57,22 +74,27 @@
         };
       }
 
-      Promise.all(images.map(readyImage))
+      const readyPromise = Promise.all(images.map(readyImage))
         .then(() => {
-          apply(lastProgress, lastNarrow);
+          apply(reducedMotion ? 0 : lastProgress, lastNarrow);
           ready = true;
           host.classList.add("is-arm-pull-ready");
         })
         .catch(() => {
           ready = false;
           host.classList.remove("is-arm-pull-ready");
+          return readyFallback(host);
         });
 
       return {
+        ready: readyPromise,
         update(progress, { narrow = false } = {}) {
           lastProgress = clamp(progress);
           lastNarrow = narrow;
-          return ready ? apply(lastProgress, lastNarrow) : { rockLift: 0, rockShift: 0 };
+          if (!ready || reducedMotion) {
+            return { rockLift: 0, rockShift: 0 };
+          }
+          return apply(lastProgress, lastNarrow);
         },
         destroy() {
           ready = false;

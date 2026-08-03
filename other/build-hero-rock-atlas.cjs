@@ -42,13 +42,18 @@ async function buildAtlas(name, cellSize) {
     }
   }).composite(layers);
 
-  await atlas
-    .clone()
-    .png({ compressionLevel: 9, adaptiveFiltering: true })
-    .toFile(path.join(imageRoot, `${name}.png`));
+  const pngOutput = path.join(imageRoot, `${name}.png`);
 
   await atlas
-    .clone()
+    .png({ compressionLevel: 9, adaptiveFiltering: true })
+    .toFile(pngOutput);
+
+  await sharp(pngOutput)
+    .recomb([
+      [0.299, 0.587, 0.114],
+      [0.299, 0.587, 0.114],
+      [0.299, 0.587, 0.114]
+    ])
     .webp({ lossless: true, effort: 6 })
     .toFile(path.join(imageRoot, `${name}.webp`));
 }
@@ -59,12 +64,29 @@ async function buildFigure(name) {
     .toFile(path.join(imageRoot, `${name}.webp`));
 }
 
-Promise.all([
-  buildAtlas("hero-rock-atlas", 768),
-  buildAtlas("hero-rock-atlas-compact", 512),
-  buildFigure("hero-figure-lower"),
-  buildFigure("hero-figure-rope")
-]).catch((error) => {
+async function buildPreviewAtlas() {
+  await sharp(path.join(imageRoot, "hero-rock-atlas-compact.png"))
+    .resize(1024, 768, { kernel: "lanczos3" })
+    .recomb([
+      [0.299, 0.587, 0.114],
+      [0.299, 0.587, 0.114],
+      [0.299, 0.587, 0.114]
+    ])
+    .webp({ lossless: true, effort: 6 })
+    .toFile(path.join(imageRoot, "hero-rock-atlas-preview.webp"));
+}
+
+async function buildAll() {
+  await Promise.all([
+    buildAtlas("hero-rock-atlas", 768),
+    buildAtlas("hero-rock-atlas-compact", 512),
+    buildFigure("hero-figure-lower"),
+    buildFigure("hero-figure-rope")
+  ]);
+  await buildPreviewAtlas();
+}
+
+buildAll().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });

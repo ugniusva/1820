@@ -6,8 +6,8 @@
   <title>1820 | Reservation</title>
   <link rel="preload" as="font" href="fonts/lato-400-latin.woff2" type="font/woff2" crossorigin />
   <link rel="preload" as="font" href="fonts/libre-baskerville-400-latin.woff2" type="font/woff2" crossorigin />
-  <link rel="preload" as="image" href="images/rockguy.png" />
-  <link rel="preload" as="image" href="images/fih.png" />
+  <link rel="preload" as="image" href="images/rockguy-loader.webp" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/fih-ui.webp" type="image/webp" fetchpriority="high" />
   <script>
     (() => {
       const navigation = performance.getEntriesByType("navigation")[0];
@@ -360,6 +360,10 @@
       filter: grayscale(1) contrast(1.25) brightness(1.08);
       opacity: 0.88;
       animation: fish-drift 2.8s ease-in-out infinite;
+    }
+
+    .fish-progress picture {
+      display: contents;
     }
 
     .fish-journey[data-step="2"] .fish-progress {
@@ -1172,6 +1176,10 @@
       will-change: opacity, transform;
     }
 
+    .rock-loader-stage picture {
+      display: contents;
+    }
+
     .rock-loader {
       position: relative;
       width: clamp(84px, 8vw, 150px);
@@ -1413,7 +1421,10 @@
           <span class="fish-stop" data-fish-stop="2">Evening</span>
           <span class="fish-stop" data-fish-stop="3">Review</span>
           <span class="fish-progress">
-            <img src="images/fih.png" alt="" />
+            <picture>
+              <source srcset="images/fih-ui.webp" type="image/webp" />
+              <img src="images/fih.png" width="384" height="256" alt="" decoding="async" fetchpriority="high" />
+            </picture>
           </span>
         </div>
         <span class="sr-only" id="stepLabel">Guest details, stage 1 of 3</span>
@@ -1555,7 +1566,10 @@
 
   <div class="page-transition" id="pageTransition" aria-hidden="true">
     <span class="rock-loader-stage">
-      <img class="rock-loader" src="images/rockguy.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="high" />
+      <picture>
+        <source srcset="images/rockguy-loader.webp" type="image/webp" />
+        <img class="rock-loader" src="images/rockguy.png" width="512" height="768" alt="" decoding="async" fetchpriority="high" />
+      </picture>
     </span>
   </div>
 
