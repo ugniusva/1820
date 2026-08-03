@@ -6,10 +6,10 @@
   <title>1820 | Restaurant</title>
   <link rel="preload" as="font" href="fonts/lato-400-latin.woff2" type="font/woff2" crossorigin />
   <link rel="preload" as="font" href="fonts/libre-baskerville-400-latin.woff2" type="font/woff2" crossorigin />
-  <link rel="preload" as="image" href="images/rockguy-loader.webp" type="image/webp" fetchpriority="high" />
-  <link rel="preload" as="image" href="images/hero-pull-static.webp" type="image/webp" fetchpriority="high" />
-  <link rel="preload" as="image" href="images/hero-pull-moving.webp" type="image/webp" fetchpriority="high" />
-  <link rel="preload" as="image" href="images/hero-figure-lower.webp" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/rockguy-loader-128.webp" imagesrcset="images/rockguy-loader-128.webp 128w, images/rockguy-loader-192.webp 192w, images/rockguy-loader-320.webp 320w, images/rockguy-loader.webp 512w" imagesizes="(max-width: 1050px) 84px, (max-width: 1875px) 8vw, 150px" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/hero-pull-static-256.webp" imagesrcset="images/hero-pull-static-256.webp 256w, images/hero-pull-static-320.webp 320w, images/hero-pull-static.webp 520w" imagesizes="(max-width: 460px) 23vw, (max-width: 760px) 96px, 12vh" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/hero-pull-moving-128.webp" imagesrcset="images/hero-pull-moving-128.webp 128w, images/hero-pull-moving-160.webp 160w, images/hero-pull-moving.webp 270w" imagesizes="(max-width: 460px) 12vw, (max-width: 760px) 50px, 6.2vh" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/hero-figure-lower-384.webp" imagesrcset="images/hero-figure-lower-384.webp 384w, images/hero-figure-lower-512.webp 512w, images/hero-figure-lower-768.webp 768w, images/hero-figure-lower-896.webp 896w, images/hero-figure-lower.webp 1024w" imagesizes="(max-width: 460px) 72vw, (max-width: 760px) 330px, 33.333vh" type="image/webp" fetchpriority="high" />
   <link rel="preload" as="image" href="images/hero-rock-atlas-preview.webp?v=20260803-1" type="image/webp" fetchpriority="high" />
   <script>
     (() => {
@@ -764,18 +764,39 @@
       text-shadow: 0 4px 20px rgba(0, 0, 0, 0.62);
     }
 
+    .experience-booking::before,
     .experience-booking::after {
       content: "";
       position: absolute;
       inset: 0 0.3em 0 0;
-      border: 1px solid currentColor;
-      clip-path: inset(calc(100% - 1px) 0 0 0);
-      transition: clip-path 460ms cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    .experience-booking::after {
+      background:
+        linear-gradient(currentColor, currentColor) left bottom / 100% 1px no-repeat,
+        linear-gradient(currentColor, currentColor) left bottom / 1px 0 no-repeat,
+        linear-gradient(currentColor, currentColor) right bottom / 1px 0 no-repeat;
+      transition: background-size 360ms cubic-bezier(0.16, 1, 0.3, 1) 180ms;
+    }
+
+    .experience-booking::before {
+      background:
+        linear-gradient(currentColor, currentColor) left top / 0 1px no-repeat,
+        linear-gradient(currentColor, currentColor) right top / 0 1px no-repeat;
+      transition: background-size 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .experience-booking:hover::before,
+    .experience-booking:focus-visible::before {
+      background-size: 50% 1px, 50% 1px;
+      transition-delay: 300ms;
     }
 
     .experience-booking:hover::after,
     .experience-booking:focus-visible::after {
-      clip-path: inset(0);
+      background-size: 100% 1px, 1px 100%, 1px 100%;
+      transition-delay: 0ms;
     }
 
     .experience-booking:focus-visible {
@@ -1542,16 +1563,16 @@
         <!-- Optional pull layers: both are cut from the original illustration; no replacement rope. -->
         <div class="hero-arm-pull" data-hero-arm-pull>
           <picture>
-            <source srcset="images/hero-pull-static.webp" type="image/webp" />
+            <source srcset="images/hero-pull-static-256.webp 256w, images/hero-pull-static-320.webp 320w, images/hero-pull-static.webp 520w" sizes="(max-width: 460px) 23vw, (max-width: 760px) 96px, 12vh" type="image/webp" />
             <img class="hero-arm-pull-static" src="images/hero-pull-static.png" width="520" height="760" alt="" decoding="async" fetchpriority="high" data-hero-critical />
           </picture>
           <picture>
-            <source srcset="images/hero-pull-moving.webp" type="image/webp" />
+            <source srcset="images/hero-pull-moving-128.webp 128w, images/hero-pull-moving-160.webp 160w, images/hero-pull-moving.webp 270w" sizes="(max-width: 460px) 12vw, (max-width: 760px) 50px, 6.2vh" type="image/webp" />
             <img class="hero-arm-pull-moving" src="images/hero-pull-moving.png" width="270" height="920" alt="" decoding="async" fetchpriority="high" data-hero-critical />
           </picture>
         </div>
         <picture>
-          <source srcset="images/hero-figure-lower.webp" type="image/webp" />
+          <source srcset="images/hero-figure-lower-384.webp 384w, images/hero-figure-lower-512.webp 512w, images/hero-figure-lower-768.webp 768w, images/hero-figure-lower-896.webp 896w, images/hero-figure-lower.webp 1024w" sizes="(max-width: 460px) 72vw, (max-width: 760px) 330px, 33.333vh" type="image/webp" />
           <img class="hero-figure-lower" src="images/hero-figure-lower.png" width="1024" height="1024" alt="" decoding="async" fetchpriority="high" data-hero-critical />
         </picture>
       </div>
@@ -1561,7 +1582,7 @@
   <div class="page-transition" id="pageTransition" aria-hidden="true">
     <span class="rock-loader-stage">
       <picture>
-        <source srcset="images/rockguy-loader.webp" type="image/webp" />
+        <source srcset="images/rockguy-loader-128.webp 128w, images/rockguy-loader-192.webp 192w, images/rockguy-loader-320.webp 320w, images/rockguy-loader.webp 512w" sizes="(max-width: 1050px) 84px, (max-width: 1875px) 8vw, 150px" type="image/webp" />
         <img class="rock-loader" src="images/rockguy.png" width="512" height="768" alt="" decoding="async" fetchpriority="high" />
       </picture>
     </span>
@@ -1756,6 +1777,10 @@
 
       const random = mulberry32(1820);
       const isNarrow = () => window.matchMedia("(max-width: 760px)").matches;
+      const networkConnection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      const constrainedNetwork = Boolean(
+        networkConnection?.saveData || ["slow-2g", "2g"].includes(networkConnection?.effectiveType)
+      );
       let narrow = isNarrow();
       const mobileScenes = [
         { name: "hero", progress: 0 },
@@ -1972,7 +1997,7 @@
         assetCount: rockAssetCount,
         mobilePixelRatio: 1.55,
         desktopPixelRatio: 1.5,
-        preferCompact: narrow,
+        preferCompact: narrow || constrainedNetwork,
         forceCanvas2D: window.location.protocol === "file:",
         onReady: () => {
           settleBoulderReady();

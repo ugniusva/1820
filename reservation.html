@@ -6,8 +6,8 @@
   <title>1820 | Reservation</title>
   <link rel="preload" as="font" href="fonts/lato-400-latin.woff2" type="font/woff2" crossorigin />
   <link rel="preload" as="font" href="fonts/libre-baskerville-400-latin.woff2" type="font/woff2" crossorigin />
-  <link rel="preload" as="image" href="images/rockguy-loader.webp" type="image/webp" fetchpriority="high" />
-  <link rel="preload" as="image" href="images/fih-ui.webp" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/rockguy-loader-128.webp" imagesrcset="images/rockguy-loader-128.webp 128w, images/rockguy-loader-192.webp 192w, images/rockguy-loader-320.webp 320w, images/rockguy-loader.webp 512w" imagesizes="(max-width: 1050px) 84px, (max-width: 1875px) 8vw, 150px" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/fih-ui-128.webp" imagesrcset="images/fih-ui-128.webp 128w, images/fih-ui-256.webp 256w, images/fih-ui.webp 384w" imagesizes="98px" type="image/webp" fetchpriority="high" />
   <script>
     (() => {
       const navigation = performance.getEntriesByType("navigation")[0];
@@ -1422,7 +1422,7 @@
           <span class="fish-stop" data-fish-stop="3">Review</span>
           <span class="fish-progress">
             <picture>
-              <source srcset="images/fih-ui.webp" type="image/webp" />
+              <source srcset="images/fih-ui-128.webp 128w, images/fih-ui-256.webp 256w, images/fih-ui.webp 384w" sizes="98px" type="image/webp" />
               <img src="images/fih.png" width="384" height="256" alt="" decoding="async" fetchpriority="high" />
             </picture>
           </span>
@@ -1567,7 +1567,7 @@
   <div class="page-transition" id="pageTransition" aria-hidden="true">
     <span class="rock-loader-stage">
       <picture>
-        <source srcset="images/rockguy-loader.webp" type="image/webp" />
+        <source srcset="images/rockguy-loader-128.webp 128w, images/rockguy-loader-192.webp 192w, images/rockguy-loader-320.webp 320w, images/rockguy-loader.webp 512w" sizes="(max-width: 1050px) 84px, (max-width: 1875px) 8vw, 150px" type="image/webp" />
         <img class="rock-loader" src="images/rockguy.png" width="512" height="768" alt="" decoding="async" fetchpriority="high" />
       </picture>
     </span>
