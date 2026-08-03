@@ -1,0 +1,927 @@
+{
+  "source": "C:\\Users\\Ugniusva\\Documents\\random shit\\cutouts\\isolation-master-chroma.png",
+  "master": "C:\\Users\\Ugniusva\\Documents\\random shit\\cutouts\\00-full-figure.png",
+  "method": "gpt-image-2 chroma isolation, local alpha extraction, marker-controlled watershed",
+  "round_forms": [
+    {
+      "file": "stone-01.png",
+      "component_number": 1,
+      "subpart": null,
+      "center": [
+        329,
+        93
+      ],
+      "bounds": [
+        298,
+        64,
+        362,
+        123
+      ]
+    },
+    {
+      "file": "stone-02.png",
+      "component_number": 2,
+      "subpart": null,
+      "center": [
+        394,
+        94
+      ],
+      "bounds": [
+        333,
+        43,
+        454,
+        150
+      ]
+    },
+    {
+      "file": "stone-03.png",
+      "component_number": 3,
+      "subpart": null,
+      "center": [
+        466,
+        118
+      ],
+      "bounds": [
+        410,
+        73,
+        521,
+        170
+      ]
+    },
+    {
+      "file": "stone-04.png",
+      "component_number": 4,
+      "subpart": null,
+      "center": [
+        323,
+        137
+      ],
+      "bounds": [
+        273,
+        98,
+        371,
+        186
+      ]
+    },
+    {
+      "file": "stone-05.png",
+      "component_number": 5,
+      "subpart": null,
+      "center": [
+        408,
+        143
+      ],
+      "bounds": [
+        373,
+        114,
+        447,
+        177
+      ]
+    },
+    {
+      "file": "stone-06.png",
+      "component_number": 6,
+      "subpart": null,
+      "center": [
+        553,
+        157
+      ],
+      "bounds": [
+        475,
+        89,
+        631,
+        239
+      ]
+    },
+    {
+      "file": "stone-07.png",
+      "component_number": 8,
+      "subpart": null,
+      "center": [
+        356,
+        168
+      ],
+      "bounds": [
+        310,
+        129,
+        400,
+        209
+      ]
+    },
+    {
+      "file": "stone-08.png",
+      "component_number": 9,
+      "subpart": null,
+      "center": [
+        429,
+        171
+      ],
+      "bounds": [
+        394,
+        139,
+        465,
+        206
+      ]
+    },
+    {
+      "file": "stone-09.png",
+      "component_number": 10,
+      "subpart": null,
+      "center": [
+        475,
+        176
+      ],
+      "bounds": [
+        442,
+        144,
+        509,
+        214
+      ]
+    },
+    {
+      "file": "stone-10.png",
+      "component_number": 11,
+      "subpart": null,
+      "center": [
+        294,
+        198
+      ],
+      "bounds": [
+        251,
+        152,
+        340,
+        246
+      ]
+    },
+    {
+      "file": "stone-11.png",
+      "component_number": 13,
+      "subpart": null,
+      "center": [
+        344,
+        205
+      ],
+      "bounds": [
+        316,
+        183,
+        370,
+        229
+      ]
+    },
+    {
+      "file": "stone-12.png",
+      "component_number": 14,
+      "subpart": null,
+      "center": [
+        390,
+        206
+      ],
+      "bounds": [
+        346,
+        167,
+        432,
+        253
+      ]
+    },
+    {
+      "file": "stone-13.png",
+      "component_number": 15,
+      "subpart": null,
+      "center": [
+        444,
+        207
+      ],
+      "bounds": [
+        408,
+        177,
+        483,
+        238
+      ]
+    },
+    {
+      "file": "stone-14.png",
+      "component_number": 16,
+      "subpart": null,
+      "center": [
+        176,
+        213
+      ],
+      "bounds": [
+        109,
+        158,
+        237,
+        275
+      ]
+    },
+    {
+      "file": "stone-15.png",
+      "component_number": 17,
+      "subpart": null,
+      "center": [
+        482,
+        213
+      ],
+      "bounds": [
+        459,
+        190,
+        504,
+        239
+      ]
+    },
+    {
+      "file": "stone-16.png",
+      "component_number": 18,
+      "subpart": null,
+      "center": [
+        526,
+        229
+      ],
+      "bounds": [
+        475,
+        188,
+        574,
+        274
+      ]
+    },
+    {
+      "file": "stone-17.png",
+      "component_number": 19,
+      "subpart": null,
+      "center": [
+        340,
+        271
+      ],
+      "bounds": [
+        257,
+        202,
+        421,
+        349
+      ]
+    },
+    {
+      "file": "stone-18.png",
+      "component_number": 20,
+      "subpart": null,
+      "center": [
+        645,
+        275
+      ],
+      "bounds": [
+        545,
+        199,
+        754,
+        374
+      ]
+    },
+    {
+      "file": "stone-19.png",
+      "component_number": 21,
+      "subpart": null,
+      "center": [
+        458,
+        277
+      ],
+      "bounds": [
+        390,
+        210,
+        529,
+        358
+      ]
+    },
+    {
+      "file": "stone-20.png",
+      "component_number": 22,
+      "subpart": null,
+      "center": [
+        229,
+        282
+      ],
+      "bounds": [
+        173,
+        232,
+        284,
+        338
+      ]
+    },
+    {
+      "file": "stone-21.png",
+      "component_number": 23,
+      "subpart": null,
+      "center": [
+        546,
+        284
+      ],
+      "bounds": [
+        503,
+        244,
+        588,
+        332
+      ]
+    },
+    {
+      "file": "stone-22.png",
+      "component_number": 24,
+      "subpart": null,
+      "center": [
+        779,
+        302
+      ],
+      "bounds": [
+        719,
+        259,
+        834,
+        364
+      ]
+    },
+    {
+      "file": "stone-23.png",
+      "component_number": 25,
+      "subpart": null,
+      "center": [
+        553,
+        327
+      ],
+      "bounds": [
+        520,
+        298,
+        590,
+        363
+      ]
+    },
+    {
+      "file": "stone-24.png",
+      "component_number": 26,
+      "subpart": null,
+      "center": [
+        735,
+        341
+      ],
+      "bounds": [
+        681,
+        292,
+        792,
+        393
+      ]
+    },
+    {
+      "file": "stone-25.png",
+      "component_number": 27,
+      "subpart": null,
+      "center": [
+        515,
+        350
+      ],
+      "bounds": [
+        472,
+        311,
+        561,
+        397
+      ]
+    },
+    {
+      "file": "stone-26.png",
+      "component_number": 28,
+      "subpart": null,
+      "center": [
+        462,
+        360
+      ],
+      "bounds": [
+        428,
+        328,
+        496,
+        397
+      ]
+    },
+    {
+      "file": "stone-27.png",
+      "component_number": 29,
+      "subpart": null,
+      "center": [
+        116,
+        363
+      ],
+      "bounds": [
+        0,
+        242,
+        262,
+        491
+      ]
+    },
+    {
+      "file": "stone-28.png",
+      "component_number": 31,
+      "subpart": null,
+      "center": [
+        849,
+        365
+      ],
+      "bounds": [
+        772,
+        301,
+        920,
+        439
+      ]
+    },
+    {
+      "file": "stone-29.png",
+      "component_number": 32,
+      "subpart": null,
+      "center": [
+        581,
+        369
+      ],
+      "bounds": [
+        536,
+        323,
+        627,
+        426
+      ]
+    },
+    {
+      "file": "stone-30.png",
+      "component_number": 33,
+      "subpart": null,
+      "center": [
+        254,
+        370
+      ],
+      "bounds": [
+        208,
+        321,
+        305,
+        412
+      ]
+    },
+    {
+      "file": "stone-31.png",
+      "component_number": 34,
+      "subpart": null,
+      "center": [
+        364,
+        397
+      ],
+      "bounds": [
+        247,
+        307,
+        471,
+        508
+      ]
+    },
+    {
+      "file": "stone-32.png",
+      "component_number": 35,
+      "subpart": null,
+      "center": [
+        538,
+        398
+      ],
+      "bounds": [
+        494,
+        358,
+        581,
+        441
+      ]
+    },
+    {
+      "file": "stone-33.png",
+      "component_number": 36,
+      "subpart": null,
+      "center": [
+        479,
+        407
+      ],
+      "bounds": [
+        440,
+        363,
+        518,
+        451
+      ]
+    },
+    {
+      "file": "stone-34.png",
+      "component_number": 37,
+      "subpart": 1,
+      "center": [
+        627,
+        416
+      ],
+      "bounds": [
+        602,
+        346,
+        674,
+        407
+      ]
+    },
+    {
+      "file": "stone-35.png",
+      "component_number": 37,
+      "subpart": 2,
+      "center": [
+        627,
+        416
+      ],
+      "bounds": [
+        568,
+        379,
+        674,
+        476
+      ]
+    },
+    {
+      "file": "stone-36.png",
+      "component_number": 38,
+      "subpart": null,
+      "center": [
+        729,
+        422
+      ],
+      "bounds": [
+        643,
+        357,
+        819,
+        505
+      ]
+    },
+    {
+      "file": "stone-37.png",
+      "component_number": 39,
+      "subpart": null,
+      "center": [
+        241,
+        438
+      ],
+      "bounds": [
+        184,
+        387,
+        300,
+        498
+      ]
+    },
+    {
+      "file": "stone-38.png",
+      "component_number": 40,
+      "subpart": null,
+      "center": [
+        552,
+        453
+      ],
+      "bounds": [
+        505,
+        412,
+        601,
+        498
+      ]
+    },
+    {
+      "file": "stone-39.png",
+      "component_number": 43,
+      "subpart": null,
+      "center": [
+        485,
+        484
+      ],
+      "bounds": [
+        422,
+        420,
+        548,
+        551
+      ]
+    },
+    {
+      "file": "stone-40.png",
+      "component_number": 44,
+      "subpart": null,
+      "center": [
+        897,
+        484
+      ],
+      "bounds": [
+        792,
+        396,
+        994,
+        581
+      ]
+    },
+    {
+      "file": "stone-41.png",
+      "component_number": 45,
+      "subpart": null,
+      "center": [
+        134,
+        498
+      ],
+      "bounds": [
+        86,
+        456,
+        183,
+        543
+      ]
+    },
+    {
+      "file": "stone-42.png",
+      "component_number": 46,
+      "subpart": null,
+      "center": [
+        416,
+        509
+      ],
+      "bounds": [
+        380,
+        470,
+        450,
+        545
+      ]
+    },
+    {
+      "file": "stone-43.png",
+      "component_number": 47,
+      "subpart": 1,
+      "center": [
+        564,
+        509
+      ],
+      "bounds": [
+        557,
+        464,
+        612,
+        517
+      ]
+    },
+    {
+      "file": "stone-44.png",
+      "component_number": 47,
+      "subpart": 2,
+      "center": [
+        564,
+        509
+      ],
+      "bounds": [
+        525,
+        477,
+        592,
+        554
+      ]
+    },
+    {
+      "file": "stone-45.png",
+      "component_number": 48,
+      "subpart": 1,
+      "center": [
+        812,
+        528
+      ],
+      "bounds": [
+        756,
+        446,
+        860,
+        540
+      ]
+    },
+    {
+      "file": "stone-46.png",
+      "component_number": 48,
+      "subpart": 2,
+      "center": [
+        812,
+        528
+      ],
+      "bounds": [
+        758,
+        501,
+        873,
+        609
+      ]
+    },
+    {
+      "file": "stone-47.png",
+      "component_number": 49,
+      "subpart": null,
+      "center": [
+        242,
+        547
+      ],
+      "bounds": [
+        148,
+        448,
+        343,
+        637
+      ]
+    },
+    {
+      "file": "stone-48.png",
+      "component_number": 50,
+      "subpart": null,
+      "center": [
+        667,
+        548
+      ],
+      "bounds": [
+        554,
+        446,
+        783,
+        655
+      ]
+    },
+    {
+      "file": "stone-49.png",
+      "component_number": 51,
+      "subpart": null,
+      "center": [
+        363,
+        576
+      ],
+      "bounds": [
+        283,
+        489,
+        456,
+        667
+      ]
+    },
+    {
+      "file": "stone-50.png",
+      "component_number": 52,
+      "subpart": null,
+      "center": [
+        495,
+        594
+      ],
+      "bounds": [
+        405,
+        524,
+        594,
+        681
+      ]
+    },
+    {
+      "file": "stone-51.png",
+      "component_number": 53,
+      "subpart": null,
+      "center": [
+        935,
+        613
+      ],
+      "bounds": [
+        838,
+        535,
+        1032,
+        722
+      ]
+    },
+    {
+      "file": "stone-52.png",
+      "component_number": 54,
+      "subpart": null,
+      "center": [
+        583,
+        647
+      ],
+      "bounds": [
+        530,
+        603,
+        635,
+        692
+      ]
+    },
+    {
+      "file": "stone-53.png",
+      "component_number": 55,
+      "subpart": null,
+      "center": [
+        686,
+        651
+      ],
+      "bounds": [
+        659,
+        623,
+        716,
+        690
+      ]
+    },
+    {
+      "file": "stone-54.png",
+      "component_number": 56,
+      "subpart": null,
+      "center": [
+        648,
+        674
+      ],
+      "bounds": [
+        604,
+        637,
+        688,
+        716
+      ]
+    },
+    {
+      "file": "stone-55.png",
+      "component_number": 57,
+      "subpart": null,
+      "center": [
+        515,
+        679
+      ],
+      "bounds": [
+        472,
+        639,
+        559,
+        728
+      ]
+    },
+    {
+      "file": "stone-56.png",
+      "component_number": 59,
+      "subpart": null,
+      "center": [
+        450,
+        698
+      ],
+      "bounds": [
+        390,
+        646,
+        511,
+        756
+      ]
+    },
+    {
+      "file": "stone-57.png",
+      "component_number": 61,
+      "subpart": null,
+      "center": [
+        798,
+        721
+      ],
+      "bounds": [
+        651,
+        584,
+        971,
+        872
+      ]
+    },
+    {
+      "file": "stone-58.png",
+      "component_number": 62,
+      "subpart": null,
+      "center": [
+        597,
+        732
+      ],
+      "bounds": [
+        514,
+        664,
+        680,
+        814
+      ]
+    },
+    {
+      "file": "stone-59.png",
+      "component_number": 63,
+      "subpart": null,
+      "center": [
+        677,
+        803
+      ],
+      "bounds": [
+        642,
+        768,
+        714,
+        837
+      ]
+    },
+    {
+      "file": "stone-60.png",
+      "component_number": "7+12",
+      "subpart": null,
+      "center": [
+        244,
+        183
+      ],
+      "bounds": [
+        201,
+        119,
+        289,
+        264
+      ]
+    }
+  ],
+  "body": [
+    {
+      "file": "body-and-carrier.png",
+      "bounds": [
+        0,
+        396,
+        968,
+        1403
+      ]
+    },
+    {
+      "file": "cord.png",
+      "bounds": [
+        237,
+        0,
+        298,
+        267
+      ]
+    }
+  ]
+}
