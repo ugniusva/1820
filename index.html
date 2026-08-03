@@ -537,11 +537,21 @@
       transform: translateZ(0);
     }
 
+    .meet-figure--top img {
+      transform-origin: 50% 0;
+      transform: translate3d(-6%, -42.5%, 0) scale(2.4);
+    }
+
+    .meet-figure--bottom img {
+      transform-origin: 50% 0;
+      transform: translate3d(-0.7%, -33.5%, 0) scale(-1.91, 1.91);
+    }
+
     .meet-figure--top {
       width: clamp(260px, 43vh, 470px);
       transform:
         translate3d(
-          calc(-63.5% - 10px),
+          calc(-63.5% - 12px),
           calc(-90.5% + ((1 - var(--meet-approach)) * -18vh) - (var(--meet-title) * 10vh)),
           0
         )
@@ -553,7 +563,7 @@
     .meet-figure--bottom {
       transform:
         translate3d(
-          calc(-36.5% + 10px),
+          calc(-36.5% + 12px),
           calc(-9.5% + ((1 - var(--meet-approach)) * 18vh) + (var(--meet-title) * 10vh)),
           0
         )
@@ -837,9 +847,9 @@
         minmax(190px, 0.48fr)
         92px;
       align-items: center;
-      gap: clamp(16px, 1.8vw, 24px);
-      height: 64px;
-      padding: 8px 30px 8px 22px;
+      gap: clamp(12px, 1.25vw, 18px);
+      height: 76px;
+      padding: 10px 30px 10px 24px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.34);
     }
 
@@ -848,7 +858,7 @@
       font-family: "Lato", Arial, sans-serif;
       font-size: clamp(1.02rem, 0.96rem + 0.16vw, 1.14rem);
       font-weight: 700;
-      letter-spacing: 0;
+      letter-spacing: 0.035em;
       line-height: 1.25;
     }
 
@@ -935,7 +945,7 @@
       background: #f5f5f3;
       color: #050505;
       cursor: pointer;
-      font: 700 0.92rem/1 "Lato", Arial, sans-serif;
+      font: 400 0.92rem/1 "Libre Baskerville", Georgia, "Times New Roman", serif;
       letter-spacing: 0;
       text-transform: none;
       transition: background 180ms ease, color 180ms ease;
@@ -979,32 +989,37 @@
       transition: opacity 180ms ease;
     }
 
-    .footer-mark img {
+    .footer-crest {
       display: block;
-      width: 158px;
+      width: 82px;
       height: auto;
       filter: saturate(0.88) contrast(1.04);
+    }
+
+    .footer-wordmark-crop {
+      position: relative;
+      display: block;
+      width: 196px;
+      aspect-ratio: 746 / 159;
+      overflow: hidden;
+    }
+
+    .footer-wordmark-crop img {
+      position: absolute;
+      top: -424.53%;
+      left: -109.92%;
+      display: block;
+      width: 332.57%;
+      height: auto;
+      max-width: none;
+      filter: grayscale(1) brightness(2.25) contrast(0.96);
+      opacity: 0.88;
     }
 
     .footer-mark:hover,
     .footer-mark:focus-visible {
       opacity: 0.78;
       outline: none;
-    }
-
-    .footer-mark strong {
-      font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
-      font-size: 1.42rem;
-      font-weight: 400;
-      letter-spacing: 0;
-      white-space: nowrap;
-    }
-
-    .footer-mark span {
-      color: rgba(255, 255, 255, 0.62);
-      font-size: 0.78rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
     }
 
     .footer-column {
@@ -1229,8 +1244,8 @@
 
     .skip.is-at-end {
       --skip-size: 36px;
-      --skip-gutter: 29px;
-      bottom: calc(var(--ending-footer-height) - 110px);
+      --skip-gutter: 52px;
+      bottom: calc(var(--ending-footer-height) - 150px);
       border-color: #ffffff;
       background: #f5f5f3;
       color: #050505;
@@ -1352,7 +1367,7 @@
         width: clamp(205px, 63vw, 270px);
         transform:
           translate3d(
-            calc(-63.5% - 10px),
+            calc(-63.5% - 12px),
             calc(-90.5% + ((1 - var(--meet-approach)) * -14vh) - (var(--meet-title) * 8vh)),
             0
           )
@@ -1363,7 +1378,7 @@
       .meet-figure--bottom {
         transform:
           translate3d(
-            calc(-36.5% + 10px),
+            calc(-36.5% + 12px),
             calc(-9.5% + ((1 - var(--meet-approach)) * 14vh) + (var(--meet-title) * 8vh)),
             0
           )
@@ -1497,16 +1512,12 @@
         gap: 4px;
       }
 
-      .footer-mark img {
-        width: 112px;
+      .footer-crest {
+        width: 66px;
       }
 
-      .footer-mark strong {
-        font-size: 1.05rem;
-      }
-
-      .footer-mark span {
-        font-size: 0.68rem;
+      .footer-wordmark-crop {
+        width: 148px;
       }
 
       .footer-column {
@@ -1530,8 +1541,8 @@
 
       .skip.is-at-end {
         --skip-size: 36px;
-        --skip-gutter: 12px;
-        bottom: calc(var(--ending-footer-height) - 182px);
+        --skip-gutter: 24px;
+        bottom: calc(var(--ending-footer-height) - 208px);
       }
     }
 
@@ -1600,12 +1611,12 @@
     <section class="meet-panel" id="meetPanel" aria-label="Where opposites meet">
       <div class="meet-frame" aria-hidden="true">
         <picture class="meet-figure meet-figure--top">
-          <source data-srcset="images/meet-figure-top.webp" type="image/webp" />
-          <img data-src="images/up.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="low" />
+          <source data-srcset="images/upv2.png" type="image/png" />
+          <img data-src="images/upv2.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="low" />
         </picture>
         <picture class="meet-figure meet-figure--bottom">
-          <source data-srcset="images/meet-figure-bottom.webp" type="image/webp" />
-          <img data-src="images/down.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="low" />
+          <source data-srcset="images/botv2.png" type="image/png" />
+          <img data-src="images/botv2.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="low" />
         </picture>
         <p class="meet-phrase">
           <span class="meet-word meet-word--where">Where.</span>
@@ -1664,9 +1675,10 @@
         <div class="footer-grid">
           <div class="footer-rail">
             <a class="footer-mark" href="https://chateau-zegaani.com/" target="_blank" rel="noopener noreferrer" aria-label="Visit Chateau Zegaani">
-              <img src="images/zegaani.png" width="79" height="86" alt="Chateau Zegaani crest" loading="lazy" decoding="async" />
-              <strong>Chateau Zegaani</strong>
-              <span>1820</span>
+              <img class="footer-crest" src="images/zegaani.png" width="79" height="86" alt="" loading="lazy" decoding="async" />
+              <span class="footer-wordmark-crop" aria-hidden="true">
+                <img src="images/Chateau_Zegaani_logo_vector.png" width="2481" height="2482" alt="" loading="lazy" decoding="async" />
+              </span>
             </a>
           </div>
 
@@ -2023,6 +2035,8 @@
       let lastFrameTime = performance.now();
       let animationFrame = 0;
       let mobileTween = null;
+      let firstHeroButtonAdvancePending = true;
+      let slowHeroButtonAdvance = false;
       let mobileFrameAverage = 16.7;
       let mobileFrameSamples = 0;
       let mobileQualityScale = 1;
@@ -2404,7 +2418,7 @@
         return value * value * value * ((value * ((value * 6) - 15)) + 10);
       }
 
-      function startMobileTween(progress) {
+      function startMobileTween(progress, { slowHeroAdvance = false } = {}) {
         const distance = Math.abs(progress - visualProgress);
         if (!distance) {
           mobileTween = null;
@@ -2413,7 +2427,9 @@
 
         const crossesBoulderSequence = Math.min(progress, visualProgress) < 0.1
           && Math.max(progress, visualProgress) > 0.4;
-        const duration = crossesBoulderSequence
+        const duration = slowHeroAdvance
+          ? 3200
+          : crossesBoulderSequence
           ? 2200
           : clamp(1050 + (distance * 2800), 1400, 1800);
         mobileTween = {
@@ -2487,8 +2503,9 @@
         setTargetProgress(scene.progress);
       }
 
-      function setTargetProgress(progress) {
+      function setTargetProgress(progress, { slowHeroAdvance = false } = {}) {
         const nextProgress = prefersReduced ? 1 : clamp(progress);
+        slowHeroButtonAdvance = slowHeroAdvance && !prefersReduced;
         if (narrow && !prefersReduced) {
           mobileSceneIndex = getClosestMobileScene(nextProgress);
           root.dataset.mobileScene = mobileScenes[mobileSceneIndex].name;
@@ -2496,7 +2513,7 @@
         if (Math.abs(nextProgress - targetProgress) > 0.00001) {
           targetProgress = nextProgress;
           if (narrow && !prefersReduced) {
-            startMobileTween(targetProgress);
+            startMobileTween(targetProgress, { slowHeroAdvance });
           }
         }
         requestFrame();
@@ -2658,20 +2675,25 @@
         } else {
           const distance = targetProgress - visualProgress;
           const distanceAbs = Math.abs(distance);
-          const rate = narrow
+          const heroAdvanceRate = slowHeroButtonAdvance ? 0.62 : 1;
+          const rate = (narrow
             ? 4.9 + Math.min(8, distanceAbs * 20)
-            : 6.4 + Math.min(12, distanceAbs * 38);
+            : 6.4 + Math.min(12, distanceAbs * 38)) * heroAdvanceRate;
           const easedStep = 1 - Math.exp(-rate * elapsed);
           const rawStep = distance * easedStep;
-          const maxStep = narrow
+          const maxStep = (narrow
             ? (0.1 + Math.min(0.24, distanceAbs * 0.68)) * elapsed
-            : (0.14 + Math.min(0.32, distanceAbs * 0.9)) * elapsed;
+            : (0.14 + Math.min(0.32, distanceAbs * 0.9)) * elapsed) * heroAdvanceRate;
           visualProgress += Math.sign(distance) * Math.min(Math.abs(rawStep), maxStep);
 
           if (Math.abs(targetProgress - visualProgress) < 0.000015) {
             visualProgress = targetProgress;
           }
           moving = Math.abs(targetProgress - visualProgress) > 0.00001;
+        }
+
+        if (!moving) {
+          slowHeroButtonAdvance = false;
         }
 
         if (Math.abs(visualProgress - latestProgress) > 0.00001 || Math.abs(targetProgress - visualProgress) > 0.00001) {
@@ -2688,7 +2710,11 @@
         const returnToStart = targetProgress > 0.94;
         const nextScene = mobileScenes.find((scene) => scene.progress > targetProgress + 0.025);
         const nextProgress = returnToStart ? 0 : (nextScene?.progress ?? 1);
-        setTargetProgress(nextProgress);
+        const slowHeroAdvance = firstHeroButtonAdvancePending
+          && targetProgress < 0.1
+          && nextProgress === mobileScenes[1].progress;
+        firstHeroButtonAdvancePending = false;
+        setTargetProgress(nextProgress, { slowHeroAdvance });
         if (nextProgress > 0.94) {
           window.setTimeout(cueHudBookingLink, narrow ? 1500 : 1100);
         }

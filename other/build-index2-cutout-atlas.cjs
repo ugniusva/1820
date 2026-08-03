@@ -92,6 +92,15 @@ async function buildBodyVariants() {
   )));
 }
 
+async function buildRopemanVariants() {
+  await Promise.all([256, 384, 512, 768, 1024].map((width) => (
+    sharp(path.join(sourceRoot, "ropeman.png"))
+      .resize({ width, withoutEnlargement: true, kernel: "lanczos3" })
+      .webp({ quality: 96, alphaQuality: 100, smartSubsample: true, effort: 6 })
+      .toFile(path.join(sourceRoot, `ropeman-${width}.webp`))
+  )));
+}
+
 function buildDataModule() {
   const stones = manifest.round_forms.map((stone, assetIndex) => {
     const [left, top, right, bottom] = stone.bounds;
@@ -125,7 +134,8 @@ async function build() {
     buildAtlas("index2-stone-atlas", 448),
     buildAtlas("index2-stone-atlas-compact", 224),
     buildAtlas("index2-stone-atlas-preview", 112),
-    buildBodyVariants()
+    buildBodyVariants(),
+    buildRopemanVariants()
   ]);
 }
 
