@@ -1,15 +1,13 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-opening-variant="veil">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>1820 | Restaurant</title>
+  <title>1820</title>
   <link rel="preload" as="font" href="fonts/lato-400-latin.woff2" type="font/woff2" crossorigin />
   <link rel="preload" as="font" href="fonts/libre-baskerville-400-latin.woff2" type="font/woff2" crossorigin />
   <link rel="preload" as="image" href="images/rockguy-loader-128.webp" imagesrcset="images/rockguy-loader-128.webp 128w, images/rockguy-loader-192.webp 192w, images/rockguy-loader-320.webp 320w, images/rockguy-loader.webp 512w" imagesizes="(max-width: 1050px) 84px, (max-width: 1875px) 8vw, 150px" type="image/webp" fetchpriority="high" />
-  <link rel="preload" as="image" href="images/hero-pull-static-256.webp" imagesrcset="images/hero-pull-static-256.webp 256w, images/hero-pull-static-320.webp 320w, images/hero-pull-static.webp 520w" imagesizes="(max-width: 460px) 23vw, (max-width: 760px) 96px, 12vh" type="image/webp" fetchpriority="high" />
-  <link rel="preload" as="image" href="images/hero-pull-moving-128.webp" imagesrcset="images/hero-pull-moving-128.webp 128w, images/hero-pull-moving-160.webp 160w, images/hero-pull-moving.webp 270w" imagesizes="(max-width: 460px) 12vw, (max-width: 760px) 50px, 6.2vh" type="image/webp" fetchpriority="high" />
-  <link rel="preload" as="image" href="images/hero-figure-lower-384.webp" imagesrcset="images/hero-figure-lower-384.webp 384w, images/hero-figure-lower-512.webp 512w, images/hero-figure-lower-768.webp 768w, images/hero-figure-lower-896.webp 896w, images/hero-figure-lower.webp 1024w" imagesizes="(max-width: 460px) 72vw, (max-width: 760px) 330px, 33.333vh" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/perfectref-512.webp" imagesrcset="images/perfectref-512.webp 512w, images/perfectref-768.webp 768w, images/perfectref.webp 1024w" imagesizes="53.5vh" type="image/webp" fetchpriority="high" />
   <link rel="preload" as="image" href="images/hero-rock-atlas-preview.webp?v=20260803-1" type="image/webp" fetchpriority="high" />
   <script>
     (() => {
@@ -113,6 +111,9 @@
       --experience: 0;
       --experience-copy: 0;
       --ending: 0;
+      --opening-snapshot-alpha: 1;
+      --opening-canvas-alpha: 0;
+      --opening-body-veil-alpha: 0;
       --ending-footer-height: clamp(430px, 52vh, 510px);
       --skip-gutter: clamp(18px, 2.6vw, 42px);
       --skip-size: 48px;
@@ -360,74 +361,49 @@
       transition: opacity 560ms cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .hero-figure img {
+    .hero-opening-art {
       position: absolute;
       left: 50%;
-      display: block;
-      height: auto;
-      object-fit: contain;
-      filter: grayscale(1) contrast(1.04);
-      transform: translateX(-50%);
-    }
-
-    .hero-figure-rope {
-      top: 16.5vh;
-      width: clamp(185px, 23.15vh, 375px);
-    }
-
-    .hero-figure-lower {
-      top: 54%;
-      width: clamp(270px, 33.333vh, 540px);
-    }
-
-    /* Optional original-art arm pull. Remove this block and its matching markup/script to roll back. */
-    .hero-arm-pull {
-      --arm-pull-scale-y: 1;
-      --arm-pull-shift-y: 0px;
-      position: absolute;
-      top: 16.5vh;
-      left: 50%;
-      width: clamp(185px, 23.15vh, 375px);
+      top: 56%;
+      width: clamp(360px, 53.5vh, 640px);
       aspect-ratio: 2 / 3;
-      visibility: hidden;
-      transform: translateX(-50%);
+      transform: translate3d(-50%, -50%, 0);
     }
 
-    .hero-arm-pull picture {
-      display: contents;
-    }
-
-    .hero-figure .hero-arm-pull img {
+    .hero-opening-image,
+    .hero-opening-image img {
       position: absolute;
+      inset: 0;
       display: block;
+      width: 100%;
+      height: 100%;
       max-width: none;
-      height: auto;
-      object-fit: contain;
+    }
+
+    .hero-opening-image img {
+      object-fit: fill;
       filter: grayscale(1) contrast(1.04);
     }
 
-    .hero-figure .hero-arm-pull-static {
-      top: 7.8125%;
-      left: 27.34375%;
-      width: 50.78125%;
-      transform: none;
-    }
-
-    .hero-figure .hero-arm-pull-moving {
-      top: 35.8073%;
-      left: 41.0156%;
-      width: 26.3672%;
-      transform: translate3d(0, var(--arm-pull-shift-y), 0) scaleY(var(--arm-pull-scale-y));
-      transform-origin: 48.148% 0;
-      will-change: transform;
-    }
-
-    .hero-figure.is-arm-pull-ready > .hero-figure-original .hero-figure-rope {
-      visibility: hidden;
-    }
-
-    .hero-figure.is-arm-pull-ready .hero-arm-pull {
-      visibility: visible;
+    .hero-opening-art::after {
+      content: "";
+      position: absolute;
+      left: -3%;
+      top: 41%;
+      width: 106%;
+      height: 34%;
+      pointer-events: none;
+      opacity: calc(var(--opening-body-veil-alpha) * 1.32);
+      background: radial-gradient(
+        ellipse 58% 76% at 56% 45%,
+        rgba(246, 246, 246, 0.99) 0 60%,
+        rgba(246, 246, 246, 0.94) 74%,
+        rgba(246, 246, 246, 0.58) 88%,
+        transparent 100%
+      );
+      filter: blur(8px);
+      transform: scale(1.04);
+      will-change: opacity;
     }
 
     .boulder-field {
@@ -1335,21 +1311,6 @@
         word-spacing: 0.12em;
       }
 
-      .hero-figure-rope {
-        top: 20vh;
-        width: clamp(150px, 44vw, 188px);
-      }
-
-      .hero-arm-pull {
-        top: 20vh;
-        width: clamp(150px, 44vw, 188px);
-      }
-
-      .hero-figure-lower {
-        top: 53%;
-        width: clamp(230px, 72vw, 330px);
-      }
-
       .meet-panel::after {
         inset: 14px 12px;
       }
@@ -1566,26 +1527,13 @@
     <section class="hero-copy" aria-labelledby="heroTitle">
       <h1 class="hero-number" id="heroTitle">1820</h1>
       <p class="hero-tagline">As nature intended.</p>
-      <div class="hero-figure" aria-hidden="true">
-        <picture class="hero-figure-original">
-          <source data-srcset="images/hero-figure-rope.webp" type="image/webp" />
-          <img class="hero-figure-rope" data-src="images/hero-figure-rope.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="low" />
-        </picture>
-        <!-- Optional pull layers: both are cut from the original illustration; no replacement rope. -->
-        <div class="hero-arm-pull" data-hero-arm-pull>
-          <picture>
-            <source srcset="images/hero-pull-static-256.webp 256w, images/hero-pull-static-320.webp 320w, images/hero-pull-static.webp 520w" sizes="(max-width: 460px) 23vw, (max-width: 760px) 96px, 12vh" type="image/webp" />
-            <img class="hero-arm-pull-static" src="images/hero-pull-static.png" width="520" height="760" alt="" decoding="async" fetchpriority="high" data-hero-critical />
-          </picture>
-          <picture>
-            <source srcset="images/hero-pull-moving-128.webp 128w, images/hero-pull-moving-160.webp 160w, images/hero-pull-moving.webp 270w" sizes="(max-width: 460px) 12vw, (max-width: 760px) 50px, 6.2vh" type="image/webp" />
-            <img class="hero-arm-pull-moving" src="images/hero-pull-moving.png" width="270" height="920" alt="" decoding="async" fetchpriority="high" data-hero-critical />
+      <div class="hero-figure" data-hero-reference aria-hidden="true">
+        <div class="hero-opening-art" data-hero-art>
+          <picture class="hero-opening-image">
+            <source srcset="images/perfectref-512.webp 512w, images/perfectref-768.webp 768w, images/perfectref.webp 1024w" sizes="53.5vh" type="image/webp" />
+            <img src="images/perfectref.png" width="1024" height="1536" alt="" decoding="async" fetchpriority="high" data-hero-critical />
           </picture>
         </div>
-        <picture>
-          <source srcset="images/hero-figure-lower-384.webp 384w, images/hero-figure-lower-512.webp 512w, images/hero-figure-lower-768.webp 768w, images/hero-figure-lower-896.webp 896w, images/hero-figure-lower.webp 1024w" sizes="(max-width: 460px) 72vw, (max-width: 760px) 330px, 33.333vh" type="image/webp" />
-          <img class="hero-figure-lower" src="images/hero-figure-lower.png" width="1024" height="1024" alt="" decoding="async" fetchpriority="high" data-hero-critical />
-        </picture>
       </div>
     </section>
     <canvas class="boulder-field" id="boulderField" aria-hidden="true"></canvas>
@@ -1726,8 +1674,9 @@
   <button class="skip" id="skipToEnd" type="button" aria-label="Continue to the next section"></button>
   <div class="scroll-length" aria-hidden="true"></div>
 
+  <script src="scripts/index2-cutout-data.js?v=hires-1"></script>
+  <script src="scripts/hero-opening.js?v=20260803-2"></script>
   <script src="scripts/boulder-renderer.js?v=20260803-1"></script>
-  <script src="scripts/hero-arm-pull.js?v=20260803-1"></script>
   <script>
     (() => {
       const root = document.documentElement;
@@ -1745,10 +1694,22 @@
       const newsletterPermission = document.getElementById("newsletterPermission");
       const newsletterStatus = document.getElementById("newsletterStatus");
       const pageTransition = document.getElementById("pageTransition");
+      const heroArtwork = document.querySelector("[data-hero-art]");
+      const cutoutData = window.Index2CutoutData;
       const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const heroArmPull = window.HeroArmPull?.mount(document.querySelector(".hero-figure"), {
+      const heroOpening = window.HeroOpening?.mount(document.querySelector("[data-hero-reference]"), {
         reducedMotion: prefersReduced
-      }) || { ready: Promise.resolve(), update: () => ({ rockLift: 0, rockShift: 0 }) };
+      }) || {
+        handoff: 0,
+        ready: Promise.resolve(),
+        rock: () => ({ alpha: 1, sourceGather: 0, sourceScale: 1, travel: 1 }),
+        update: () => ({ canvasAlpha: 1, complete: true, handoff: 0, snapshotAlpha: 0 })
+      };
+      const heroArmPull = {
+        ready: Promise.resolve(),
+        sample: () => ({ rockLift: 0, rockShift: 0 }),
+        update: () => ({ rockLift: 0, rockShift: 0 })
+      };
       const transitionKey = "1820PageTransition";
       const arrivalHold = 880;
       const maximumArrivalHold = 6000;
@@ -1806,9 +1767,17 @@
       const rows = 8;
       const rockAssetCount = 10;
       const heroOrigin = { x: 50, y: 61 };
-      const seedFormationOffset = { x: 2, y: -12 };
+      const seedFormationOffset = { x: 8, y: 8 };
+      const openingRegistration = { x: 350, y: 696, scale: 0.488 };
+      const openingStoneCount = cutoutData?.stones?.length || 60;
       let viewportWidth = Math.max(1, window.innerWidth);
       let viewportHeight = Math.max(1, window.innerHeight);
+      let heroArtRect = {
+        left: viewportWidth * 0.5,
+        top: viewportHeight * 0.5,
+        width: 1,
+        height: 1
+      };
 
       const cells = Array.from({ length: columns * rows }, (_, index) => {
         const col = index % columns;
@@ -1929,11 +1898,36 @@
         const seeded = Boolean(seedSlot);
         const seedJitterX = Math.sin((index + 1) * 12.9898) * 0.44;
         const seedJitterY = Math.cos((index + 1) * 8.233) * 0.34;
-        const seedOffsetX = seeded ? (seedSlot.x * 0.83) + seedJitterX : 0;
-        const seedOffsetY = seeded ? (seedSlot.y * 0.78) + seedJitterY - 0.45 : 0;
+        const seedOffsetX = seeded ? (seedSlot.x * 1.55) + seedJitterX : 0;
+        const seedVerticalScale = seeded && seedSlot.y < 0 ? 0.98 : 0.78;
+        const seedOffsetY = seeded ? (seedSlot.y * seedVerticalScale) + seedJitterY - 0.45 : 0;
         const seedSize = seeded
-          ? clamp((seedSlot.size * 1.08) + 2, 12, 76)
+          ? clamp(((seedSlot.size * 1.30) + 2) * 1.26, 15.12, 95.76)
           : 0;
+        const openingStone = cutoutData.stones[
+          1 + (index % Math.max(1, openingStoneCount - 1))
+        ];
+        const openingExtra = index >= openingStoneCount;
+        const openingSourceSize = openingStone.maxSize * openingRegistration.scale;
+        const openingHorizontalSpread = 1.18;
+        const openingPairAngle = ((index % openingStoneCount) * 2.399963) + 0.72;
+        const openingPairRadius = openingExtra ? openingSourceSize * 0.065 : 0;
+        const openingSourceX = openingRegistration.x
+          + (525 * openingRegistration.scale)
+          + ((openingStone.centerX - 525) * openingRegistration.scale * openingHorizontalSpread)
+          + (Math.cos(openingPairAngle) * openingPairRadius * openingHorizontalSpread);
+        const openingCenterTopLift = clamp(1 - (Math.abs(openingStone.centerX - 525) / 210))
+          * clamp((360 - openingStone.centerY) / 180)
+          * 20;
+        const openingSourceY = openingRegistration.y
+          + (openingStone.centerY * openingRegistration.scale)
+          + (Math.sin(openingPairAngle) * openingPairRadius * 0.72)
+          - openingCenterTopLift;
+        const openingVertical = clamp(openingStone.centerY / 803);
+        const openingRadial = clamp(Math.hypot(
+          (openingStone.centerX - 525) / 525,
+          (openingStone.centerY - 410) / 410
+        ));
         const assetIndex = Math.floor(random() * rockAssetCount);
         const floorWeight = clamp((cell.y - 70) / 36);
         const gapWeight = gapHotspots.reduce((strongest, gap) => {
@@ -1971,6 +1965,12 @@
           seedSize,
           seedOffsetX,
           seedOffsetY,
+          openingExtra,
+          openingRadial,
+          openingSourceSize,
+          openingSourceX,
+          openingSourceY,
+          openingVertical,
           originX,
           originY,
           finalX: cell.x,
@@ -2027,6 +2027,15 @@
       function resizeBoulderField(force = false) {
         viewportWidth = Math.max(1, window.innerWidth);
         viewportHeight = Math.max(1, window.innerHeight);
+        const measuredHeroArt = heroArtwork?.getBoundingClientRect();
+        if (measuredHeroArt?.width && measuredHeroArt?.height) {
+          heroArtRect = {
+            left: measuredHeroArt.left,
+            top: measuredHeroArt.top,
+            width: measuredHeroArt.width,
+            height: measuredHeroArt.height
+          };
+        }
         boulderRenderer.resize(narrow, force);
       }
 
@@ -2035,7 +2044,6 @@
       let lastFrameTime = performance.now();
       let animationFrame = 0;
       let mobileTween = null;
-      let firstHeroButtonAdvancePending = true;
       let slowHeroButtonAdvance = false;
       let mobileFrameAverage = 16.7;
       let mobileFrameSamples = 0;
@@ -2185,6 +2193,7 @@
 
         heroMediaPromise = Promise.allSettled([
           ...heroCriticalImages.map(waitForImage),
+          heroOpening.ready,
           heroArmPull.ready,
           boulderReady
         ])
@@ -2330,6 +2339,7 @@
         const curtain = smooth(clamp((progress - 0.209) / 0.066));
         const siteHeaderIn = smooth(clamp((progress - 0.295) / 0.055));
         root.style.cssText = `--progress:${progress.toFixed(5)};--hero:${hero.toFixed(5)};--site-header:${siteHeaderIn.toFixed(5)};--veil:${veil.toFixed(5)};--meet-open:${meetOpen.toFixed(5)};--meet-opacity:${meetOpacity.toFixed(5)};--meet-approach:${meetApproach.toFixed(5)};--meet-figures:${meetFigures.toFixed(5)};--meet-words:${meetWords.toFixed(5)};--meet-title:${meetTitle.toFixed(5)};--meet-strike:${meetStrike.toFixed(5)};--experience:${experience.toFixed(5)};--experience-copy:${experienceCopy.toFixed(5)};--ending:${ending.toFixed(5)}`;
+        const opening = heroOpening.update(progress, { narrow });
         setLive(siteHeader, "header", siteHeaderIn > 0.01);
         setLive(meetPanel, "meet", meetOpen > 0.005);
         setLive(experiencePanel, "experience", experience > 0.005);
@@ -2356,8 +2366,103 @@
         const heroFigureScale = lowerFigureWidth / 360;
         const seedUnitX = (19.2 * heroFigureScale * 100) / viewportWidth;
         const seedUnitY = (10.8 * heroFigureScale * 100) / viewportHeight;
+        const handoffProgress = opening.handoff;
+        const handoffPull = heroArmPull.sample(handoffProgress, { narrow });
+        const handoff11Sin = Math.sin(handoffProgress * 11);
+        const handoff11Cos = Math.cos(handoffProgress * 11);
+        const handoff8Sin = Math.sin(handoffProgress * 8);
+        const handoff8Cos = Math.cos(handoffProgress * 8);
+        const openingArtScale = heroArtRect.width / 1024;
+        const openingPileCenterX = heroArtRect.left
+          + ((openingRegistration.x + (525 * openingRegistration.scale)) * openingArtScale);
+        const openingPileCenterY = heroArtRect.top
+          + ((openingRegistration.y + (410 * openingRegistration.scale)) * openingArtScale);
 
-        boulders.forEach((boulder) => {
+        boulders.forEach((boulder, index) => {
+          if (!opening.complete) {
+            const openingRock = heroOpening.rock(index, {
+              extra: boulder.openingExtra,
+              radial: boulder.openingRadial,
+              vertical: boulder.openingVertical
+            }, progress);
+            const targetInProgress = boulder.seeded
+              ? 1
+              : smooth(clamp((handoffProgress - boulder.appear) / 0.07));
+            const targetTravel = smooth(clamp(
+              (handoffProgress - boulder.release) / boulder.duration
+            ));
+            const targetSwayWave = (handoff11Sin * boulder.phaseCos)
+              + (handoff11Cos * boulder.phaseSin);
+            const targetFloatWave = (handoff8Cos * boulder.phaseCos)
+              - (handoff8Sin * boulder.phaseSin);
+            const targetMotionWeight = boulder.seeded ? lerp(0.12, 1, targetTravel) : 1;
+            const targetMicro = targetSwayWave * boulder.sway * targetMotionWeight;
+            const targetSeedOriginX = boulder.seeded
+              ? heroOrigin.x + (boulder.seedOffsetX * seedUnitX)
+                + ((seedFormationOffset.x / viewportWidth) * 100)
+              : boulder.originX;
+            const targetSeedOriginY = boulder.seeded
+              ? heroOrigin.y + (boulder.seedOffsetY * seedUnitY)
+                + ((seedFormationOffset.y / viewportHeight) * 100)
+              : boulder.originY;
+            const targetPullWeight = boulder.seeded ? 1 - (targetTravel * 0.28) : 0;
+            const targetX = lerp(targetSeedOriginX, boulder.finalX, targetTravel)
+              + targetMicro
+              + ((handoffPull.rockShift * targetPullWeight / viewportWidth) * 100);
+            const targetY = lerp(targetSeedOriginY, boulder.finalY, targetTravel)
+              - ((handoffPull.rockLift * targetPullWeight / viewportHeight) * 100)
+              + (targetFloatWave * targetMotionWeight * 1.15);
+            const targetScaleIn = lerp(
+              0.15,
+              1,
+              smooth(clamp((handoffProgress - boulder.appear) / 0.18))
+            );
+            const targetExpandedSize = boulder.drawSize
+              * boulder.assetScale
+              * viewportRockScale;
+            const targetDrawSize = boulder.seeded
+              ? lerp(boulder.seedSize * viewportRockScale, targetExpandedSize, targetTravel)
+              : targetExpandedSize * targetScaleIn;
+            const rawSourceX = heroArtRect.left + (boulder.openingSourceX * openingArtScale);
+            const rawSourceY = heroArtRect.top + (boulder.openingSourceY * openingArtScale);
+            const gatheredSourceX = lerp(
+              rawSourceX,
+              openingPileCenterX,
+              openingRock.sourceGather
+            );
+            const gatheredSourceY = lerp(
+              rawSourceY,
+              openingPileCenterY,
+              openingRock.sourceGather
+            );
+            const sourceX = gatheredSourceX + armPull.rockShift;
+            const sourceY = gatheredSourceY - armPull.rockLift;
+            const sourceSize = boulder.openingSourceSize
+              * openingArtScale
+              * openingRock.sourceScale;
+            const drawX = lerp(sourceX, (targetX / 100) * viewportWidth, openingRock.travel);
+            const drawY = lerp(sourceY, (targetY / 100) * viewportHeight, openingRock.travel);
+            const drawSize = lerp(sourceSize, targetDrawSize, openingRock.travel);
+            const alpha = targetInProgress * openingRock.alpha * opening.canvasAlpha;
+
+            if (alpha > 0.003 && drawSize > 0.5) {
+              boulderRenderer.addSprite(
+                boulder.assetIndex,
+                drawX,
+                drawY,
+                drawSize,
+                drawSize,
+                boulder.rotation,
+                alpha * boulder.rockOpacity,
+                boulder.rockBrightness,
+                boulder.rockContrast,
+                boulder.rotationCos,
+                boulder.rotationSin
+              );
+            }
+            return;
+          }
+
           const inProgress = boulder.seeded ? 1 : smooth(clamp((progress - boulder.appear) / 0.07));
           const travel = smooth(clamp((progress - boulder.release) / boulder.duration));
           const swayWave = (progress11Sin * boulder.phaseCos) + (progress11Cos * boulder.phaseSin);
@@ -2428,7 +2533,7 @@
         const crossesBoulderSequence = Math.min(progress, visualProgress) < 0.1
           && Math.max(progress, visualProgress) > 0.4;
         const duration = slowHeroAdvance
-          ? 3200
+          ? 4000
           : crossesBoulderSequence
           ? 2200
           : clamp(1050 + (distance * 2800), 1400, 1800);
@@ -2675,7 +2780,7 @@
         } else {
           const distance = targetProgress - visualProgress;
           const distanceAbs = Math.abs(distance);
-          const heroAdvanceRate = slowHeroButtonAdvance ? 0.62 : 1;
+          const heroAdvanceRate = slowHeroButtonAdvance ? 0.55 : 1;
           const rate = (narrow
             ? 4.9 + Math.min(8, distanceAbs * 20)
             : 6.4 + Math.min(12, distanceAbs * 38)) * heroAdvanceRate;
@@ -2710,10 +2815,8 @@
         const returnToStart = targetProgress > 0.94;
         const nextScene = mobileScenes.find((scene) => scene.progress > targetProgress + 0.025);
         const nextProgress = returnToStart ? 0 : (nextScene?.progress ?? 1);
-        const slowHeroAdvance = firstHeroButtonAdvancePending
-          && targetProgress < 0.1
+        const slowHeroAdvance = targetProgress < 0.1
           && nextProgress === mobileScenes[1].progress;
-        firstHeroButtonAdvancePending = false;
         setTargetProgress(nextProgress, { slowHeroAdvance });
         if (nextProgress > 0.94) {
           window.setTimeout(cueHudBookingLink, narrow ? 1500 : 1100);
