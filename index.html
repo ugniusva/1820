@@ -1514,8 +1514,7 @@
       }
 
       body::after {
-        opacity: 0.16;
-        mix-blend-mode: normal;
+        display: none;
       }
 
       .scroll-length {
@@ -1530,8 +1529,34 @@
       .meet-panel,
       .experience-panel,
       .ending-panel {
-        backface-visibility: hidden;
-        will-change: opacity, transform;
+        backface-visibility: visible;
+        will-change: auto;
+      }
+
+      .hero-copy,
+      .meet-panel.is-live,
+      .experience-panel.is-live,
+      .ending-panel.is-live {
+        will-change: opacity;
+      }
+
+      .meet-panel {
+        opacity: var(--meet-open);
+        clip-path: none;
+        transform: none;
+      }
+
+      .meet-panel::before {
+        display: none;
+      }
+
+      .meet-figure img {
+        filter: none;
+      }
+
+      .experience-panel {
+        clip-path: none;
+        transform: none;
       }
 
       .topbar {
@@ -1649,13 +1674,19 @@
 
       .experience-media {
         inset: 68px 0 0;
-        transform:
-          translate3d(0, calc(var(--ending) * -2vh), 0)
-          scale(calc(1.035 + (var(--ending) * 0.02)));
+        transform: none;
+        will-change: auto;
+      }
+
+      .experience-media::after {
+        display: none;
       }
 
       .experience-video {
         object-position: center;
+        opacity: 0.78;
+        filter: none;
+        transform: none;
       }
 
       .experience-lockup {
@@ -1771,6 +1802,7 @@
 
       .skip {
         bottom: max(14px, env(safe-area-inset-bottom));
+        backdrop-filter: none;
       }
 
       .skip.is-at-end {
@@ -1883,15 +1915,81 @@
 
       .footer-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
+        grid-auto-rows: min-content;
+        align-content: start;
+        gap: 14px 12px;
         padding-inline: 13px;
       }
 
       .footer-grid > .footer-rail {
-        display: none;
+        display: grid;
+        grid-column: 1 / -1;
+        grid-row: 3;
+        justify-items: center;
+        min-height: 0;
+        padding-top: 2px;
       }
 
       .footer-grid > .footer-column:nth-child(2) {
+        display: grid;
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .footer-grid > .footer-column:nth-child(3) {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      .footer-grid > .footer-column:nth-child(5) {
+        display: grid;
+        grid-column: 1;
+        grid-row: 2;
+      }
+
+      .footer-grid > .footer-column:nth-child(6) {
+        display: grid;
+        grid-column: 2;
+        grid-row: 2;
+      }
+
+      .footer-mark {
+        width: min(100%, 132px);
+      }
+
+      .footer-crest {
+        width: 54px;
+      }
+
+      .footer-wordmark-crop {
+        width: min(100%, 122px);
+      }
+
+      .footer-column {
+        gap: 5px;
+      }
+
+      .footer-column h3 {
+        font-size: 1.05rem;
+      }
+
+      .footer-column p,
+      .footer-column a {
+        font-size: 0.72rem;
+        line-height: 1.24;
+      }
+
+      .skip.is-at-end {
+        left: auto;
+        right: 16px;
+        bottom: max(16px, env(safe-area-inset-bottom));
+        transform: none;
+      }
+    }
+
+    @media (max-width: 360px) and (max-height: 650px) {
+      .footer-grid > .footer-column:nth-child(2),
+      .footer-grid > .footer-column:nth-child(6) {
         display: none;
       }
 
@@ -1900,18 +1998,12 @@
       }
 
       .footer-grid > .footer-column:nth-child(5) {
-        display: grid;
         grid-column: 2;
+        grid-row: 1;
       }
 
-      .footer-column p,
-      .footer-column a {
-        font-size: 0.72rem;
-        line-height: 1.28;
-      }
-
-      .footer-grid > .footer-column:nth-child(6) {
-        display: none;
+      .footer-grid > .footer-rail {
+        grid-row: 2;
       }
     }
 
@@ -1997,6 +2089,7 @@
           preload="none"
           data-poster="video/experience-1820-poster.webp"
         >
+          <source data-src="video/experience-1820-mobile.mp4" media="(max-width: 760px)" type="video/mp4" />
           <source data-src="video/experience-1820.webm" type="video/webm" />
           <source data-src="video/experience-1820.mp4" type="video/mp4" />
         </video>
@@ -2451,6 +2544,7 @@
       let targetProgress = prefersReduced ? 1 : clamp(window.scrollY / getMaxScroll());
       let visualProgress = targetProgress;
       let lastFrameTime = performance.now();
+      let lastMobileRenderTime = 0;
       let animationFrame = 0;
       let mobileTween = null;
       let slowHeroButtonAdvance = false;
@@ -2478,8 +2572,8 @@
 
       const deviceMemory = Number(navigator.deviceMemory) || 8;
       const logicalCores = Number(navigator.hardwareConcurrency) || 8;
-      if (narrow && (deviceMemory <= 4 || logicalCores <= 4)) {
-        mobileQualityScale = 0.86;
+      if (narrow) {
+        mobileQualityScale = deviceMemory <= 4 || logicalCores <= 4 ? 0.74 : 0.86;
         boulderRenderer.setPixelRatioScale(mobileQualityScale);
       }
 
@@ -2955,17 +3049,22 @@
       }
 
       function tuneMobileQuality(frameMilliseconds, bouldersMoving) {
-        if (!narrow || !bouldersMoving || frameMilliseconds > 90) {
+        if (!narrow || !bouldersMoving) {
           return;
         }
 
-        mobileFrameAverage += (frameMilliseconds - mobileFrameAverage) * 0.14;
+        const measuredFrame = clamp(frameMilliseconds, 8, 100);
+        mobileFrameAverage += (measuredFrame - mobileFrameAverage) * 0.18;
         mobileFrameSamples += 1;
-        if (mobileFrameSamples < 14 || mobileFrameAverage < 20.5) {
+        if (mobileFrameSamples < 8 && measuredFrame < 48) {
           return;
         }
 
-        const nextScale = mobileFrameAverage > 28 ? 0.74 : 0.86;
+        const nextScale = mobileFrameAverage > 28 || measuredFrame >= 48
+          ? 0.74
+          : mobileFrameAverage > 20.5
+          ? 0.8
+          : mobileQualityScale;
         if (nextScale < mobileQualityScale && boulderRenderer.setPixelRatioScale(nextScale)) {
           mobileQualityScale = nextScale;
           latestProgress = -1;
@@ -3169,6 +3268,11 @@
 
       function frame(now) {
         animationFrame = 0;
+        if (narrow && lastMobileRenderTime && now - lastMobileRenderTime < 12) {
+          requestFrame();
+          return;
+        }
+        lastMobileRenderTime = narrow ? now : 0;
         const frameGap = now - lastFrameTime;
         const elapsed = frameGap > 120
           ? 0.0167
